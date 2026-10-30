@@ -10,8 +10,11 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Claude artifact link), let the owner check it, and push only after he says «загружай».
 - Known dupes live in `data/dupes.txt`; apply with `python3 -I src/add_dupes.py data/db.json data/dupes.txt`
   (adds `du`/`xd` to the DB), then rebuild. The «Найти дюп» screen shows ONLY known dupes (up to 5) — the owner
-  rejected formula-based «похож по нотам» there. Search on that screen covers only perfumes with known dupes;
-  otherwise a «Написать нам» button opens feedback. More dupes = add lines to data/dupes.txt.
+  rejected formula-based «похож по нотам» there. Its search covers the whole base (perfumes with dupes first);
+  a perfume without dupes shows «дюпов пока нет», a same-line original with dupes (Absolu Aventus → Aventus)
+  and a «Написать нам» button. More dupes = add lines to data/dupes.txt.
+- Search: raw → sound key (phon) → consonant skeleton (skel, Russian letters only) → typos (osa). Russian-letter
+  queries are ranked by popularity; Latin ones by match level. Test with smoke_search/smoke_s2-style checks.
 - Owner's firm rule: never "fix" bad or missing data by switching a feature off or hiding results. Data gaps
   (missing notes, borrowed notes, missing dupe brands, no 2025–26 releases) get filled from real sources
   (official brand sites, shops, a licensed data API). Disabling the formula is not an acceptable solution.
