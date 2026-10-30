@@ -1068,7 +1068,27 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     "блэк орхид": "black orchid", "уд вуд": "oud wood", "табако ваниль": "tobacco vanille", "лейтон": "layton", "хамра": "khamrah",
     "энджел": "angel", "ангел": "angel", "алиен": "alien", "флауэрбомб": "flowerbomb", "гуд гёрл": "good girl", "гуд герл": "good girl",
     "аква ди джио": "acqua di gio", "эксплорер": "explorer", "кул вотер": "cool water", "фаренгейт": "fahrenheit",
-    "бай зе фаерплейс": "by the fireplace", "реплика": "replica", "клуб де нуи": "club de nuit"
+    "бай зе фаерплейс": "by the fireplace", "реплика": "replica", "клуб де нуи": "club de nuit",
+    // Сокращения и народные названия
+    "br540": "baccarat rouge 540", "br 540": "baccarat rouge 540", "бр540": "baccarat rouge 540", "бр 540": "baccarat rouge 540",
+    "баккара руж": "baccarat rouge", "бакара": "baccarat", "баккарат": "baccarat", "руж": "rouge",
+    "cdnim": "club de nuit intense man", "cdni": "club de nuit intense", "cdn": "club de nuit", "сдн": "club de nuit",
+    "клуб де нуит": "club de nuit", "клаб де нуи": "club de nuit", "унтолд": "untold", "антолд": "untold", "айконик": "iconic", "иконик": "iconic",
+    "tv": "tobacco vanille", "тв": "tobacco vanille", "тобакко ваниль": "tobacco vanille", "тобако ваниль": "tobacco vanille",
+    "ow": "oud wood", "bdc": "bleu de chanel", "блю шанель": "bleu de chanel", "блу де шанель": "bleu de chanel",
+    "adg": "acqua di gio", "адж": "acqua di gio", "аква ди джо": "acqua di gio", "аква ди жио": "acqua di gio",
+    "swy": "stronger with you", "стронгер виз ю": "stronger with you", "стронгер вит ю": "stronger with you", "стронгер уиз ю": "stronger with you",
+    "lveb": "la vie est belle", "lvb": "la vie est belle", "ла ви эбель": "la vie est belle", "лави эбель": "la vie est belle", "ла ви э бель": "la vie est belle",
+    "ofg": "oud for greatness", "уд фор грейтнес": "oud for greatness", "mfk": "maison francis kurkdjian", "мфк": "maison francis kurkdjian",
+    "pdm": "parfums de marly", "пдм": "parfums de marly", "jpg": "jean paul gaultier", "жпг": "jean paul gaultier", "ysl": "yves saint laurent",
+    "tf": "tom ford", "тф": "tom ford", "lv": "louis vuitton", "лв": "louis vuitton", "ck": "calvin klein", "d&g": "dolce gabbana", "дг": "dolce gabbana",
+    "ультра мейл": "ultra male", "ультрамейл": "ultra male", "ультра мале": "ultra male", "ле мейл": "le male", "ле мале": "le male",
+    "альтаир": "althair", "алтаир": "althair", "имеджинейшн": "imagination", "имэджинейшн": "imagination", "имажинейшн": "imagination",
+    "имаджинейшн": "imagination", "иммансите": "immensite", "имансите": "immensite", "имменсити": "immensite", "иммэнсите": "immensite",
+    "энджелс шер": "angels share", "энджелс шеа": "angels share", "ангелс шер": "angels share", "энджелс": "angels",
+    "блек опиум": "black opium", "сильвер маунтин": "silver mountain", "грин айриш": "green irish", "саваш": "sauvage", "сауваж": "sauvage",
+    "эдп": "eau de parfum", "edp": "eau de parfum", "эдт": "eau de toilette", "edt": "eau de toilette", "эликсир": "elixir", "элексир": "elixir",
+    "интенс": "intense", "интенсли": "intensely", "абсолютли": "absolutely", "экстрейт": "extrait", "экстре": "extrait"
   };
   var ALIAS = {};
   Object.keys(ALIAS_RAW).forEach(function (k) { ALIAS[norm(k)] = ALIAS_RAW[k]; });
@@ -1077,6 +1097,101 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     ALIAS_MULTI.forEach(function (k) { if (q.indexOf(k) !== -1) q = q.split(k).join(ALIAS[k]); });
     return q.split(/\s+/).map(function (w) { return ALIAS[w] || w; }).join(" ");
   }
+
+  /* ---------- Умный поиск: русские буквы, без апострофов и пробелов, с опечатками ---------- */
+  var TR = { "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh", "з": "z", "и": "i", "й": "i", "к": "k", "л": "l",
+    "м": "m", "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh",
+    "щ": "sh", "ъ": "", "ы": "i", "ь": "", "э": "e", "ю": "yu", "я": "ya", "ӣ": "i", "ӯ": "u", "ҳ": "h", "қ": "k", "ғ": "g", "ҷ": "j" };
+  function translit(s) { return s.replace(/[а-яёӣӯҳқғҷ]/g, function (c) { return TR[c]; }); }
+  // Звуковой ключ слова: «chanel» и «шанель», «tobacco» и «тобакко», «althair» и «альтаир» дают одинаковый ключ
+  function phon(w) {
+    return w.replace(/eau|au/g, "o").replace(/ou/g, "u")
+      .replace(/sch|sh|ch/g, "S").replace(/zh|j/g, "J").replace(/g(?=[eiy])/g, "J")
+      .replace(/ph/g, "f").replace(/th/g, "t").replace(/ck|qu|q/g, "k").replace(/c(?=[eiy])/g, "s").replace(/c/g, "k")
+      .replace(/x/g, "ks").replace(/w/g, "v").replace(/y/g, "i").replace(/z/g, "s").replace(/h/g, "")
+      .replace(/ei|ai|ae/g, "e").replace(/(.)\1+/g, "$1").replace(/(...)e$/, "$1");
+  }
+  // Ключи названия: каждое слово и соседние слова слитно (L'Immensité → «limmensite»), как написано и по звучанию
+  function withKeys(x, text) {
+    if (x.sk) return x;
+    var w = translit(norm(text)).split(/[^a-z0-9]+/).filter(Boolean), rk = [];
+    w.forEach(function (a, i) { rk.push(a); if (i + 1 < w.length) rk.push(a + w[i + 1]); });
+    x.rk = rk; x.sk = rk.map(phon); x.rks = " " + rk.join(" "); x.sks = " " + x.sk.join(" ");
+    return x;
+  }
+  // Запрос → слова (после словаря сокращений): как написаны, латиницей и звуковым ключом
+  function qParse(s) {
+    var q = expandQuery(norm(String(s).trim())), toks = q ? q.split(/\s+/).filter(Boolean) : [];
+    var rtoks = toks.map(function (w) { return translit(w).replace(/[^a-z0-9]/g, ""); });
+    return { q: q, toks: toks, rtoks: rtoks, ptoks: rtoks.map(phon) };
+  }
+  // Совпадение слова запроса: 0 — как написано, 1 — по звучанию (начало слова), -1 — нет
+  function hitLevel(x, hay, tok, rtok, ptok) {
+    if (hay.indexOf(tok) !== -1 || (rtok.length >= 2 && x.rks.indexOf(" " + rtok) !== -1)) return 0;
+    return ptok.length >= 2 && x.sks.indexOf(" " + ptok) !== -1 ? 1 : -1;
+  }
+  // Все слова запроса нашлись: 0 — как написано, 1 — по звучанию, -1 — нет
+  function nameLevel(x, hay, Q) {
+    var lv = 0;
+    for (var k = 0; k < Q.toks.length; k++) { var h = hitLevel(x, hay, Q.toks[k], Q.rtoks[k], Q.ptoks[k]); if (h < 0) return -1; if (h > lv) lv = h; }
+    return lv;
+  }
+  // Расстояние между словами с перестановкой соседних букв; если больше k — возвращает k + 1
+  function osa(a, b, k) {
+    var n = a.length, m = b.length, j;
+    if (Math.abs(n - m) > k) return k + 1;
+    var prev2 = null, prev = [], cur;
+    for (j = 0; j <= m; j++) prev[j] = j;
+    for (var i = 1; i <= n; i++) {
+      cur = [i]; var best = i;
+      for (j = 1; j <= m; j++) {
+        var v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (prev2 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
+        cur[j] = v; if (v < best) best = v;
+      }
+      if (best > k) return k + 1;
+      prev2 = prev; prev = cur;
+    }
+    return prev[m];
+  }
+  // Сколько опечаток прощаем: в коротких словах 1, в длинных (8+ букв) 2; в словах из 3 букв — только если в запросе несколько слов
+  function typos(len, multi) { return len >= 8 ? 2 : (len >= 4 ? 1 : (multi && len === 3 ? 1 : 0)); }
+  // Меньше всего опечаток между словом запроса и словами названия (или их началом, если слово набрано не до конца)
+  function bestTypos(keys, tk, k) {
+    var best = k + 1;
+    for (var i = 0; i < keys.length && best > 0; i++) {
+      var w = keys[i];
+      if (w.indexOf(tk) !== -1) return 0;
+      if (!k) continue;
+      best = Math.min(best, osa(tk, w, k));
+      if (w.length > tk.length) best = Math.min(best, osa(tk, w.slice(0, tk.length), k));
+    }
+    return best;
+  }
+  function fuzzyAll(x, Q) {
+    var sum = 0, multi = Q.toks.length > 1;
+    for (var t = 0; t < Q.toks.length; t++) {
+      var rt = Q.rtoks[t], pt = Q.ptoks[t]; if (!rt) continue;
+      var k = typos(rt.length, multi), best = Math.min(bestTypos(x.rk, rt, k), pt ? bestTypos(x.sk, pt, typos(pt.length, multi)) : k + 1);
+      if (best > k) return -1;
+      sum += best;
+    }
+    return sum;
+  }
+  // Если точных совпадений мало — добавляем похожие по написанию (меньше опечаток — выше)
+  function fuzzyFind(list, have, Q, ok) {
+    if (have.length >= 20 || !Q.rtoks.some(function (t) { return t.length >= 3; })) return [];
+    var seen = new Set(have), out = [];
+    list.forEach(function (x) {
+      if (seen.has(x) || (ok && !ok(x))) return;
+      var d = fuzzyAll(x, Q);
+      if (d >= 0) out.push({ x: x, d: d });
+    });
+    return out.sort(function (a, b) { return (a.d - b.d) || ((b.x.pc || b.x.pop || 0) - (a.x.pc || a.x.pop || 0)); }).map(function (o) { return o.x; });
+  }
+  var SEARCH_READY = false;
+  function prepSearch() { if (!SEARCH_READY) { SEARCH_READY = true; P.forEach(function (p) { withKeys(p, p.n + " " + p.b); }); } }
+  setTimeout(prepSearch, 1200);   // ключи поиска готовим заранее, пока человек читает страницу
 
   var state = { step: 1, mode: "known", sel: [], slots: [null, null, null], cur: null, focus: null, smells: [], gender: "any",
     ans: {}, q: 0, query: "", brand: null, limit: PAGE, picks: [], showBrands: false, bq: "", blimit: 60,
@@ -1179,11 +1294,14 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); }, hint = [];
     if (q) {
       // Слово ищется в названии и бренде; если там его нет — в нотах аромата (ваниль, уд, rose…)
-      var toks = q.split(/\s+/).filter(Boolean), sets = toks.map(noteSetFor), byName = [], byNotes = [];
+      prepSearch();
+      var Q = qParse(state.query), toks = Q.toks, sets = toks.map(noteSetFor), byName = [], bySound = [], byNotes = [];
       P.forEach(function (p) {
+        var lv = nameLevel(p, p.hay, Q);
+        if (lv >= 0) { (lv ? bySound : byName).push(p); return; }
         var nameAll = true;
         for (var k = 0; k < toks.length; k++) {
-          if (p.hay.indexOf(toks[k]) !== -1) continue;
+          if (hitLevel(p, p.hay, toks[k], Q.rtoks[k], Q.ptoks[k]) >= 0) continue;
           nameAll = false;
           var hit = false;
           if (sets[k]) for (var j = 0; j < p.raw.length; j++) { if (sets[k][p.raw[j] >> 2]) { hit = true; break; } }
@@ -1191,8 +1309,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         }
         (nameAll ? byName : byNotes).push(p);
       });
-      byName.sort(byPop); byNotes.sort(byPop);
-      items = byName.concat(byNotes);
+      byName.sort(byPop); bySound.sort(byPop); byNotes.sort(byPop);
+      byName = byName.concat(bySound);
+      // Опечатки («aventis», «mancra») — после точных совпадений
+      var byFuzzy = fuzzyFind(P, byName, Q), inFuzzy = new Set(byFuzzy);
+      items = byName.concat(byFuzzy, byNotes.filter(function (p) { return !inFuzzy.has(p); }));
       if (byNotes.length) sets.forEach(function (s) { if (s) hint.push(noteName(commonest(s))); });
       mode = "search";
     } else if (state.brand) {
@@ -1270,12 +1391,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   function drawBrandList() {
     var top = topBrands().map(function (x) { return x.b; });
-    var q = expandQuery(norm(state.bq.trim())), toks = q ? q.split(/\s+/) : [];
-    var list = brandStats().filter(function (x) {
-      if (top.indexOf(x.b) !== -1) return false;
-      var h = norm(x.b);
-      return toks.every(function (w) { return h.indexOf(w) !== -1; });
-    });
+    var Q = qParse(state.bq), toks = Q.toks, ok = function (x) { return top.indexOf(x.b) === -1; };
+    var all = brandStats().map(function (x) { if (!x.hay) x.hay = norm(x.b); return withKeys(x, x.b); });
+    var list = all.filter(function (x) { return ok(x) && nameLevel(x, x.hay, Q) === 0; })
+      .concat(all.filter(function (x) { return ok(x) && nameLevel(x, x.hay, Q) === 1; }));
+    if (toks.length) list = list.concat(fuzzyFind(all, list, Q, ok));
     $("#bhint").textContent = toks.length ? (list.length ? t("brandsFound", { n: pl(list.length, "brand") }) : t("brandsNone")) : t("brandsPopular");
     $("#bchips").innerHTML = list.slice(0, state.blimit).map(function (x) {
       return '<button type="button" class="bchip" data-brand="' + esc(x.b) + '"><b>' + esc(x.b) + "</b><span>" + x.n + "</span></button>";
@@ -1689,12 +1809,12 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var q = expandQuery(norm(state.dq.trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
     if (!q) return { pop: true, items: DUPE_TOP.concat(Object.keys(DUPES).map(function (i) { return P[i]; })
       .filter(function (p) { return DUPE_TOP.indexOf(p) === -1; }).sort(byPop)) };
-    var toks = q.split(/\s+/).filter(Boolean);
-    return { pop: false, items: P.filter(function (p) {
-      if (p.np) return false;
-      for (var k = 0; k < toks.length; k++) if (p.hay.indexOf(toks[k]) === -1) return false;
-      return true;
-    }).sort(byPop) };
+    prepSearch();
+    var Q = qParse(state.dq), ok = function (p) { return !p.np; };
+    var raw = [], sound = [];
+    P.forEach(function (p) { if (!ok(p)) return; var lv = nameLevel(p, p.hay, Q); if (lv === 0) raw.push(p); else if (lv === 1) sound.push(p); });
+    var exact = raw.sort(byPop).concat(sound.sort(byPop));
+    return { pop: false, items: exact.concat(fuzzyFind(P, exact, Q, ok)) };
   }
   function drawDupe() {
     var src = state.dsrc;
