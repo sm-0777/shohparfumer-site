@@ -1,0 +1,45 @@
+# Shoh Parfumer — Подбор Парфюма
+
+Сайт подбора духов: клиент выбирает три любимых аромата (или любимые запахи, или подбор в подарок),
+отвечает на пару вопросов и получает пять ароматов по сходству нот. Русский, тоҷикӣ, English.
+
+## Что где лежит
+
+| Путь | Что это |
+|---|---|
+| `public/index.html` | Готовый сайт. Его публикует Netlify. Это единственный файл, который видят клиенты. |
+| `src/site.html` | Шаблон сайта (код и тексты). Правки делаются здесь. |
+| `data/db.json` | База ароматов (≈17 300 духов, ноты, аккорды, пол, категория бренда). |
+| `src/make_site.py` | Собирает `public/index.html` из шаблона и базы. |
+| `src/build_db.py`, `src/postprocess.py` | Собирают базу из открытых данных Parfumo (TidyTuesday, 2024-12-10). |
+| `netlify.toml` | Настройка Netlify: публиковать папку `public`. |
+
+## Настройки владельца (в начале скрипта в `src/site.html`)
+
+```js
+var TELEGRAM = "sm_0777";   // куда приходят отзывы и заказы
+var GOATCOUNTER = "";       // код счётчика статистики GoatCounter
+var SITE_URL = "";          // адрес сайта для «Поделиться»
+var STOCK = {               // духи в наличии: "Бренд|Название": цена в сомони
+  // "Creed|Aventus": 2500,
+};
+```
+
+## Как обновить сайт
+
+```bash
+python3 -I src/make_site.py src/site.html data/db.json public/index.html --standalone
+git add -A && git commit -m "Обновление сайта" && git push
+```
+
+Netlify опубликует изменения сам примерно через минуту.
+
+## Пересобрать базу (редко)
+
+```bash
+curl -L -o parfumo.csv https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-12-10/parfumo_data_clean.csv
+python3 -I src/build_db.py parfumo.csv data/db.json
+python3 -I src/postprocess.py data/db.json
+```
+
+Источник данных: [Parfumo Fragrance Dataset (TidyTuesday)](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-12-10).

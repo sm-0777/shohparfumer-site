@@ -1,0 +1,1866 @@
+<title>Shoh Parfumer · Подбор Парфюма</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: закреплённая шапка (бренд + отзыв, язык, тема), ниже одна колонка до 720px. Кнопки жёлтые в обеих темах, меняется только фон. */
+:root {
+  --bg: #0B0B0A;
+  --surface: #151513;
+  --soft: #211F19;
+  --line: #2E2D27;
+  --fg: #F5F2E9;
+  --muted: #A8A496;
+  --accent: #FFC61A;
+  --accent-ink: #1A1400;
+  --accent-text: #FFC61A;
+  --ok: #34C771;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --glass: rgba(255, 255, 255, 0.06);
+  --font-display: "Unbounded", system-ui, sans-serif;
+  --font-body: "Onest", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-site="dark"]) {
+    --bg: #F6F4EE; --surface: #FFFFFF; --soft: #EFEBDF; --line: #DDD8C9; --fg: #17160F; --muted: #625E4D;
+    --accent-text: #8A6A00; --ok: #178A49; --scrim: rgba(23, 22, 15, 0.45); --glass: rgba(0, 0, 0, 0.03);
+    color-scheme: light;
+  }
+}
+:root[data-site="light"] {
+  --bg: #F6F4EE; --surface: #FFFFFF; --soft: #EFEBDF; --line: #DDD8C9; --fg: #17160F; --muted: #625E4D;
+  --accent-text: #8A6A00; --ok: #178A49; --scrim: rgba(23, 22, 15, 0.45); --glass: rgba(0, 0, 0, 0.03);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { background: var(--bg); }
+body { color: var(--fg); font: 16px/1.5 var(--font-body); padding-block: 0 40px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 720px; margin-inline: auto; display: flex; flex-direction: column; gap: 24px; }
+.wrap > * { min-width: 0; }
+
+h1, h2 { font-family: var(--font-display); font-weight: 600; line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.4rem, 5.4vw, 2rem); }
+h2 { font-size: clamp(1.2rem, 4.6vw, 1.6rem); }
+p { margin: 0; }
+.lead { color: var(--muted); font-size: 1.0625rem; max-width: 52ch; }
+.small { font-size: 0.875rem; color: var(--muted); }
+
+button, a.btn { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.stack { display: flex; flex-direction: column; gap: 18px; }
+
+/* ---------- Закреплённая шапка ---------- */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 25; background: var(--bg); border-bottom: 1px solid var(--line); }
+.topbar .in { max-width: 720px; margin-inline: auto; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; }
+.dots { display: inline-flex; gap: 4px; flex: none; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: block; }
+.dots i:nth-child(2) { opacity: .65; }
+.dots i:nth-child(3) { opacity: .35; }
+.brand .name { display: flex; flex-direction: column; gap: 2px; line-height: 1.15; min-width: 0; }
+.brand .sub { font-family: var(--font-body); font-weight: 500; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tools { display: flex; align-items: center; gap: 6px; flex: none; }
+.tool { height: 36px; min-width: 36px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.8125rem; font-weight: 600; }
+.tool svg { width: 18px; height: 18px; flex: none; }
+.tool.fb { border-color: var(--accent); color: var(--accent-text); }
+.langs { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.langs button { height: 34px; min-width: 32px; padding: 0 7px; border: 0; background: transparent; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.langs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+#themebtn .sun { display: none; }
+:root[data-site="light"] #themebtn .sun { display: block; }
+:root[data-site="light"] #themebtn .moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-site="dark"]) #themebtn .sun { display: block; }
+  :root:not([data-site="dark"]) #themebtn .moon { display: none; }
+}
+@media (max-width: 459px) { .tool.fb .lbl { display: none; } .tool.fb { padding: 0; width: 36px; } }
+@media (max-width: 419px) { .dots { display: none; } .brand { font-size: 0.875rem; } .brand .name { white-space: nowrap; } }
+
+main.gutter { padding-top: 20px; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; }
+.steps li { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); overflow-wrap: anywhere; }
+.steps li::before { content: ""; height: 4px; border-radius: 2px; background: var(--line); }
+.steps li.done::before, .steps li.now::before { background: var(--accent); }
+.steps li.now { color: var(--fg); font-weight: 600; }
+
+/* ---------- Кнопки ---------- */
+.btn { min-height: 48px; padding: 12px 22px; border-radius: 12px; border: 1px solid transparent; font-weight: 600; background: var(--accent); color: var(--accent-ink); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; text-align: center; }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .35; cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn.sm { min-height: 44px; padding: 8px 16px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.actions .btn { flex: 1 1 140px; }
+
+/* ---------- Шаг 1 ---------- */
+.slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.slot { min-height: 56px; padding: 8px 10px; border: 1.5px dashed var(--line); border-radius: 14px; font-size: 0.875rem; color: var(--muted); display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.slot b { font-weight: 600; font-size: 0.875rem; overflow-wrap: break-word; line-height: 1.25; }
+.slot span { font-size: 0.75rem; color: var(--muted); overflow-wrap: break-word; }
+/* Место, которое заполняется сейчас: жёлтая рамка */
+.slot.now { border: 2px solid var(--accent); color: var(--fg); box-shadow: 0 0 0 3px rgba(255, 198, 26, 0.18); }
+/* Выбранный аромат: зелёная рамка и зелёная галочка, текст обычного цвета */
+.slot.full { border: 2px solid var(--ok); background: transparent; color: var(--fg); position: relative; padding: 0; }
+.slot.full .ck { position: absolute; top: 5px; right: 8px; font-size: 0.875rem; font-weight: 700; color: var(--ok); pointer-events: none; }
+.slot.full.focus { box-shadow: 0 0 0 3px rgba(52, 199, 113, 0.22); }
+/* Весь выбранный блок нажимается; значок в углу стоит над названием, поэтому название занимает всю ширину */
+.slotbtn { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; min-height: 56px; padding: 24px 10px 8px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-start; color: var(--fg); }
+.slotbtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.slotx { position: absolute; top: 0; right: 0; width: 36px; height: 30px; border: 0; border-radius: 0 10px 0 10px; background: var(--ok); color: #FFFFFF; font-size: 20px; line-height: 1; display: grid; place-items: center; cursor: pointer; }
+.slotx:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.search { width: 100%; min-height: 48px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; }
+.search::placeholder { color: var(--muted); }
+.search:focus { border-color: var(--accent); }
+textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
+
+.brands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 560px) { .brands { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bcard { min-height: 76px; padding: 12px 14px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+.bcard b { font-family: var(--font-display); font-weight: 500; font-size: 0.9375rem; line-height: 1.2; overflow-wrap: anywhere; }
+.bcard span { color: var(--muted); font-size: 0.8125rem; }
+.bcard:hover { border-color: var(--accent); }
+.bcard.more { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.bcard.more span { color: var(--accent-ink); opacity: .75; }
+.bcard.more:hover { border-color: var(--fg); }
+.allb { padding-top: 6px; }
+.bchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.bchip { min-height: 44px; max-width: 100%; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); display: inline-flex; align-items: center; gap: 8px; text-align: left; }
+.bchip b { font-weight: 500; overflow-wrap: anywhere; }
+.bchip span { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+.bchip:hover { border-color: var(--accent); }
+
+.listhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.listhead h2 { font-size: 1.125rem; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.row { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.row .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.row .txt b { font-weight: 600; overflow-wrap: anywhere; }
+.row .txt span { color: var(--muted); font-size: 0.875rem; }
+.row .tick { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; flex: none; color: transparent; font-size: 15px; font-weight: 700; }
+.row[aria-pressed="true"] { border-color: var(--accent); background: var(--soft); }
+.row[aria-pressed="true"] .tick { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.row:disabled { opacity: .4; cursor: not-allowed; }
+.bar { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--bg); border-top: 1px solid var(--line); }
+.bar .btn { flex: 0 0 auto; }
+
+/* ---------- Шаг 2 ---------- */
+.rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rank li { display: grid; grid-template-columns: 52px minmax(0, 1fr) 46px; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px; }
+.num { font-family: var(--font-display); font-weight: 600; font-size: 3rem; line-height: 1; color: var(--accent-text); text-align: center; }
+.rank h3 { margin: 0; font-size: 1.0625rem; font-weight: 600; overflow-wrap: anywhere; }
+.rank .brandline { color: var(--muted); font-size: 0.875rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { font-size: 0.8125rem; padding: 3px 10px; border-radius: 999px; background: var(--soft); }
+.mv { display: flex; flex-direction: column; gap: 6px; }
+.mv button { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); font-size: 18px; line-height: 1; }
+.mv button:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ---------- Шаг 3 ---------- */
+.qhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { width: 100%; min-height: 64px; padding: 12px 16px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; gap: 2px; }
+.opt b { font-weight: 600; font-size: 1.0625rem; }
+.opt span { color: var(--muted); font-size: 0.875rem; }
+.opt[aria-pressed="true"], .opt:hover { border-color: var(--accent); background: var(--soft); }
+
+/* ---------- Шаг 4 ---------- */
+.profile { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.brow { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 0.875rem; }
+.track { height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+.fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; }
+.seg button:hover { border-color: var(--accent); }
+.picks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.card .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.badge { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--soft); font-weight: 600; }
+.badge.hit { background: var(--accent); color: var(--accent-ink); }
+.match { font-family: var(--font-display); font-weight: 600; font-size: 1.125rem; color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.card .body { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: start; }
+.bottle { width: 84px; height: auto; display: block; }
+.card h3 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; line-height: 1.25; overflow-wrap: anywhere; }
+.card .by { color: var(--muted); font-size: 0.9375rem; }
+.card .why { font-size: 0.9375rem; }
+.card .meta { font-size: 0.8125rem; color: var(--muted); }
+.ai { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ai-out { background: var(--soft); border-radius: 12px; padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tip { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.tip summary { min-height: 48px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; font-weight: 600; list-style: none; }
+.tip summary::-webkit-details-marker { display: none; }
+.tip summary::after { content: "+"; font-size: 1.25rem; line-height: 1; color: var(--accent-text); flex: none; }
+.tip[open] summary::after { content: "−"; }
+.tip p, .tip ol { margin: 0; padding: 0 14px 14px; }
+.tip ol { padding-left: 34px; display: flex; flex-direction: column; gap: 6px; }
+
+/* ---------- Пути подбора, запахи, наличие, похожие ---------- */
+.paths { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: -6px; }
+.pathlink { border: 0; background: none; padding: 6px 0; min-height: 36px; font-weight: 600; color: var(--accent-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.pathlink:hover { text-decoration-thickness: 2px; }
+.smells { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 560px) { .smells { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.smell { min-height: 72px; padding: 12px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; display: flex; gap: 10px; align-items: flex-start; }
+.smell .dot { width: 14px; height: 14px; border-radius: 50%; flex: none; margin-top: 3px; }
+.smell .st { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.smell b { font-weight: 600; overflow-wrap: break-word; }
+.smell .st span { color: var(--muted); font-size: 0.8125rem; overflow-wrap: break-word; }
+.smell[aria-pressed="true"] { border: 2px solid var(--ok); padding: 11px; }
+.smell:disabled { opacity: .4; cursor: not-allowed; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.tier { color: var(--muted); letter-spacing: 0.05em; }
+.stock { margin: 0; font-weight: 600; color: var(--ok); font-size: 0.9375rem; }
+.cardacts { display: flex; flex-wrap: wrap; gap: 8px; }
+.cardacts .btn { flex: 0 0 auto; }
+.simlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.simrow { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.simrow .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.simrow .txt b { font-weight: 600; overflow-wrap: break-word; }
+.simrow .txt span { color: var(--muted); font-size: 0.8125rem; }
+.simrow .txt .stock { font-size: 0.8125rem; }
+.simrow .pct { font-family: var(--font-display); font-weight: 600; color: var(--accent-text); font-variant-numeric: tabular-nums; flex: none; }
+.sharetext { margin: 0; padding: 12px; border-radius: 12px; background: var(--soft); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9375rem; }
+
+/* ---------- PDF ---------- */
+.pdfrow { display: flex; flex-direction: column; gap: 6px; }
+.listhead .actions .btn { flex: 0 0 auto; }
+.pvsheet { max-width: 640px; }
+.pvpages { display: flex; flex-direction: column; gap: 12px; }
+.pvpages img { display: block; width: 100%; height: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 8px; background: #FFFFFF; }
+/* Лист для PDF: рисуется вне экрана, всегда белая бумага */
+.rep-clip { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: hidden; }
+.report { width: 714px; background: #FFFFFF; color: #17160F; font: 15px/1.5 var(--font-body); }
+.report .rb { padding: 10px 0; background: #FFFFFF; }
+.report h1 { font-family: var(--font-display); font-size: 26px; margin: 2px 0; color: #17160F; }
+.report h2 { font-family: var(--font-display); font-size: 17px; margin: 0 0 8px; color: #17160F; }
+.report .rsub { color: #8A6A00; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+.report .rmuted { color: #625E4D; font-size: 13px; }
+.report ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.report .rcard { border: 1px solid #DDD8C9; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.report .rtop { display: flex; justify-content: space-between; align-items: center; }
+.report .rbadge { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; background: #EFEBDF; color: #17160F; padding: 3px 9px; border-radius: 999px; }
+.report .rbadge.hit { background: #FFC61A; color: #1A1400; }
+.report .rpct { font-family: var(--font-display); font-weight: 600; color: #8A6A00; }
+.report .rname { font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+
+/* ---------- Окно отзыва ---------- */
+.overlay { position: fixed; inset: 0; z-index: 40; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+@media (min-width: 600px) { .overlay { align-items: center; } }
+.sheet { width: 100%; max-width: 520px; max-height: 100%; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.sheet .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sheet h2 { font-size: 1.25rem; }
+.contact { font-family: var(--font-display); font-size: 0.9375rem; color: var(--accent-text); user-select: all; }
+.status { font-size: 0.875rem; color: var(--accent-text); min-height: 1.2em; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fill { transition: width .5s ease; }
+  .row, .opt, .btn, .bcard, .tool, .langs button { transition: background-color .15s, border-color .15s, color .15s; }
+}
+</style>
+
+<header class="topbar gutter">
+  <div class="in">
+    <div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="name">Shoh Parfumer<small class="sub" data-t="brandSub">Подбор Парфюма</small></span></div>
+    <div class="tools">
+      <button type="button" class="tool fb" id="fbopen" data-ta="fbOpen" aria-label="Обратная связь" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg>
+        <span class="lbl" data-t="fbBtn">Отзыв</span>
+      </button>
+      <div class="langs" role="group" data-ta="langAria" aria-label="Язык сайта">
+        <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+        <button type="button" data-lang="tg" aria-pressed="false">TJ</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="tool" id="themebtn" data-ta="themeAria" aria-label="Светлая или тёмная тема">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="gutter">
+<div class="wrap">
+  <ol class="steps" id="steps" data-ta="stepsAria" aria-label="Шаги"></ol>
+
+  <!-- Шаг 1 -->
+  <section data-step="1" class="stack" aria-labelledby="h1">
+    <h1 id="h1" data-t="h1">Выберите три любимых аромата</h1>
+    <p class="lead" data-t="lead1">Мы подберём пять новых духов по вашему вкусу. Это займёт около минуты.</p>
+    <div class="paths">
+      <button type="button" class="pathlink" id="goNovice"><span data-t="pathNovice">Не знаю названий</span> <span aria-hidden="true">→</span></button>
+      <button type="button" class="pathlink" id="goGift"><span data-t="pathGift">Ищу в подарок</span> <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="slots" id="slots" aria-live="polite"></div>
+    <input id="q" class="search" type="search" data-tp="searchPh" placeholder="Найти аромат или бренд" autocomplete="off" data-ta="searchPh" aria-label="Найти аромат или бренд">
+    <p class="small" id="listhint"></p>
+
+    <div class="stack" id="brandsblock" style="gap:10px">
+      <span class="small" data-t="knownBrands">Известные бренды</span>
+      <div class="brands" id="brands"></div>
+      <div class="stack allb" id="allb" style="gap:12px" hidden>
+        <div class="listhead">
+          <h2 data-t="otherBrands">Другие бренды</h2>
+          <button type="button" class="btn ghost sm" id="hideb" data-t="hide">Скрыть</button>
+        </div>
+        <input id="bq" class="search" type="search" data-tp="brandSearch" placeholder="Найти бренд" autocomplete="off" data-ta="brandSearch" aria-label="Найти бренд">
+        <p class="small" id="bhint"></p>
+        <div class="bchips" id="bchips"></div>
+        <button type="button" class="btn ghost" id="bmore" data-t="moreBrandsBtn" hidden>Показать ещё бренды</button>
+      </div>
+    </div>
+
+    <div class="stack" id="resultsblock" style="gap:12px" hidden>
+      <div class="listhead">
+        <h2 id="rtitle"></h2>
+        <div class="actions" style="flex:0 0 auto">
+          <button type="button" class="btn ghost sm" id="slotsim" data-t="simBtn" hidden>Похожие</button>
+          <button type="button" class="btn ghost sm" id="allbrands" data-t="allBrands">Все бренды</button>
+        </div>
+      </div>
+      <ul class="list" id="list"></ul>
+      <button type="button" class="btn ghost" id="more" data-t="showMore" hidden>Показать ещё</button>
+    </div>
+
+    <div class="bar">
+      <span class="small" id="count"></span>
+      <button class="btn" id="to2" type="button" data-t="next" disabled>Дальше</button>
+    </div>
+  </section>
+
+  <!-- Новичок: любимые запахи -->
+  <section data-step="5" class="stack" aria-labelledby="h5" hidden>
+    <h2 id="h5" data-t="h5">Какие запахи вам нравятся?</h2>
+    <p class="lead" data-t="lead5">Выберите от 2 до 4. Названия духов знать не нужно.</p>
+    <div class="smells" id="smells"></div>
+    <div class="bar">
+      <button class="btn ghost sm" id="back5" type="button" data-t="back">Назад</button>
+      <span class="small" id="count5"></span>
+      <button class="btn" id="to3n" type="button" data-t="next" disabled>Дальше</button>
+    </div>
+  </section>
+
+  <!-- Шаг 2 -->
+  <section data-step="2" class="stack" aria-labelledby="h2a" hidden>
+    <h2 id="h2a" data-t="h2rank">Расставьте по местам</h2>
+    <p class="lead" data-t="lead2">Номер 1 — самый любимый. Стрелками поднимайте и опускайте ароматы.</p>
+    <ol class="rank" id="rank"></ol>
+    <div class="actions">
+      <button class="btn ghost" id="back1" type="button" data-t="back">Назад</button>
+      <button class="btn" id="to3" type="button" data-t="next">Дальше</button>
+    </div>
+  </section>
+
+  <!-- Шаг 3 -->
+  <section data-step="3" class="stack" aria-labelledby="qt" hidden>
+    <div class="qhead">
+      <span class="small" id="qn"></span>
+      <button class="btn ghost sm" id="qback" type="button" data-t="back">Назад</button>
+    </div>
+    <h2 id="qt"></h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- Шаг 4 -->
+  <section data-step="4" class="stack" aria-labelledby="rt" hidden>
+    <h2 id="rt" data-t="h2res">Ваш вкус и пять ароматов, которые стоит примерить</h2>
+    <div class="profile">
+      <p id="tastesentence"></p>
+      <div class="bars" id="bars"></div>
+      <div class="stack" id="keynotesbox" style="gap:8px" hidden>
+        <span class="small" data-t="keyNotes">Ваши главные ноты</span>
+        <div class="chips" id="keynotes" style="margin-top:0"></div>
+      </div>
+    </div>
+    <div class="seg" id="gender" role="group" data-ta="genderAria" aria-label="Для кого">
+      <button type="button" data-g="any" aria-pressed="true" data-t="gAny">Все</button>
+      <button type="button" data-g="m" aria-pressed="false" data-t="gM">Мужские</button>
+      <button type="button" data-g="f" aria-pressed="false" data-t="gF">Женские</button>
+    </div>
+    <ol class="picks" id="picks"></ol>
+    <div class="pdfrow" id="pdfrow">
+      <div class="actions">
+        <button type="button" class="btn" id="pdfbtn" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:8px"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span data-t="pdfBtn">Сохранить в PDF</span>
+        </button>
+        <button type="button" class="btn ghost" id="sharebtn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:8px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span data-t="shareBtn">Поделиться</span>
+        </button>
+      </div>
+      <p class="status" id="pdfstatus" role="status" aria-live="polite"></p>
+    </div>
+    <p class="small" data-t="explainPct">Процент показывает сходство с вашими тремя ароматами.</p>
+
+    <!-- Бесплатные советы (вместо ИИ-консультанта) -->
+    <div class="ai" id="tips">
+      <h2 style="font-size:1.125rem" data-t="tipsTitle">Советы</h2>
+      <details class="tip" id="tip1box"><summary data-t="tip1Title">Объясните мой вкус</summary><p id="tip1text"></p></details>
+      <details class="tip"><summary data-t="tip2Title">С какого аромата начать</summary><p id="tip2text"></p></details>
+      <details class="tip"><summary data-t="tip3Title">Как примерять духи</summary><ol id="tip3list"></ol></details>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="redo" type="button" data-t="redo">Начать заново</button>
+    </div>
+  </section>
+</div>
+</main>
+
+<!-- Окно обратной связи -->
+<div class="overlay" id="fb" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="fbtitle">
+    <div class="top">
+      <h2 id="fbtitle" data-t="fbTitle">Обратная связь</h2>
+      <button type="button" class="tool" id="fbclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="small" data-t="fbText">Напишите отзыв, вопрос или пожелание.</p>
+    <input id="fbname" class="search" type="text" maxlength="80" data-tp="fbName" placeholder="Ваше имя (необязательно)" data-ta="fbName" aria-label="Ваше имя">
+    <textarea id="fbmsg" class="search" maxlength="1500" data-tp="fbMsg" placeholder="Ваш отзыв" data-ta="fbMsg" aria-label="Ваш отзыв"></textarea>
+    <a class="btn" id="fbsend" href="#" target="_blank" rel="noopener" data-t="fbSend">Отправить в Telegram</a>
+    <p class="small" id="fbcontact"></p>
+    <p class="status" id="fbstatus" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- Похожие ароматы -->
+<div class="overlay" id="sim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="simtitle">
+    <div class="top">
+      <h2 id="simtitle"></h2>
+      <button type="button" class="tool" id="simclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="seg" id="simtabs" role="group">
+      <button type="button" data-f="all" aria-pressed="true" data-t="simAll">Все</button>
+      <button type="button" data-f="cheap" aria-pressed="false" data-t="simCheaper">Дешевле</button>
+      <button type="button" data-f="pricey" aria-pressed="false" data-t="simPricier">Дороже</button>
+    </div>
+    <p class="small" id="simhint"></p>
+    <ul class="simlist" id="simlist"></ul>
+  </div>
+</div>
+
+<!-- Поделиться подборкой -->
+<div class="overlay" id="sh" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shtitle">
+    <div class="top">
+      <h2 id="shtitle" data-t="shareTitle">Поделиться подборкой</h2>
+      <button type="button" class="tool" id="shclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="sharetext" id="shtext"></p>
+    <div class="actions">
+      <a class="btn" id="shtg" href="#" target="_blank" rel="noopener">Telegram</a>
+      <a class="btn" id="shwa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <button type="button" class="btn ghost" id="shcopy" data-t="shareCopy">Скопировать</button>
+    <p class="status" id="shstatus" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- Просмотр PDF после сохранения -->
+<div class="overlay" id="pv" hidden>
+  <div class="sheet pvsheet" role="dialog" aria-modal="true" aria-labelledby="pvtitle">
+    <div class="top">
+      <h2 id="pvtitle" data-t="pvTitle">Ваш PDF</h2>
+      <button type="button" class="tool" id="pvclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="small" data-t="pvText">Файл Shoh-Parfumer.pdf сохранён. Вот что в нём:</p>
+    <div class="pvpages" id="pvpages"></div>
+    <button type="button" class="btn" id="pvok" data-t="close">Закрыть</button>
+  </div>
+</div>
+
+<script type="application/json" id="db">__DB__</script>
+<script>
+(function () {
+  "use strict";
+
+  /* ======================= Настройки ======================= */
+  var TELEGRAM = "sm_0777";     // ник владельца без @
+  var GOATCOUNTER = "";         // код счётчика GoatCounter, например "shohparfumer" (работает только на настоящем сайте)
+  var SITE_URL = "";            // адрес сайта для «Поделиться», например "https://shohparfumer.com" (на хостинге берётся сам)
+  // Духи в наличии: "Бренд|Название": цена в сомони. Бренд и название пишутся так же, как на сайте.
+  // Пример: "Creed|Aventus": 2500,
+  var STOCK = {
+  };
+
+  /* ======================= Переводы ======================= */
+  var LANGS = ["ru", "tg", "en"];
+  var I18N = {
+    ru: {
+      brandSub: "Подбор Парфюма", fbBtn: "Отзыв", fbOpen: "Обратная связь", langAria: "Язык сайта", themeAria: "Светлая или тёмная тема",
+      stepsAria: "Шаги", steps: ["Выбор", "Порядок", "Вопросы", "Итог"],
+      h1: "Выберите три любимых аромата", lead1: "Мы подберём пять новых духов по вашему вкусу. Это займёт около минуты.",
+      slot: "Место {n}", searchPh: "Найти аромат или бренд", hintHome: "Выберите бренд или введите название. В базе {n}.",
+      knownBrands: "Известные бренды", moreBrands: "Посмотреть другие бренды", hideBrands: "Скрыть бренды", moreBrandsCount: "ещё {n}",
+      otherBrands: "Другие бренды", hide: "Скрыть", brandSearch: "Найти бренд", brandsPopular: "Сначала самые популярные.",
+      brandsFound: "Найдено: {n}", brandsNone: "Такого бренда нет в базе. Попробуйте написать иначе.", moreBrandsBtn: "Показать ещё бренды",
+      allBrands: "Все бренды", found: "Найдено: {n}", notFound: "Ничего не нашли. Попробуйте другое слово или выберите похожий аромат.",
+      showMore: "Показать ещё", selected: "Выбрано: {n} из 3", next: "Дальше", back: "Назад",
+      showSlot: "Показать в списке: {n}", removeSlot: "Убрать: {n}", slotTitle: "Выбранный аромат",
+      slotHint: "Чтобы убрать этот аромат, нажмите × на блоке или снимите галочку ниже.",
+      h2rank: "Расставьте по местам", lead2: "Номер 1 — самый любимый. Стрелками поднимайте и опускайте ароматы.",
+      up: "Поднять выше: {n}", down: "Опустить ниже: {n}", qn: "Вопрос {i} из {n}",
+      h2res: "Ваш вкус и пять ароматов, которые стоит примерить", taste: "Судя по вашим трём ароматам, вам ближе всего: {list}.",
+      keyNotes: "Ваши главные ноты", lblSummer: "Для лета", lblCool: "Для прохлады", lblHit: "Хит", lblYear: "Весь год",
+      matchTitle: "Сходство с вашим вкусом по нотам и аккордам", whyNotes: "Общие ноты с вашими ароматами: {list}.",
+      whyAcc: "Похож по характеру: {list}.", closest: "Ближе всего к вашему «{n}».", season: "Сезон: {s}",
+      sS: "лето", sC: "осень и зима", sA: "весь год", and: " и ",
+      explainPct: "Процент показывает сходство с вашими тремя ароматами по нотам (50%), аккордам (30%) и общему характеру (20%). Редкие ноты весят больше частых, базовые больше верхних. Окончательно решает примерка на коже. Флаконы на картинках нарисованы по характеру аромата, это не фотографии.",
+      aiTitle: "Спросите ИИ-консультанта", aiSub: "Он знает ваши три аромата, ответы и подборку. Выберите вопрос или напишите свой.",
+      aiChip1: "Объясни мой вкус", aiChip2: "Безопасный и необычный", aiChip3: "Как примерять духи",
+      aiPh: "Свой вопрос про аромат", aiAsk: "Спросить", thinking: "Думаю…",
+      aiDenied: "Доступ к ИИ не разрешён. Подборка выше работает и без него.", aiBusy: "Слишком много запросов. Подождите минуту и попробуйте снова.", aiErr: "ИИ сейчас не отвечает. Попробуйте ещё раз.",
+      redo: "Начать заново", bottle: "Рисунок флакона",
+      pdfBtn: "Сохранить в PDF", pdfWorking: "Готовлю PDF…", pdfSaved: "PDF сохранён.", pdfDeclined: "Сохранение отменено.",
+      pdfErr: "Не удалось сохранить PDF. Попробуйте ещё раз.", pdfFavs: "Ваши любимые ароматы", pdfPicks: "Пять ароматов для примерки",
+      pdfNote: "Процент — сходство с вашими тремя ароматами по нотам, аккордам и общему характеру. Окончательно решает примерка на коже.",
+      pvTitle: "Ваш PDF", pvText: "Файл Shoh-Parfumer.pdf сохранён. Вот что в нём:", pvPage: "Страница {n}",
+      tipsTitle: "Советы", tip1Title: "Объясните мой вкус", tip2Title: "С какого аромата начать", tip3Title: "Как примерять духи",
+      tip1: "Ваш вкус — это {axes}. Чаще всего в ваших ароматах звучат {notes}. Сильнее всего подборку определяет «{fav}»: {n} из 5 ароматов ближе всего именно к нему.",
+      tip2: "Самый надёжный выбор — «{safe}» ({safePct}%): он ближе всего к тому, что вы уже любите. Если хочется нового, попробуйте «{bold}» ({boldPct}%): он подходит к вашему вкусу, но звучит иначе.",
+      tip2one: "Начните с «{safe}» ({safePct}%): он ближе всего к тому, что вы уже любите.",
+      tip3: ["Пробуйте не больше 3–4 ароматов за раз: нос быстро устаёт.", "Наносите аромат на запястье или бумажную полоску, а не нюхайте флакон.",
+        "Не растирайте запястья: так быстрее исчезают верхние ноты.", "Подождите 15–30 минут: настоящий характер аромата раскрывается позже.",
+        "Перед покупкой проносите понравившийся аромат хотя бы полдня."],
+      fbTitle: "Обратная связь", fbText: "Напишите отзыв, вопрос или пожелание. Сообщение уйдёт владельцу сайта в Telegram.",
+      fbName: "Ваше имя (необязательно)", fbMsg: "Ваш отзыв", fbSend: "Отправить в Telegram", close: "Закрыть",
+      fbCopied: "Текст скопирован. Если он не появился в чате, вставьте его.", fbEmpty: "Сначала напишите сообщение.",
+      fbNoContact: "Контакт для отзывов скоро появится.", fbHeader: "Отзыв с сайта Shoh Parfumer", fbFrom: "Имя",
+      aiLang: "русском",
+      q: [
+        { key: "season", title: "Для какого сезона вы выбираете парфюм?", opts: [
+          { v: "summer", t: "Для лета", d: "Лёгкий и свежий аромат для жары" },
+          { v: "cool", t: "Для осени и зимы", d: "Тёплый и насыщенный аромат для холода" },
+          { v: "any", t: "На весь год", d: "Универсальный аромат на каждый день" } ] },
+        { key: "mood", title: "Какой аромат вы хотите найти?", opts: [
+          { v: "fresh", t: "Свежий и чистый", d: "Как после душа или у моря" },
+          { v: "sweet", t: "Сладкий и тёплый", d: "Ваниль, фрукты, десерты" },
+          { v: "woody", t: "Древесный и строгий", d: "Дерево, специи, кожа" },
+          { v: "floral", t: "Цветочный и нежный", d: "Букет цветов, мягкий мускус" } ] }
+      ],
+      ax: ["цитрус", "свежесть", "цветы", "фрукты", "сладость", "специи", "дерево", "амбра", "мускус", "кожа и табак"],
+      perfume: ["аромат", "аромата", "ароматов"], brand: ["бренд", "бренда", "брендов"]
+    },
+    tg: {
+      brandSub: "Интихоби Атр", fbBtn: "Фикр", fbOpen: "Алоқаи бозгашт", langAria: "Забони сайт", themeAria: "Мавзӯи равшан ё торик",
+      stepsAria: "Қадамҳо", steps: ["Интихоб", "Тартиб", "Саволҳо", "Натиҷа"],
+      h1: "Се атри дӯстдоштаи худро интихоб кунед", lead1: "Мо аз рӯи завқи шумо панҷ атри нав пешниҳод мекунем. Ин тақрибан як дақиқа вақт мегирад.",
+      slot: "Ҷойи {n}", searchPh: "Ҷустуҷӯи атр ё бренд", hintHome: "Брендро интихоб кунед ё номро нависед. Дар пойгоҳ {n} ҳаст.",
+      knownBrands: "Брендҳои машҳур", moreBrands: "Дигар брендҳоро дидан", hideBrands: "Пинҳон кардани брендҳо", moreBrandsCount: "боз {n}",
+      otherBrands: "Брендҳои дигар", hide: "Пинҳон", brandSearch: "Ҷустуҷӯи бренд", brandsPopular: "Аввал машҳуртаринҳо.",
+      brandsFound: "Ёфт шуд: {n}", brandsNone: "Чунин бренд дар пойгоҳ нест. Тарзи дигар нависед.", moreBrandsBtn: "Боз брендҳо",
+      allBrands: "Ҳамаи брендҳо", found: "Ёфт шуд: {n}", notFound: "Чизе ёфт нашуд. Калимаи дигарро санҷед ё атри монандро интихоб кунед.",
+      showMore: "Боз нишон додан", selected: "Интихоб шуд: {n} аз 3", next: "Идома", back: "Бозгашт",
+      showSlot: "Дар рӯйхат нишон додан: {n}", removeSlot: "Хориҷ кардан: {n}", slotTitle: "Атри интихобшуда",
+      slotHint: "Барои хориҷ кардани ин атр × -ро дар блок пахш кунед ё қайдро дар поён бардоред.",
+      h2rank: "Ба тартиб гузоред", lead2: "Рақами 1 — аз ҳама дӯстдошта. Бо тирчаҳо атрҳоро боло ё поён баред.",
+      up: "Боло бурдан: {n}", down: "Поён бурдан: {n}", qn: "Саволи {i} аз {n}",
+      h2res: "Завқи шумо ва панҷ атре, ки арзиши санҷиданро дорад", taste: "Аз рӯи се атри шумо, ба шумо бештар инҳо наздиканд: {list}.",
+      keyNotes: "Нотаҳои асосии шумо", lblSummer: "Барои тобистон", lblCool: "Барои ҳавои салқин", lblHit: "Хит", lblYear: "Тамоми сол",
+      matchTitle: "Монандӣ бо завқи шумо аз рӯи нотаҳо ва аккордҳо", whyNotes: "Нотаҳои умумӣ бо атрҳои шумо: {list}.",
+      whyAcc: "Аз рӯи хусусият монанд: {list}.", closest: "Аз ҳама ба «{n}»-и шумо наздик.", season: "Фасл: {s}",
+      sS: "тобистон", sC: "тирамоҳ ва зимистон", sA: "тамоми сол", and: " ва ",
+      explainPct: "Фоиз монандиро бо се атри шумо нишон медиҳад: аз рӯи нотаҳо (50%), аккордҳо (30%) ва хусусияти умумӣ (20%). Нотаҳои камёб аз нотаҳои маъмул муҳимтаранд, нотаҳои асос аз нотаҳои болоӣ. Қарори ниҳоиро санҷиш дар пӯст медиҳад. Шишаҳо дар расмҳо аз рӯи хусусияти атр кашида шудаанд, акс нестанд.",
+      aiTitle: "Аз мушовири зеҳни сунъӣ пурсед", aiSub: "Ӯ се атри шумо, ҷавобҳо ва интихобро медонад. Саволро интихоб кунед ё худатон нависед.",
+      aiChip1: "Завқи маро шарҳ деҳ", aiChip2: "Бехатар ва ғайриоддӣ", aiChip3: "Атрро чӣ тавр санҷидан",
+      aiPh: "Саволи худ дар бораи атр", aiAsk: "Пурсидан", thinking: "Фикр мекунам…",
+      aiDenied: "Дастрасӣ ба зеҳни сунъӣ иҷозат дода нашудааст. Интихоби боло бе он ҳам кор мекунад.", aiBusy: "Дархостҳо зиёданд. Як дақиқа сабр кунед ва аз нав кӯшиш кунед.", aiErr: "Зеҳни сунъӣ ҳоло ҷавоб намедиҳад. Боз кӯшиш кунед.",
+      redo: "Аз нав сар кардан", bottle: "Расми шиша",
+      pdfBtn: "Ҳамчун PDF нигоҳ доштан", pdfWorking: "PDF омода мешавад…", pdfSaved: "PDF нигоҳ дошта шуд.", pdfDeclined: "Нигоҳдорӣ бекор шуд.",
+      pdfErr: "PDF нигоҳ дошта нашуд. Боз кӯшиш кунед.", pdfFavs: "Атрҳои дӯстдоштаи шумо", pdfPicks: "Панҷ атр барои санҷиш",
+      pdfNote: "Фоиз — монандӣ бо се атри шумо аз рӯи нотаҳо, аккордҳо ва хусусияти умумӣ. Қарори ниҳоиро санҷиш дар пӯст медиҳад.",
+      pvTitle: "PDF-и шумо", pvText: "Файли Shoh-Parfumer.pdf нигоҳ дошта шуд. Ин аст мундариҷаи он:", pvPage: "Саҳифаи {n}",
+      tipsTitle: "Маслиҳатҳо", tip1Title: "Завқи маро шарҳ диҳед", tip2Title: "Аз кадом атр сар кардан", tip3Title: "Атрро чӣ тавр санҷидан",
+      tip1: "Завқи шумо — {axes}. Дар атрҳои шумо бештар {notes} садо медиҳанд. Интихоби шуморо бештар «{fav}» муайян мекунад: {n} аз 5 атр маҳз ба он наздиктаранд.",
+      tip2: "Интихоби аз ҳама боэътимод — «{safe}» ({safePct}%): он ба атрҳои дӯстдоштаи шумо аз ҳама наздик аст. Агар чизи нав хоҳед, «{bold}» ({boldPct}%)-ро санҷед: он ба завқи шумо мувофиқ аст, вале дигар хел садо медиҳад.",
+      tip2one: "Аз «{safe}» ({safePct}%) сар кунед: он ба атрҳои дӯстдоштаи шумо аз ҳама наздик аст.",
+      tip3: ["Як бор на зиёда аз 3–4 атрро санҷед: бинӣ зуд хаста мешавад.", "Атрро ба банди даст ё коғази санҷишӣ пошед, на ин ки шишаро бӯй кунед.",
+        "Бандҳои дастро ба ҳам намолед: ин тавр нотаҳои болоӣ зудтар мепаранд.", "15–30 дақиқа интизор шавед: хусусияти аслии атр баъдтар кушода мешавад.",
+        "Пеш аз харид атри писандидаро ақаллан ним рӯз истифода баред."],
+      fbTitle: "Алоқаи бозгашт", fbText: "Фикр, савол ё пешниҳоди худро нависед. Паём ба соҳиби сайт дар Telegram меравад.",
+      fbName: "Номи шумо (ихтиёрӣ)", fbMsg: "Фикри шумо", fbSend: "Ба Telegram фиристодан", close: "Пӯшидан",
+      fbCopied: "Матн нусха шуд. Агар дар чат пайдо нашавад, онро гузоред.", fbEmpty: "Аввал паём нависед.",
+      fbNoContact: "Тамос барои фикрҳо ба наздикӣ пайдо мешавад.", fbHeader: "Фикр аз сайти Shoh Parfumer", fbFrom: "Ном",
+      aiLang: "тоҷикӣ (бо алифбои кириллӣ)",
+      q: [
+        { key: "season", title: "Атрро барои кадом фасл интихоб мекунед?", opts: [
+          { v: "summer", t: "Барои тобистон", d: "Бӯи сабук ва тоза барои гармо" },
+          { v: "cool", t: "Барои тирамоҳ ва зимистон", d: "Бӯи гарм ва пурғуна барои хунукӣ" },
+          { v: "any", t: "Барои тамоми сол", d: "Бӯи универсалӣ барои ҳар рӯз" } ] },
+        { key: "mood", title: "Кадом навъи атрро ёфтан мехоҳед?", opts: [
+          { v: "fresh", t: "Тоза ва беғубор", d: "Мисли баъди душ ё дар соҳили баҳр" },
+          { v: "sweet", t: "Ширин ва гарм", d: "Ваниль, мева, ширинӣ" },
+          { v: "woody", t: "Чӯбӣ ва ҷиддӣ", d: "Чӯб, адвиёт, чарм" },
+          { v: "floral", t: "Гулӣ ва нозук", d: "Дастаи гул, мушки нарм" } ] }
+      ],
+      ax: ["ситрус", "тозагӣ", "гулҳо", "меваҳо", "ширинӣ", "адвиёт", "чӯб", "анбар", "мушк", "чарм ва тамоку"],
+      perfume: ["атр"], brand: ["бренд"]
+    },
+    en: {
+      brandSub: "Perfume Finder", fbBtn: "Feedback", fbOpen: "Feedback", langAria: "Site language", themeAria: "Light or dark theme",
+      stepsAria: "Steps", steps: ["Choose", "Rank", "Questions", "Results"],
+      h1: "Pick your three favourite fragrances", lead1: "We'll find five new fragrances that match your taste. It takes about a minute.",
+      slot: "Spot {n}", searchPh: "Search a fragrance or brand", hintHome: "Choose a brand or type a name. {n} in the database.",
+      knownBrands: "Popular brands", moreBrands: "See other brands", hideBrands: "Hide brands", moreBrandsCount: "{n} more",
+      otherBrands: "Other brands", hide: "Hide", brandSearch: "Search brands", brandsPopular: "Most popular first.",
+      brandsFound: "Found: {n}", brandsNone: "No such brand in the database. Try another spelling.", moreBrandsBtn: "Show more brands",
+      allBrands: "All brands", found: "Found: {n}", notFound: "Nothing found. Try another word or choose a similar fragrance.",
+      showMore: "Show more", selected: "Selected: {n} of 3", next: "Next", back: "Back",
+      showSlot: "Show in list: {n}", removeSlot: "Remove: {n}", slotTitle: "Selected fragrance",
+      slotHint: "To remove this fragrance, tap × on its box or untick it below.",
+      h2rank: "Put them in order", lead2: "Number 1 is your favourite. Use the arrows to move fragrances up or down.",
+      up: "Move up: {n}", down: "Move down: {n}", qn: "Question {i} of {n}",
+      h2res: "Your taste and five fragrances to try", taste: "Based on your three fragrances, you lean most towards: {list}.",
+      keyNotes: "Your key notes", lblSummer: "For summer", lblCool: "For cooler days", lblHit: "Bestseller", lblYear: "All year",
+      matchTitle: "Similarity to your taste by notes and accords", whyNotes: "Notes shared with your fragrances: {list}.",
+      whyAcc: "Similar in character: {list}.", closest: "Closest to your “{n}”.", season: "Season: {s}",
+      sS: "summer", sC: "autumn and winter", sA: "all year", and: " and ",
+      explainPct: "The percentage shows how close each fragrance is to your three picks by notes (50%), accords (30%) and overall character (20%). Rare notes count more than common ones, base notes more than top notes. Trying it on your skin is the final test. Bottles are drawn from each fragrance's character; they are not photos.",
+      aiTitle: "Ask the AI consultant", aiSub: "It knows your three fragrances, your answers and your picks. Choose a question or write your own.",
+      aiChip1: "Explain my taste", aiChip2: "Safe pick and bold pick", aiChip3: "How to test perfume",
+      aiPh: "Your question about fragrance", aiAsk: "Ask", thinking: "Thinking…",
+      aiDenied: "AI access isn't allowed. The picks above work without it.", aiBusy: "Too many requests. Wait a minute and try again.", aiErr: "The AI isn't responding right now. Try again.",
+      redo: "Start over", bottle: "Bottle drawing",
+      pdfBtn: "Save as PDF", pdfWorking: "Preparing PDF…", pdfSaved: "PDF saved.", pdfDeclined: "Save cancelled.",
+      pdfErr: "Couldn't save the PDF. Try again.", pdfFavs: "Your favourite fragrances", pdfPicks: "Five fragrances to try",
+      pdfNote: "The percentage is the similarity to your three fragrances by notes, accords and overall character. Trying it on your skin is the final test.",
+      pvTitle: "Your PDF", pvText: "Shoh-Parfumer.pdf is saved. Here's what's inside:", pvPage: "Page {n}",
+      tipsTitle: "Tips", tip1Title: "Explain my taste", tip2Title: "Where to start", tip3Title: "How to try perfume",
+      tip1: "Your taste is built on {axes}. The notes that come up most in your fragrances are {notes}. “{fav}” shapes your picks the most: it is the closest match for {n} of the 5 fragrances.",
+      tip2: "The safest choice is “{safe}” ({safePct}%): it's closest to what you already love. If you want something new, try “{bold}” ({boldPct}%): it suits your taste but sounds different.",
+      tip2one: "Start with “{safe}” ({safePct}%): it's closest to what you already love.",
+      tip3: ["Try no more than 3–4 fragrances at a time: your nose tires quickly.", "Spray on your wrist or a paper strip rather than sniffing the bottle.",
+        "Don't rub your wrists together: it makes the top notes fade faster.", "Wait 15–30 minutes: the real character comes out later.",
+        "Wear a fragrance you like for at least half a day before buying."],
+      fbTitle: "Feedback", fbText: "Write a review, question or suggestion. It goes to the site owner on Telegram.",
+      fbName: "Your name (optional)", fbMsg: "Your message", fbSend: "Send via Telegram", close: "Close",
+      fbCopied: "Text copied. If it doesn't appear in the chat, paste it.", fbEmpty: "Write a message first.",
+      fbNoContact: "The feedback contact will be added soon.", fbHeader: "Feedback from the Shoh Parfumer site", fbFrom: "Name",
+      aiLang: "English",
+      q: [
+        { key: "season", title: "Which season are you choosing a fragrance for?", opts: [
+          { v: "summer", t: "For summer", d: "Light and fresh for hot days" },
+          { v: "cool", t: "For autumn and winter", d: "Warm and rich for cold days" },
+          { v: "any", t: "All year round", d: "An everyday all-rounder" } ] },
+        { key: "mood", title: "What kind of fragrance do you want to find?", opts: [
+          { v: "fresh", t: "Fresh and clean", d: "Like after a shower or by the sea" },
+          { v: "sweet", t: "Sweet and warm", d: "Vanilla, fruit, desserts" },
+          { v: "woody", t: "Woody and refined", d: "Wood, spices, leather" },
+          { v: "floral", t: "Floral and soft", d: "A bouquet of flowers, soft musk" } ] }
+      ],
+      ax: ["citrus", "freshness", "flowers", "fruit", "sweetness", "spices", "wood", "amber", "musk", "leather and tobacco"],
+      perfume: ["fragrance", "fragrances"], brand: ["brand", "brands"]
+    }
+  };
+  // Новые тексты: подбор для новичка, подарок, пол, похожие, наличие, «поделиться»
+  var I18N_X = {
+    ru: {
+      searchPh: "Найти аромат, бренд или ноту", pathNovice: "Не знаю названий", pathGift: "Ищу в подарок",
+      stepsNovice: ["Запахи", "Вопрос", "Итог"], stepsGift: ["Вопросы", "Итог"],
+      h5: "Какие запахи вам нравятся?", lead5: "Выберите от 2 до 4. Названия духов знать не нужно.", count5: "Выбрано: {n} из 4",
+      closestSmell: "Больше всего совпадает с «{n}».", tasteNovice: "Судя по выбранным запахам, вам ближе всего: {list}.",
+      tasteGift: "Подборка для подарка: {list}.", h2resGift: "Пять ароматов в подарок", pdfSmells: "Любимые запахи", pdfGift: "Подарок",
+      genderAria: "Для кого", gAny: "Все", gM: "Мужские", gF: "Женские", noPicks: "С этим фильтром ничего не нашлось. Выберите «Все».",
+      simBtn: "Похожие", simTitle: "Похожие на «{n}»", simAll: "Все", simCheaper: "Дешевле", simPricier: "Дороже",
+      simNone: "В этой категории похожих не нашлось.", simNoTier: "Ценовая категория этого бренда неизвестна, поэтому показаны все похожие.",
+      simHint: "«Дешевле» и «дороже» — по ценовой категории бренда, примерно.", tiers: ["", "доступный", "средний", "люкс", "нишевый"], tierLabel: "Цена: {t}",
+      inStock: "В наличии · {p}", currency: "сомони", orderBtn: "Заказать", orderText: "Здравствуйте! Хочу заказать: {n} ({b}), {p}.",
+      shareBtn: "Поделиться", shareTitle: "Поделиться подборкой", shareText: "Мой подбор духов на Shoh Parfumer: {list}",
+      shareCopy: "Скопировать", shareCopied: "Скопировано.", byNotes: "Найдено и по нотам: {list}.",
+      explainPct: "Процент показывает сходство с вашим вкусом по нотам (50%), аккордам (30%) и общему характеру (20%). Редкие ноты весят больше частых, базовые больше верхних. Окончательно решает примерка на коже. Флаконы на картинках нарисованы по характеру аромата, это не фотографии.",
+      pdfNote: "Процент — сходство с вашим вкусом по нотам, аккордам и общему характеру. Окончательно решает примерка на коже.",
+      qs: {
+        season: { key: "season", title: "Для какого сезона вы выбираете парфюм?", opts: [
+          { v: "summer", t: "Для лета", d: "Лёгкий и свежий аромат для жары" },
+          { v: "cool", t: "Для осени и зимы", d: "Тёплый и насыщенный аромат для холода" },
+          { v: "any", t: "На весь год", d: "Универсальный аромат на каждый день" } ] },
+        mood: { key: "mood", title: "Какой аромат вы хотите найти?", opts: [
+          { v: "fresh", t: "Свежий и чистый", d: "Как после душа или у моря" },
+          { v: "sweet", t: "Сладкий и тёплый", d: "Ваниль, фрукты, десерты" },
+          { v: "woody", t: "Древесный и строгий", d: "Дерево, специи, кожа" },
+          { v: "floral", t: "Цветочный и нежный", d: "Букет цветов, мягкий мускус" } ] },
+        who: { key: "who", title: "Для кого подарок?", opts: [
+          { v: "m", t: "Для мужчины", d: "Мужские и унисекс ароматы" },
+          { v: "f", t: "Для женщины", d: "Женские и унисекс ароматы" },
+          { v: "any", t: "Неважно", d: "Любые ароматы" } ] },
+        character: { key: "character", title: "Какой он человек?", opts: [
+          { v: "calm", t: "Спокойный и нежный", d: "Мягкие цветы, мускус, чистота" },
+          { v: "bold", t: "Яркий и смелый", d: "Сладкие, пряные, восточные" },
+          { v: "business", t: "Деловой и строгий", d: "Дерево, цитрус, кожа" },
+          { v: "romantic", t: "Романтичный", d: "Цветы, фрукты, ваниль" } ] },
+        budget: { key: "budget", title: "Какой бюджет?", opts: [
+          { v: "low", t: "Доступный", d: "Хорошие недорогие ароматы" },
+          { v: "mid", t: "Средний", d: "Известные дизайнерские бренды" },
+          { v: "high", t: "Люкс и ниша", d: "Дорогие и редкие ароматы" },
+          { v: "any", t: "Неважно", d: "Любой" } ] }
+      }
+    },
+    tg: {
+      searchPh: "Ҷустуҷӯи атр, бренд ё нота", pathNovice: "Номҳоро намедонам", pathGift: "Барои тӯҳфа меҷӯям",
+      stepsNovice: ["Бӯйҳо", "Савол", "Натиҷа"], stepsGift: ["Саволҳо", "Натиҷа"],
+      h5: "Кадом бӯйҳо ба шумо писанданд?", lead5: "Аз 2 то 4-тоашро интихоб кунед. Номи атрҳоро донистан шарт нест.", count5: "Интихоб шуд: {n} аз 4",
+      closestSmell: "Бештар ба «{n}» мувофиқ аст.", tasteNovice: "Аз рӯи бӯйҳои интихобшуда ба шумо бештар инҳо наздиканд: {list}.",
+      tasteGift: "Интихоб барои тӯҳфа: {list}.", h2resGift: "Панҷ атр барои тӯҳфа", pdfSmells: "Бӯйҳои дӯстдошта", pdfGift: "Тӯҳфа",
+      genderAria: "Барои кӣ", gAny: "Ҳама", gM: "Мардона", gF: "Занона", noPicks: "Бо ин филтр чизе ёфт нашуд. «Ҳама»-ро интихоб кунед.",
+      simBtn: "Монандҳо", simTitle: "Монанд ба «{n}»", simAll: "Ҳама", simCheaper: "Арзонтар", simPricier: "Гаронтар",
+      simNone: "Дар ин категория монанд ёфт нашуд.", simNoTier: "Категорияи нархи ин бренд маълум нест, бинобар ин ҳамаи монандҳо нишон дода шудаанд.",
+      simHint: "«Арзонтар» ва «гаронтар» тақрибан аз рӯи категорияи нархи бренд.", tiers: ["", "арзон", "миёна", "люкс", "нишавӣ"], tierLabel: "Нарх: {t}",
+      inStock: "Дар мавҷудият · {p}", currency: "сомонӣ", orderBtn: "Фармоиш", orderText: "Салом! Мехоҳам фармоиш диҳам: {n} ({b}), {p}.",
+      shareBtn: "Мубодила", shareTitle: "Мубодилаи интихоб", shareText: "Интихоби атри ман дар Shoh Parfumer: {list}",
+      shareCopy: "Нусхабардорӣ", shareCopied: "Нусха шуд.", byNotes: "Аз рӯи нотаҳо ҳам ёфт шуд: {list}.",
+      explainPct: "Фоиз монандиро бо завқи шумо нишон медиҳад: аз рӯи нотаҳо (50%), аккордҳо (30%) ва хусусияти умумӣ (20%). Нотаҳои камёб аз нотаҳои маъмул муҳимтаранд, нотаҳои асос аз нотаҳои болоӣ. Қарори ниҳоиро санҷиш дар пӯст медиҳад. Шишаҳо дар расмҳо аз рӯи хусусияти атр кашида шудаанд, акс нестанд.",
+      pdfNote: "Фоиз — монандӣ бо завқи шумо аз рӯи нотаҳо, аккордҳо ва хусусияти умумӣ. Қарори ниҳоиро санҷиш дар пӯст медиҳад.",
+      qs: {
+        season: { key: "season", title: "Атрро барои кадом фасл интихоб мекунед?", opts: [
+          { v: "summer", t: "Барои тобистон", d: "Бӯи сабук ва тоза барои гармо" },
+          { v: "cool", t: "Барои тирамоҳ ва зимистон", d: "Бӯи гарм ва пурғуна барои хунукӣ" },
+          { v: "any", t: "Барои тамоми сол", d: "Бӯи универсалӣ барои ҳар рӯз" } ] },
+        mood: { key: "mood", title: "Кадом навъи атрро ёфтан мехоҳед?", opts: [
+          { v: "fresh", t: "Тоза ва беғубор", d: "Мисли баъди душ ё дар соҳили баҳр" },
+          { v: "sweet", t: "Ширин ва гарм", d: "Ваниль, мева, ширинӣ" },
+          { v: "woody", t: "Чӯбӣ ва ҷиддӣ", d: "Чӯб, адвиёт, чарм" },
+          { v: "floral", t: "Гулӣ ва нозук", d: "Дастаи гул, мушки нарм" } ] },
+        who: { key: "who", title: "Тӯҳфа барои кист?", opts: [
+          { v: "m", t: "Барои мард", d: "Атрҳои мардона ва умумӣ" },
+          { v: "f", t: "Барои зан", d: "Атрҳои занона ва умумӣ" },
+          { v: "any", t: "Фарқ надорад", d: "Ҳама гуна атрҳо" } ] },
+        character: { key: "character", title: "Ӯ чӣ гуна инсон аст?", opts: [
+          { v: "calm", t: "Ором ва нозук", d: "Гулҳои нарм, мушк, тозагӣ" },
+          { v: "bold", t: "Дурахшон ва ҷасур", d: "Ширин, тунд, шарқӣ" },
+          { v: "business", t: "Корӣ ва ҷиддӣ", d: "Чӯб, ситрус, чарм" },
+          { v: "romantic", t: "Ошиқона", d: "Гул, мева, ваниль" } ] },
+        budget: { key: "budget", title: "Буҷет чӣ қадар аст?", opts: [
+          { v: "low", t: "Арзон", d: "Атрҳои хуби арзон" },
+          { v: "mid", t: "Миёна", d: "Брендҳои машҳури дизайнерӣ" },
+          { v: "high", t: "Люкс ва ниша", d: "Атрҳои гарон ва нодир" },
+          { v: "any", t: "Фарқ надорад", d: "Ҳама гуна" } ] }
+      }
+    },
+    en: {
+      searchPh: "Search a fragrance, brand or note", pathNovice: "I don't know any names", pathGift: "Looking for a gift",
+      stepsNovice: ["Scents", "Question", "Results"], stepsGift: ["Questions", "Results"],
+      h5: "Which scents do you like?", lead5: "Pick 2 to 4. You don't need to know any perfume names.", count5: "Selected: {n} of 4",
+      closestSmell: "Best matches “{n}”.", tasteNovice: "Based on the scents you chose, you lean towards: {list}.",
+      tasteGift: "Gift picks lean towards: {list}.", h2resGift: "Five fragrances to give", pdfSmells: "Favourite scents", pdfGift: "Gift",
+      genderAria: "For whom", gAny: "All", gM: "Men's", gF: "Women's", noPicks: "Nothing found with this filter. Choose “All”.",
+      simBtn: "Similar", simTitle: "Similar to “{n}”", simAll: "All", simCheaper: "Cheaper", simPricier: "Pricier",
+      simNone: "No similar fragrances in this category.", simNoTier: "This brand's price category is unknown, so all similar fragrances are shown.",
+      simHint: "“Cheaper” and “pricier” are estimated from the brand's price category.", tiers: ["", "affordable", "mid-range", "luxury", "niche"], tierLabel: "Price: {t}",
+      inStock: "In stock · {p}", currency: "TJS", orderBtn: "Order", orderText: "Hello! I'd like to order: {n} ({b}), {p}.",
+      shareBtn: "Share", shareTitle: "Share your picks", shareText: "My perfume picks on Shoh Parfumer: {list}",
+      shareCopy: "Copy", shareCopied: "Copied.", byNotes: "Also found by notes: {list}.",
+      explainPct: "The percentage shows how close each fragrance is to your taste by notes (50%), accords (30%) and overall character (20%). Rare notes count more than common ones, base notes more than top notes. Trying it on your skin is the final test. Bottles are drawn from each fragrance's character; they are not photos.",
+      pdfNote: "The percentage is the similarity to your taste by notes, accords and overall character. Trying it on your skin is the final test.",
+      qs: {
+        season: { key: "season", title: "Which season are you choosing a fragrance for?", opts: [
+          { v: "summer", t: "For summer", d: "Light and fresh for hot days" },
+          { v: "cool", t: "For autumn and winter", d: "Warm and rich for cold days" },
+          { v: "any", t: "All year round", d: "An everyday all-rounder" } ] },
+        mood: { key: "mood", title: "What kind of fragrance do you want to find?", opts: [
+          { v: "fresh", t: "Fresh and clean", d: "Like after a shower or by the sea" },
+          { v: "sweet", t: "Sweet and warm", d: "Vanilla, fruit, desserts" },
+          { v: "woody", t: "Woody and refined", d: "Wood, spices, leather" },
+          { v: "floral", t: "Floral and soft", d: "A bouquet of flowers, soft musk" } ] },
+        who: { key: "who", title: "Who is the gift for?", opts: [
+          { v: "m", t: "For a man", d: "Men's and unisex fragrances" },
+          { v: "f", t: "For a woman", d: "Women's and unisex fragrances" },
+          { v: "any", t: "Doesn't matter", d: "Any fragrance" } ] },
+        character: { key: "character", title: "What is the person like?", opts: [
+          { v: "calm", t: "Calm and gentle", d: "Soft flowers, musk, clean scents" },
+          { v: "bold", t: "Bright and bold", d: "Sweet, spicy, oriental" },
+          { v: "business", t: "Smart and serious", d: "Wood, citrus, leather" },
+          { v: "romantic", t: "Romantic", d: "Flowers, fruit, vanilla" } ] },
+        budget: { key: "budget", title: "What's the budget?", opts: [
+          { v: "low", t: "Affordable", d: "Good budget fragrances" },
+          { v: "mid", t: "Mid-range", d: "Well-known designer brands" },
+          { v: "high", t: "Luxury and niche", d: "Premium and rare" },
+          { v: "any", t: "Doesn't matter", d: "Any" } ] }
+      }
+    }
+  };
+  LANGS.forEach(function (l) { Object.keys(I18N_X[l]).forEach(function (k) { I18N[l][k] = I18N_X[l][k]; }); });
+
+  var ACC_I18N = {
+    Floral: ["цветочный", "гулӣ", "floral"], Spicy: ["пряный", "тунд", "spicy"], Sweet: ["сладкий", "ширин", "sweet"],
+    Woody: ["древесный", "чӯбӣ", "woody"], Fresh: ["свежий", "тоза", "fresh"], Fruity: ["фруктовый", "мевагӣ", "fruity"],
+    Citrus: ["цитрусовый", "ситрусӣ", "citrus"], Green: ["зелёный", "сабз", "green"], Powdery: ["пудровый", "хокаӣ", "powdery"],
+    Oriental: ["восточный", "шарқӣ", "oriental"], Creamy: ["сливочный", "қаймоқӣ", "creamy"], Gourmand: ["гурманский", "гурманӣ", "gourmand"],
+    Resinous: ["смолистый", "қатронӣ", "resinous"], Aquatic: ["водный", "обӣ", "aquatic"], Smoky: ["дымный", "дудӣ", "smoky"],
+    Leathery: ["кожаный", "чармӣ", "leathery"], Earthy: ["землистый", "хокӣ", "earthy"], Animal: ["животный", "ҳайвонӣ", "animalic"],
+    Chypre: ["шипровый", "шипр", "chypre"], "Fougère": ["фужерный", "фужер", "fougère"]
+  };
+  // Ноты на таджикском: самые частые; редкие показываются по-русски
+  var NOTE_TG = {
+    "мускус": "мушк", "белый мускус": "мушки сафед", "бергамот": "бергамот", "роза": "гули садбарг", "сандал": "сандал", "ваниль": "ваниль",
+    "пачули": "пачулӣ", "жасмин": "ёсуман", "жасмин самбак": "ёсумани самбак", "амбра": "анбар", "серая амбра": "анбари хокистарӣ",
+    "белая амбра": "анбари сафед", "кедр": "кедр", "белый кедр": "кедри сафед", "виргинский кедр": "кедри виргинӣ", "ветивер": "ветивер",
+    "мандарин": "мандарин", "лимон": "лиму", "тонка": "тонка", "ирис": "савсан", "корень ириса": "решаи савсан", "масло ириса": "равғани савсан",
+    "цветок апельсина": "гули афлесун", "апельсин": "афлесун", "горький апельсин": "афлесуни талх", "красный апельсин": "афлесуни сурх",
+    "лаванда": "лаванда", "иланг-иланг": "иланг-иланг", "кардамон": "ҳел", "розовый перец": "қаламфури гулобӣ", "чёрный перец": "қаламфури сиёҳ",
+    "белый перец": "қаламфури сафед", "перец": "қаламфур", "сычуаньский перец": "қаламфури сичуанӣ", "душистый перец": "қаламфури хушбӯй",
+    "ладан": "кундур", "ландыш": "гули барфак", "кожа": "чарм", "кожаные ноты": "нотаҳои чармӣ", "замша": "замша", "герань": "шамъдонӣ",
+    "дубовый мох": "хазаи булут", "мох": "хаза", "фиалка": "бунафша", "лист фиалки": "барги бунафша", "уд": "уд", "бензоин": "бензоин",
+    "грейпфрут": "грейпфрут", "розовый грейпфрут": "грейпфрути гулобӣ", "нероли": "нероли", "корица": "дорчин", "шафран": "заъфарон",
+    "персик": "шафтолу", "имбирь": "занҷабил", "древесные ноты": "нотаҳои чӯбӣ", "мускатный орех": "ҷавзи бӯя", "лабданум": "лабданум",
+    "чёрная смородина": "қарағати сиёҳ", "почки чёрной смородины": "муғчаҳои қарағати сиёҳ", "смородина": "қарағат", "красная смородина": "қарағати сурх",
+    "тубероза": "тубероза", "кориандр": "кашнич", "фрезия": "фрезия", "груша": "нок", "гелиотроп": "гелиотроп", "гвоздика": "михак",
+    "гвоздика (цветок)": "гули михак", "пион": "пион", "малина": "тамашк", "кашмеран": "кашмеран", "магнолия": "магнолия", "яблоко": "себ",
+    "зелёное яблоко": "себи сабз", "мята": "наъно", "перечная мята": "наъно", "курчавая мята": "наъно", "гваяк": "гваяк", "альдегиды": "алдегидҳо",
+    "табак": "тамоку", "табачный лист": "барги тамоку", "цветок табака": "гули тамоку", "базилик": "райҳон", "гардения": "гардения", "слива": "олу",
+    "гальбанум": "галбанум", "розмарин": "розмарин", "петитгрейн": "петитгрейн", "зелёные ноты": "нотаҳои сабз", "мирра": "мур", "лайм": "лайм",
+    "мёд": "асал", "мускатный шалфей": "шалфейи мускатӣ", "шалфей": "шалфей", "ананас": "ананас", "османтус": "османтус", "кипарис": "сарв",
+    "орхидея": "орхидея", "ванильная орхидея": "орхидеяи ваниль", "амброксан": "амброксан", "палисандр": "палисандр", "карамель": "карамел",
+    "лилия": "занбақ", "белая лилия": "занбақи сафед", "ладанник": "ладанник", "миндаль": "бодом", "горький миндаль": "бодоми талх", "специи": "адвиёт",
+    "пряные ноты": "нотаҳои тунд", "смола элеми": "қатрони элеми", "элеми": "элеми", "амбретта": "амбретта", "гиацинт": "сунбул", "цикламен": "сикламен",
+    "мимоза": "мимоза", "нарцисс": "наргис", "тимьян": "тимьян", "можжевельник": "арча", "ягоды можжевельника": "меваи арча", "кокос": "норгил",
+    "кокосовое молоко": "шири норгил", "личи": "личи", "цибет": "цибет", "полынь": "явшон", "лотос": "нилуфар", "кувшинка": "нилуфари обӣ",
+    "чай": "чой", "зелёный чай": "чойи кабуд", "чёрный чай": "чойи сиёҳ", "белый чай": "чойи сафед", "морские ноты": "нотаҳои баҳрӣ",
+    "водные ноты": "нотаҳои обӣ", "какао": "какао", "цитрусовые ноты": "нотаҳои ситрусӣ", "цитрусовые": "ситрусҳо", "сирень": "сирень",
+    "кофе": "қаҳва", "стиракс": "стиракс", "жимолость": "жимолость", "абрикос": "зардолу", "ром": "ром", "эстрагон": "тархун",
+    "опопонакс": "опопонакс", "ревень": "чукрӣ", "берёза": "тӯс", "пралине": "пралине", "зира": "зира", "инжир": "анҷир", "лист инжира": "барги анҷир",
+    "белые цветы": "гулҳои сафед", "цветочные ноты": "нотаҳои гулӣ", "маракуйя": "маракуйя", "анис": "бодиён", "бадьян": "бодиёни ситорагӣ",
+    "ципериол": "ципериол", "франжипани": "франжипани", "дыня": "харбуза", "арбуз": "тарбуз", "клубника": "қулфинай", "юдзу": "юдзу",
+    "танжерин": "танжерин", "клементин": "клементин", "молоко": "шир", "сливки": "қаймоқ", "фруктовые ноты": "нотаҳои мевагӣ", "фрукты": "меваҳо",
+    "красные фрукты": "меваҳои сурх", "красные ягоды": "буттамеваҳои сурх", "ежевика": "марминҷон", "черника": "черника", "амбровое дерево": "чӯби анбар",
+    "манго": "манго", "сосна": "санавбар", "хвоя": "сӯзанбарг", "пихта": "пихта", "пихтовая смола": "қатрони пихта", "пихтовый бальзам": "балзами пихта",
+    "вишня": "олуболу", "цветок вишни": "гули олуболу", "светлое дерево": "чӯби равшан", "сухое дерево": "чӯби хушк", "ценные породы дерева": "чӯбҳои қиматбаҳо",
+    "папирус": "папирус", "шоколад": "шоколад", "ромашка": "бобуна", "бархатцы": "гули махмалӣ", "мате": "мате", "вербена": "вербена",
+    "мирт": "мурд", "дуб": "булут", "сахар": "шакар", "абсент": "абсент", "эвкалипт": "эвкалипт", "гранат": "анор", "бессмертник": "гули ҷовидон",
+    "фундук": "фундуқ", "бальзам": "балзам", "кашемир": "кашмир", "цветы": "гулҳо", "бамбук": "бамбук", "кумарин": "кумарин", "лавр": "барги ғор",
+    "пудровые ноты": "нотаҳои хокаӣ", "трава": "алаф", "сено": "алафи хушк", "гибискус": "гибискус", "нектарин": "нектарин", "сухофрукты": "меваҳои хушк",
+    "кассия": "кассия", "плющ": "лаблабу", "лакрица": "ширинбия", "смолы": "қатронҳо", "белая роза": "гули садбарги сафед", "красное дерево": "чӯби сурх",
+    "пчелиный воск": "муми асал", "цветок персика": "гули шафтолу", "цветок яблони": "гули себ", "бальзамические ноты": "нотаҳои балзамӣ"
+  };
+
+  var lang = "ru";
+  try { var sl = localStorage.getItem("sp-lang"); if (LANGS.indexOf(sl) !== -1) lang = sl; } catch (e) {}
+  function L() { return I18N[lang]; }
+  function t(key, vars) {
+    var s = I18N[lang][key];
+    if (s === undefined) s = I18N.ru[key];
+    if (vars) Object.keys(vars).forEach(function (k) { s = String(s).split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+  function pl(n, kind) {
+    var f = L()[kind];
+    if (lang === "ru") { var m = n % 10, c = n % 100; return n + " " + (m === 1 && c !== 11 ? f[0] : (m >= 2 && m <= 4 && (c < 12 || c > 14) ? f[1] : f[2])); }
+    if (lang === "en") return n + " " + (n === 1 ? f[0] : f[1]);
+    return n + " " + f[0];
+  }
+  function joinList(arr) {
+    if (arr.length < 2) return arr.join("");
+    return arr.slice(0, -1).join(", ") + t("and") + arr[arr.length - 1];
+  }
+
+  /* ======================= Тема ======================= */
+  var root = document.documentElement;
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
+  // При каждом входе тема как в телефоне. Кнопка меняет тему только на этот визит и не запоминается.
+  var themeChoice = null;
+  try { localStorage.removeItem("sp-theme"); } catch (e) {}   // убрать выбор, сохранённый старой версией сайта
+  function effectiveTheme() { return themeChoice || (mq && mq.matches ? "light" : "dark"); }
+  function applyTheme() {
+    if (themeChoice) root.setAttribute("data-site", themeChoice); else root.removeAttribute("data-site");
+  }
+  applyTheme();
+  if (mq && mq.addEventListener) mq.addEventListener("change", function () { if (!themeChoice) applyTheme(); });
+  document.getElementById("themebtn").addEventListener("click", function () {
+    themeChoice = effectiveTheme() === "light" ? "dark" : "light";
+    applyTheme();
+  });
+
+  /* ======================= База ======================= */
+  var DB = JSON.parse(document.getElementById("db").textContent);
+  var AX = ["cit", "fresh", "flo", "fru", "swe", "spi", "woo", "amb", "mus", "lea"];
+  var AXCOL = { cit: "#E6D447", fresh: "#5FC3D9", flo: "#E58FB4", fru: "#F0875A", swe: "#D9A15B", spi: "#C8472E", woo: "#A9774A", amb: "#E0A22E", mus: "#D6CBB6", lea: "#7A5238" };
+  var BRAND_FIRST = ["Dior", "Chanel", "Creed", "Louis Vuitton", "Tom Ford"];
+  var PAGE = 40;
+  var LI = { ru: 0, tg: 1, en: 2 };
+
+  function noteName(i) {
+    if (lang === "en") return DB.ne[i] || DB.n[i];
+    if (lang === "tg") return NOTE_TG[DB.n[i]] || DB.n[i];
+    return DB.n[i];
+  }
+  function accName(ch) { var a = ACC_I18N[DB.a[ch.charCodeAt(0) - 97]]; return a ? a[LI[lang]] : ""; }
+  function shownNotes(p) {
+    var out = [], cnt = [0, 0, 0, 0];
+    p.raw.forEach(function (c) { var l = c & 3; if (cnt[l] < 2) { cnt[l]++; out.push(noteName(c >> 2)); } });
+    if (!out.length) out = p.acc.split("").slice(0, 5).map(accName);
+    return out;
+  }
+
+  var P = DB.p.map(function (r, i) {
+    var f = r[3];
+    return {
+      i: i, n: r[0], b: DB.b[r[1]], v: r[2].split("").map(Number),
+      s: ["s", "c", "a", "a"][f % 4], hit: !!((f >> 2) & 1), pri: !!((f >> 3) & 1),
+      pc: r[4], r: r[5] / 10, raw: r[6], acc: r[7] || "", score: 0, sim: 0,
+      gen: (f >> 5) & 3, tier: (DB.bt && DB.bt[r[1]]) || 0      // пол: 1 мужской, 2 женский, 0 для всех; категория бренда 1–4
+    };
+  });
+  // Постоянный код аромата (для ссылки «Поделиться») и цена из списка наличия
+  var BY_UID = {};
+  // Не духи (после бритья, спреи для тела и волос, дезодоранты): ищутся, но не рекомендуются
+  var NOT_PERFUME = /after ?shave|aftershave|body (spray|mist|lotion|cream|oil)|hair (mist|perfume|oil)|deodorant|shower gel|brume cheveux|parfum cheveux|apr[eè]s[- ]rasage|lotion apr|soap|candle|bougie/i;
+  P.forEach(function (p) {
+    p.np = NOT_PERFUME.test(p.n);
+    p.uid = hash(p.b + "|" + p.n).toString(36); BY_UID[p.uid] = p;
+    var pr = STOCK[p.b + "|" + p.n]; p.price = typeof pr === "number" && pr > 0 ? pr : 0;
+  });
+  var inClaude = !!(window.claude && typeof window.claude.use === "function");
+
+  /* ---------- Подбор для новичка: любимые запахи ---------- */
+  var SMELLS = [
+    { id: "cit", col: "#E6D447", names: ["Цитрус", "Ситрус", "Citrus"], notes: ["бергамот", "лимон", "мандарин", "грейпфрут"], acc: ["Citrus", "Fresh"], ax: { cit: 3, fresh: 1 } },
+    { id: "sea", col: "#5FC3D9", names: ["Море и свежесть", "Баҳр ва тозагӣ", "Sea and freshness"], notes: ["морские ноты", "мята", "лаванда", "зелёные ноты"], acc: ["Aquatic", "Fresh", "Green"], ax: { fresh: 3, cit: 1 } },
+    { id: "flo", col: "#E58FB4", names: ["Цветы", "Гулҳо", "Flowers"], notes: ["роза", "жасмин", "ландыш", "пион"], acc: ["Floral", "Powdery"], ax: { flo: 3, mus: 1 } },
+    { id: "fru", col: "#F0875A", names: ["Фрукты и ягоды", "Мева ва буттамева", "Fruit and berries"], notes: ["яблоко", "груша", "персик", "малина", "чёрная смородина"], acc: ["Fruity", "Sweet"], ax: { fru: 3, swe: 1 } },
+    { id: "van", col: "#D9A15B", names: ["Ваниль и сладкое", "Ваниль ва ширинӣ", "Vanilla and sweets"], notes: ["ваниль", "тонка", "карамель", "пралине"], acc: ["Sweet", "Gourmand", "Creamy"], ax: { swe: 3, amb: 1 } },
+    { id: "spi", col: "#C8472E", names: ["Специи", "Адвиёт", "Spices"], notes: ["кардамон", "корица", "розовый перец", "мускатный орех"], acc: ["Spicy", "Oriental"], ax: { spi: 3, woo: 1 } },
+    { id: "woo", col: "#A9774A", names: ["Дерево", "Чӯб", "Wood"], notes: ["сандал", "кедр", "ветивер", "гваяк"], acc: ["Woody", "Earthy"], ax: { woo: 3 } },
+    { id: "amb", col: "#E0A22E", names: ["Амбра и ладан", "Анбар ва кундур", "Amber and incense"], notes: ["амбра", "ладан", "лабданум", "бензоин"], acc: ["Resinous", "Oriental", "Sweet"], ax: { amb: 3, spi: 1 } },
+    { id: "mus", col: "#C9BDA6", names: ["Чистота и мускус", "Тозагӣ ва мушк", "Clean musk"], notes: ["белый мускус", "мускус", "ирис", "амбретта"], acc: ["Powdery", "Fresh", "Creamy"], ax: { mus: 3, flo: 1 } },
+    { id: "lea", col: "#7A5238", names: ["Кожа и табак", "Чарм ва тамоку", "Leather and tobacco"], notes: ["кожа", "табак", "замша", "берёза"], acc: ["Leathery", "Smoky"], ax: { lea: 3, woo: 1 } },
+    { id: "cof", col: "#6B4A33", names: ["Кофе и шоколад", "Қаҳва ва шоколад", "Coffee and chocolate"], notes: ["кофе", "какао", "шоколад", "пралине"], acc: ["Gourmand", "Sweet"], ax: { swe: 3, amb: 1 } },
+    { id: "oud", col: "#8B3A4A", names: ["Уд и восток", "Уд ва Шарқ", "Oud and the East"], notes: ["уд", "шафран", "роза", "ладан"], acc: ["Oriental", "Woody", "Spicy"], ax: { amb: 2, woo: 2, spi: 1 } }
+  ];
+  var SMELL_BY = {};
+  SMELLS.forEach(function (s) { SMELL_BY[s.id] = s; });
+  function smellName(s) { return s.names[LI[lang]]; }
+  // Запах превращается в «аромат-образец»: ноты, аккорды и вкусы, чтобы работала та же формула
+  function smellObj(s) {
+    if (s._o) return s._o;
+    var raw = [];
+    s.notes.forEach(function (nm) { var i = DB.n.indexOf(nm); if (i >= 0) raw.push(i * 4 + 2); });
+    var acc = s.acc.map(function (a) { var j = DB.a.indexOf(a); return j >= 0 ? LETTERS[j] : ""; }).join("");
+    return (s._o = { n: "", b: "", i: -1, smell: s, raw: raw, acc: acc, v: AX.map(function (a) { return s.ax[a] || 0; }) });
+  }
+  /* ---------- Подбор в подарок: характер человека ---------- */
+  var GIFT_CHAR = {
+    calm: { acc: ["Floral", "Powdery", "Fresh"], ax: { flo: 3, mus: 3, fresh: 1 } },
+    bold: { acc: ["Sweet", "Spicy", "Oriental"], ax: { swe: 3, spi: 2, amb: 2 } },
+    business: { acc: ["Woody", "Citrus", "Leathery"], ax: { woo: 3, cit: 2, lea: 1 } },
+    romantic: { acc: ["Floral", "Fruity", "Sweet"], ax: { flo: 3, fru: 2, swe: 2 } }
+  };
+  function giftObj() {
+    var c = GIFT_CHAR[state.ans.character] || GIFT_CHAR.calm;
+    return { n: "", b: "", i: -1, gift: true, raw: [], acc: c.acc.map(function (a) { var j = DB.a.indexOf(a); return j >= 0 ? LETTERS[j] : ""; }).join(""),
+      v: AX.map(function (a) { return c.ax[a] || 0; }) };
+  }
+  var TIER_OK = { low: [1, 2], mid: [2, 3], high: [3, 4] };
+  function money(n) { var s; try { s = n.toLocaleString("ru-RU"); } catch (e) { s = String(n); } return s + " " + t("currency"); }
+  function tierStr(p) { return p.tier ? new Array(p.tier + 1).join("$") : ""; }
+  function orderHref(p) { return "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(t("orderText", { n: p.n, b: p.b, p: money(p.price) })); }
+
+  /* ---------- Статистика (GoatCounter, только на настоящем сайте) ---------- */
+  if (GOATCOUNTER && !inClaude) {
+    var gs = document.createElement("script");
+    gs.async = true; gs.src = "https://gc.zgo.at/count.js";
+    gs.setAttribute("data-goatcounter", "https://" + GOATCOUNTER + ".goatcounter.com/count");
+    document.head.appendChild(gs);
+  }
+  function track(path) {
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: String(path).slice(0, 200), title: String(path).slice(0, 200), event: true }); } catch (e) {}
+  }
+
+  /* ---------- поиск: русские названия брендов и духов ---------- */
+  var ALIAS_RAW = {
+    "диор": "dior", "шанель": "chanel", "крид": "creed", "луи виттон": "louis vuitton", "виттон": "louis vuitton", "вюиттон": "louis vuitton",
+    "том форд": "tom ford", "армани": "armani", "ив сен лоран": "yves saint laurent", "сен лоран": "saint laurent", "версаче": "versace",
+    "гуччи": "gucci", "прада": "prada", "эрмес": "hermes", "гермес": "hermes", "герлен": "guerlain", "гирлен": "guerlain", "ланком": "lancome",
+    "барберри": "burberry", "берберри": "burberry", "маржела": "margiela", "кривелли": "crivelli", "мезон кривелли": "maison crivelli",
+    "франсис куркджан": "francis kurkdjian", "куркджан": "kurkdjian", "марли": "marly", "парфюм де марли": "parfums de marly",
+    "инисио": "initio", "инишио": "initio", "ксерджофф": "xerjoff", "нишане": "nishane", "амуаж": "amouage", "байредо": "byredo",
+    "ле лабо": "le labo", "джо малон": "jo malone", "пако рабан": "paco rabanne", "хьюго босс": "hugo boss", "кельвин кляйн": "calvin klein",
+    "дольче габбана": "dolce gabbana", "готье": "gaultier", "жан поль готье": "jean paul gaultier", "каролина эррера": "carolina herrera",
+    "мюглер": "mugler", "нарцисо родригез": "narciso rodriguez", "аззаро": "azzaro", "монблан": "montblanc", "клоэ": "chloe", "хлоэ": "chloe",
+    "виктор рольф": "viktor", "килиан": "kilian", "латтафа": "lattafa", "аль харамейн": "al haramain", "расаси": "rasasi", "армаф": "armaf",
+    "афнан": "afnan", "аджмал": "ajmal", "картье": "cartier", "булгари": "bvlgari", "баленсиага": "balenciaga", "живанши": "givenchy",
+    "диптик": "diptyque", "ланвин": "lanvin", "кензо": "kenzo", "иссей мияке": "issey miyake", "давидофф": "davidoff", "лакост": "lacoste",
+    "валентино": "valentino", "фенди": "fendi", "ральф лорен": "ralph lauren", "эскада": "escada", "нина ричи": "nina ricci",
+    "эйвон": "avon", "зара": "zara", "эсте лаудер": "estee lauder", "эсти лаудер": "estee lauder", "шисейдо": "shiseido",
+    "саваж": "sauvage", "соваж": "sauvage", "блю де шанель": "bleu de chanel", "авентус": "aventus", "баккара": "baccarat",
+    "жадор": "adore", "коко мадемуазель": "coco mademoiselle", "блэк опиум": "black opium", "ля ви эст бель": "la vie est belle",
+    "ван миллион": "1 million", "миллион": "million", "инвиктус": "invictus", "эрос": "eros", "лайт блю": "light blue",
+    "блэк орхид": "black orchid", "уд вуд": "oud wood", "табако ваниль": "tobacco vanille", "лейтон": "layton", "хамра": "khamrah",
+    "энджел": "angel", "ангел": "angel", "алиен": "alien", "флауэрбомб": "flowerbomb", "гуд гёрл": "good girl", "гуд герл": "good girl",
+    "аква ди джио": "acqua di gio", "эксплорер": "explorer", "кул вотер": "cool water", "фаренгейт": "fahrenheit",
+    "бай зе фаерплейс": "by the fireplace", "реплика": "replica", "клуб де нуи": "club de nuit"
+  };
+  var ALIAS = {};
+  Object.keys(ALIAS_RAW).forEach(function (k) { ALIAS[norm(k)] = ALIAS_RAW[k]; });
+  var ALIAS_MULTI = Object.keys(ALIAS).filter(function (k) { return k.indexOf(" ") !== -1; }).sort(function (a, b) { return b.length - a.length; });
+  function expandQuery(q) {
+    ALIAS_MULTI.forEach(function (k) { if (q.indexOf(k) !== -1) q = q.split(k).join(ALIAS[k]); });
+    return q.split(/\s+/).map(function (w) { return ALIAS[w] || w; }).join(" ");
+  }
+
+  var state = { step: 1, mode: "known", sel: [], slots: [null, null, null], cur: null, focus: null, smells: [], gender: "any",
+    ans: {}, q: 0, query: "", brand: null, limit: PAGE, picks: [], showBrands: false, bq: "", blimit: 60 };
+
+  function $(s) { return document.querySelector(s); }
+  function norm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function unit(v) { var n = Math.sqrt(v.reduce(function (a, x) { return a + x * x; }, 0)) || 1; return v.map(function (x) { return x / n; }); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+  function chipsHtml(p) { return shownNotes(p).map(function (n) { return '<span class="chip">' + esc(n) + "</span>"; }).join(""); }
+  P.forEach(function (p) { p.hay = norm(p.n + " " + p.b); });
+
+  /* ======================= Рисованный флакон (минимализм) ======================= */
+  // Обобщённые формы, не копии флаконов брендов. Форма и крышка зависят от главного вкуса аромата,
+  // цвет жидкости тоже; из двух подходящих форм выбирается одна, всегда одна и та же для аромата.
+  var BOTTLE_SHAPES = {
+    rect:   { el: '<rect x="30" y="58" width="60" height="90" rx="10"/>', top: 58, bottom: 148 },
+    square: { el: '<rect x="24" y="72" width="72" height="76" rx="9"/>', top: 72, bottom: 148 },
+    round:  { el: '<circle cx="60" cy="108" r="40"/>', top: 68, bottom: 148 },
+    oval:   { el: '<ellipse cx="60" cy="106" rx="34" ry="42"/>', top: 64, bottom: 148 },
+    slim:   { el: '<rect x="42" y="46" width="36" height="102" rx="12"/>', top: 46, bottom: 148 },
+    taper:  { el: '<path d="M42 62 L78 62 Q82 62 83 66 L96 140 Q97 148 89 148 L31 148 Q23 148 24 140 L37 66 Q38 62 42 62 Z"/>', top: 62, bottom: 148 },
+    arch:   { el: '<path d="M30 148 L30 88 Q30 58 60 58 Q90 58 90 88 L90 148 Z"/>', top: 58, bottom: 148 },
+    flat:   { el: '<rect x="18" y="90" width="84" height="58" rx="16"/>', top: 90, bottom: 148 }
+  };
+  var CAP_COL = { gold: ["#E2A92B", "#A8761A"], silver: ["#BFC1C4", "#7E8187"], black: ["#1E1E1E", "#050505"], wood: ["#8E5E33", "#5C3A1E"], rose: ["#D79C86", "#A86C58"] };
+  var SHAPE_BY_AX = { cit: ["rect", "slim"], fresh: ["slim", "rect"], flo: ["round", "arch"], fru: ["oval", "round"], swe: ["arch", "round"],
+    spi: ["taper", "square"], woo: ["square", "flat"], amb: ["flat", "taper"], mus: ["oval", "arch"], lea: ["taper", "square"] };
+  var CAP_BY_AX = { cit: "silver", fresh: "silver", flo: "rose", fru: "rose", swe: "gold", spi: "gold", woo: "wood", amb: "gold", mus: "rose", lea: "black" };
+  var bottleId = 0;
+  function bottleSvg(p) {
+    var k = 0, m = -1;
+    p.v.forEach(function (x, i) { if (x > m) { m = x; k = i; } });
+    var ax = AX[k], shape = SHAPE_BY_AX[ax][hash(p.n + p.b) % 2], s = BOTTLE_SHAPES[shape], cap = CAP_BY_AX[ax], c = CAP_COL[cap];
+    var id = "bt" + (bottleId++), level = s.top + (s.bottom - s.top) * 0.35, collarY = s.top - 9, capEl;
+    if (cap === "rose" || cap === "silver") capEl = '<circle cx="60" cy="' + (collarY - 14) + '" r="15"/>';
+    else if (cap === "wood") capEl = '<rect x="45" y="' + (collarY - 30) + '" width="30" height="30" rx="7"/>';
+    else if (cap === "black") capEl = '<rect x="46" y="' + (collarY - 34) + '" width="28" height="34" rx="3"/>';
+    else capEl = '<rect x="43" y="' + (collarY - 26) + '" width="34" height="26" rx="3"/>';
+    return '<svg class="bottle" viewBox="0 0 120 160" role="img" aria-label="' + esc(t("bottle")) + '" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><clipPath id="' + id + '">' + s.el + "</clipPath></defs>" +
+      '<g clip-path="url(#' + id + ')"><rect x="0" y="' + level + '" width="120" height="' + (160 - level) + '" fill="' + AXCOL[ax] + '" opacity=".85"/></g>' +
+      '<g fill="none" stroke="#8C8777" stroke-width="1.6">' + s.el + "</g>" +
+      '<path d="M' + (shape === "slim" ? 47 : 37) + " " + (s.top + 10) + " l0 " + Math.round((s.bottom - s.top) * 0.45) + '" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<rect x="50" y="' + collarY + '" width="20" height="10" rx="2" fill="#B9B3A3" stroke="#8C8777" stroke-width="1"/>' +
+      '<g fill="' + c[0] + '" stroke="' + c[1] + '" stroke-width="1">' + capEl + "</g></svg>";
+  }
+
+  /* ======================= Шаги ======================= */
+  // Шаги зависят от способа подбора: знаю духи (1→2→3→4), новичок (5→3→4), подарок (3→4)
+  var MODE_STEPS = { known: [1, 2, 3, 4], novice: [5, 3, 4], gift: [3, 4] };
+  function drawSteps() {
+    var seq = MODE_STEPS[state.mode], cur = seq.indexOf(state.step);
+    var names = state.mode === "known" ? L().steps : (state.mode === "novice" ? L().stepsNovice : L().stepsGift);
+    $("#steps").innerHTML = names.map(function (n, i) {
+      var cls = i < cur ? "done" : (i === cur ? "now" : "");
+      return '<li class="' + cls + '"' + (i === cur ? ' aria-current="step"' : "") + ">" + esc(n) + "</li>";
+    }).join("");
+  }
+  function render() {
+    document.querySelectorAll("[data-step]").forEach(function (s) { s.hidden = Number(s.getAttribute("data-step")) !== state.step; });
+    drawSteps();
+    if (state.step === 5) drawSmells();
+    if (state.step === 1) drawPicker();
+    if (state.step === 2) drawRank();
+    if (state.step === 3) drawQuestion();
+    if (state.step === 4) drawResults();
+  }
+  function go(n) { state.step = n; render(); window.scrollTo(0, 0); }
+
+  /* ======================= Шаг 1 ======================= */
+  var BSTATS = null;
+  function brandStats() {
+    if (BSTATS) return BSTATS;
+    var m = {};
+    P.forEach(function (p) { var x = m[p.b] || (m[p.b] = { b: p.b, n: 0, pop: 0 }); x.n++; x.pop += p.pc || 0; });
+    BSTATS = Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return (b.pop - a.pop) || a.b.localeCompare(b.b); });
+    return BSTATS;
+  }
+  function topBrands() {
+    var st = brandStats(), byName = {};
+    st.forEach(function (x) { byName[x.b] = x; });
+    var out = BRAND_FIRST.filter(function (b) { return byName[b]; }).map(function (b) { return byName[b]; });
+    st.forEach(function (x) { if (out.length < 5 && out.indexOf(x) === -1) out.push(x); });
+    return out.slice(0, 5);
+  }
+  // Три места на шаге 1: аромат или null. Пустое место с жёлтой рамкой — то, куда встанет следующий выбор.
+  function curSlot() { return state.cur !== null && !state.slots[state.cur] ? state.cur : state.slots.indexOf(null); }
+  function filledCount() { return state.slots.filter(Boolean).length; }
+  function removeSlot(i) { state.slots[i] = null; state.cur = i; state.focus = null; drawPicker(); }
+  function listItems() {
+    var q = expandQuery(norm(state.query.trim())), items = [], mode = "home";
+    if (state.focus !== null && state.slots[state.focus]) {
+      return { mode: "slot", items: [state.slots[state.focus]] };
+    }
+    var byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); }, hint = [];
+    if (q) {
+      // Слово ищется в названии и бренде; если там его нет — в нотах аромата (ваниль, уд, rose…)
+      var toks = q.split(/\s+/).filter(Boolean), sets = toks.map(noteSetFor), byName = [], byNotes = [];
+      P.forEach(function (p) {
+        var nameAll = true;
+        for (var k = 0; k < toks.length; k++) {
+          if (p.hay.indexOf(toks[k]) !== -1) continue;
+          nameAll = false;
+          var hit = false;
+          if (sets[k]) for (var j = 0; j < p.raw.length; j++) { if (sets[k][p.raw[j] >> 2]) { hit = true; break; } }
+          if (!hit) return;
+        }
+        (nameAll ? byName : byNotes).push(p);
+      });
+      byName.sort(byPop); byNotes.sort(byPop);
+      items = byName.concat(byNotes);
+      if (byNotes.length) sets.forEach(function (s) { if (s) hint.push(noteName(commonest(s))); });
+      mode = "search";
+    } else if (state.brand) {
+      items = P.filter(function (p) { return p.b === state.brand; }).sort(byPop);
+      mode = "brand";
+    }
+    return { mode: mode, items: items, notes: hint };
+  }
+  // Ноты, подходящие под слово поиска (на любом из трёх языков). Короткие слова (уд, oud) — только целиком.
+  var NOTE_TEXT = null;
+  function noteSetFor(tok) {
+    if (!NOTE_TEXT) NOTE_TEXT = DB.n.map(function (ru, i) { return " " + norm(ru + " " + (DB.ne[i] || "") + " " + (NOTE_TG[ru] || "")) + " "; });
+    var set = null, short = tok.length <= 3, stem = tok.length >= 6 ? tok.slice(0, -2) : (tok.length === 5 ? tok.slice(0, -1) : tok);
+    NOTE_TEXT.forEach(function (w, i) {
+      if (short ? w.indexOf(" " + tok + " ") !== -1 : w.indexOf(stem) !== -1) (set || (set = {}))[i] = 1;
+    });
+    return set;
+  }
+  function commonest(set) {
+    var I = prepIdf(), best = -1;
+    Object.keys(set).forEach(function (k) { k = Number(k); if (best === -1 || I.n[k] < I.n[best]) best = k; });
+    return best;
+  }
+  function drawPicker() {
+    var cur = curSlot(), full = cur === -1;
+    $("#slots").innerHTML = [0, 1, 2].map(function (i) {
+      var p = state.slots[i];
+      if (p) {
+        var foc = state.focus === i;
+        return '<div class="slot full' + (foc ? " focus" : "") + '"><button type="button" class="slotbtn" data-slot="' + i + '" aria-pressed="' + foc + '" aria-label="' +
+          esc(t("showSlot", { n: p.n })) + '"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + "</span></button>" +
+          (foc ? '<button type="button" class="slotx" data-x="' + i + '" aria-label="' + esc(t("removeSlot", { n: p.n })) + '">×</button>'
+               : '<span class="ck" aria-hidden="true">✓</span>') + "</div>";
+      }
+      var now = i === cur;
+      return '<div class="slot' + (now ? " now" : "") + '"' + (now ? ' aria-current="true"' : "") + "><span>" + esc(t("slot", { n: i + 1 })) + "</span></div>";
+    }).join("");
+    var Lx = listItems();
+    $("#brandsblock").hidden = Lx.mode !== "home";
+    $("#resultsblock").hidden = Lx.mode === "home";
+    $("#listhint").textContent = Lx.mode === "home" ? t("hintHome", { n: pl(P.length, "perfume") })
+      : (Lx.mode === "slot" ? t("slotHint") : (Lx.items.length ? (Lx.notes.length ? t("byNotes", { list: Lx.notes.join(", ") }) : "") : t("notFound")));
+    $("#slotsim").hidden = Lx.mode !== "slot";
+    if (Lx.mode === "home") {
+      var others = brandStats().length - 5;
+      $("#brands").innerHTML = topBrands().map(function (x) {
+        return '<button type="button" class="bcard" data-brand="' + esc(x.b) + '"><b>' + esc(x.b) + "</b><span>" + esc(pl(x.n, "perfume")) + "</span></button>";
+      }).join("") + '<button type="button" class="bcard more" aria-expanded="' + state.showBrands + '" aria-controls="allb"><b>' +
+        esc(state.showBrands ? t("hideBrands") : t("moreBrands")) + "</b><span>" + esc(others > 0 ? t("moreBrandsCount", { n: pl(others, "brand") }) : "") + "</span></button>";
+      $("#allb").hidden = !state.showBrands;
+      if (state.showBrands) drawBrandList();
+    } else {
+      $("#rtitle").textContent = Lx.mode === "brand" ? state.brand : (Lx.mode === "slot" ? t("slotTitle") : t("found", { n: Lx.items.length }));
+      $("#list").innerHTML = Lx.items.slice(0, state.limit).map(function (p) {
+        var on = state.slots.indexOf(p) !== -1;
+        return '<li><button type="button" class="row" data-id="' + p.i + '" aria-pressed="' + on + '"' + (full && !on ? " disabled" : "") +
+          '><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></span><span class="tick" aria-hidden="true">✓</span></button></li>';
+      }).join("");
+      $("#more").hidden = Lx.items.length <= state.limit;
+    }
+    $("#count").textContent = t("selected", { n: filledCount() });
+    $("#to2").disabled = !full;
+  }
+  // Нажатие на выбранный блок: в списке остаётся только он; × на блоке или снятая галочка убирают аромат
+  $("#slots").addEventListener("click", function (e) {
+    var x = e.target.closest("[data-x]"), b = e.target.closest("[data-slot]");
+    if (x) { removeSlot(Number(x.getAttribute("data-x"))); var nb = $("#q"); if (nb) nb.scrollIntoView({ block: "nearest" }); return; }
+    if (b) {
+      var i = Number(b.getAttribute("data-slot"));
+      state.focus = state.focus === i ? null : i;
+      drawPicker();
+      var again = $('[data-x="' + i + '"]') || $('[data-slot="' + i + '"]');
+      if (again) again.focus();
+    }
+  });
+  function drawBrandList() {
+    var top = topBrands().map(function (x) { return x.b; });
+    var q = expandQuery(norm(state.bq.trim())), toks = q ? q.split(/\s+/) : [];
+    var list = brandStats().filter(function (x) {
+      if (top.indexOf(x.b) !== -1) return false;
+      var h = norm(x.b);
+      return toks.every(function (w) { return h.indexOf(w) !== -1; });
+    });
+    $("#bhint").textContent = toks.length ? (list.length ? t("brandsFound", { n: pl(list.length, "brand") }) : t("brandsNone")) : t("brandsPopular");
+    $("#bchips").innerHTML = list.slice(0, state.blimit).map(function (x) {
+      return '<button type="button" class="bchip" data-brand="' + esc(x.b) + '"><b>' + esc(x.b) + "</b><span>" + x.n + "</span></button>";
+    }).join("");
+    $("#bmore").hidden = list.length <= state.blimit;
+  }
+  $("#brands").addEventListener("click", function (e) {
+    var b = e.target.closest("button.bcard"); if (!b) return;
+    if (b.classList.contains("more")) {
+      state.showBrands = !state.showBrands;
+      drawPicker();
+      if (state.showBrands) {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        $("#allb").scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      }
+      return;
+    }
+    state.brand = b.getAttribute("data-brand"); state.limit = PAGE;
+    drawPicker(); window.scrollTo(0, 0);
+  });
+  $("#bchips").addEventListener("click", function (e) {
+    var b = e.target.closest("button.bchip"); if (!b) return;
+    state.brand = b.getAttribute("data-brand"); state.limit = PAGE;
+    drawPicker(); window.scrollTo(0, 0);
+  });
+  $("#bq").addEventListener("input", function (e) { state.bq = e.target.value; state.blimit = 60; drawBrandList(); });
+  $("#bmore").addEventListener("click", function () { state.blimit += 60; drawBrandList(); });
+  $("#hideb").addEventListener("click", function () { state.showBrands = false; drawPicker(); var m = $("#brands .more"); if (m) m.focus(); });
+  $("#allbrands").addEventListener("click", function () { state.brand = null; state.query = ""; state.limit = PAGE; state.focus = null; $("#q").value = ""; drawPicker(); });
+  $("#more").addEventListener("click", function () { state.limit += PAGE; drawPicker(); });
+  $("#list").addEventListener("click", function (e) {
+    var b = e.target.closest("button.row"); if (!b) return;
+    var p = P[Number(b.getAttribute("data-id"))], i = state.slots.indexOf(p);
+    if (i !== -1) { removeSlot(i); return; }
+    var c = curSlot(); if (c === -1) return;
+    state.slots[c] = p; state.cur = null; state.focus = null;
+    drawPicker();
+  });
+  $("#q").addEventListener("input", function (e) { state.query = e.target.value; state.limit = PAGE; state.focus = null; drawPicker(); });
+  $("#to2").addEventListener("click", function () {
+    if (curSlot() !== -1) return;
+    state.mode = "known"; state.sel = state.slots.slice(); state.focus = null;
+    state.sel.forEach(function (p) { track("choose/" + p.b + " — " + p.n); });
+    go(2);
+  });
+  $("#slotsim").addEventListener("click", function () { var p = state.slots[state.focus]; if (p) openSimilar(p, this); });
+  $("#goNovice").addEventListener("click", function () { state.mode = "novice"; state.ans = {}; state.q = 0; go(5); });
+  $("#goGift").addEventListener("click", function () { state.mode = "gift"; state.ans = {}; state.q = 0; go(3); });
+
+  /* ======================= Новичок: любимые запахи ======================= */
+  function drawSmells() {
+    var full = state.smells.length >= 4;
+    $("#smells").innerHTML = SMELLS.map(function (s) {
+      var on = state.smells.indexOf(s.id) !== -1;
+      var ex = s.notes.slice(0, 3).map(function (nm) { var i = DB.n.indexOf(nm); return i >= 0 ? noteName(i) : nm; }).join(", ");
+      return '<button type="button" class="smell" data-s="' + s.id + '" aria-pressed="' + on + '"' + (full && !on ? " disabled" : "") +
+        '><span class="dot" style="background:' + s.col + '" aria-hidden="true"></span><span class="st"><b>' + esc(smellName(s)) + "</b><span>" + esc(ex) + "</span></span></button>";
+    }).join("");
+    $("#count5").textContent = t("count5", { n: state.smells.length });
+    $("#to3n").disabled = state.smells.length < 2;
+  }
+  $("#smells").addEventListener("click", function (e) {
+    var b = e.target.closest("button.smell"); if (!b || b.disabled) return;
+    var id = b.getAttribute("data-s"), i = state.smells.indexOf(id);
+    if (i !== -1) state.smells.splice(i, 1); else if (state.smells.length < 4) state.smells.push(id);
+    drawSmells();
+    var again = $('[data-s="' + id + '"]'); if (again) again.focus();
+  });
+  $("#back5").addEventListener("click", function () { state.mode = "known"; go(1); });
+  $("#to3n").addEventListener("click", function () {
+    if (state.smells.length < 2) return;
+    state.smells.forEach(function (id) { track("smell/" + id); });
+    state.q = 0; go(3);
+  });
+
+  /* ======================= Шаг 2 ======================= */
+  function drawRank() {
+    $("#rank").innerHTML = state.sel.map(function (p, i) {
+      return '<li><div class="num" aria-hidden="true">' + (i + 1) + '</div><div><h3>' + esc(p.n) + '</h3><div class="brandline">' + esc(p.b) + '</div><div class="chips">' + chipsHtml(p) +
+        '</div></div><div class="mv"><button type="button" data-up="' + i + '" aria-label="' + esc(t("up", { n: p.n })) + '"' + (i === 0 ? " disabled" : "") + ">↑</button>" +
+        '<button type="button" data-down="' + i + '" aria-label="' + esc(t("down", { n: p.n })) + '"' + (i === 2 ? " disabled" : "") + ">↓</button></div></li>";
+    }).join("");
+  }
+  $("#rank").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b || b.disabled) return;
+    var up = b.getAttribute("data-up"), i = up !== null ? Number(up) : Number(b.getAttribute("data-down")), j = up !== null ? i - 1 : i + 1;
+    var tmp = state.sel[i]; state.sel[i] = state.sel[j]; state.sel[j] = tmp;
+    drawRank();
+    var again = $("[data-" + (up !== null ? "up" : "down") + '="' + j + '"]:not(:disabled)') || $("[data-" + (up !== null ? "down" : "up") + '="' + j + '"]');
+    if (again) again.focus();
+  });
+  $("#back1").addEventListener("click", function () { state.slots = state.sel.slice(); state.cur = null; state.focus = null; go(1); });
+  $("#to3").addEventListener("click", function () { state.q = 0; go(3); });
+
+  /* ======================= Шаг 3 ======================= */
+  // Вопросы зависят от способа подбора
+  var MODE_Q = { known: ["season", "mood"], novice: ["season"], gift: ["who", "character", "season", "budget"] };
+  function qList() { return MODE_Q[state.mode].map(function (k) { return L().qs[k]; }); }
+  function drawQuestion() {
+    var Q = qList()[state.q];
+    $("#qn").textContent = t("qn", { i: state.q + 1, n: qList().length });
+    $("#qt").textContent = Q.title;
+    $("#opts").innerHTML = Q.opts.map(function (o) {
+      return '<button type="button" class="opt" data-v="' + o.v + '" aria-pressed="' + (state.ans[Q.key] === o.v) + '"><b>' + esc(o.t) + "</b><span>" + esc(o.d) + "</span></button>";
+    }).join("");
+  }
+  $("#opts").addEventListener("click", function (e) {
+    var b = e.target.closest("button.opt"); if (!b) return;
+    var key = qList()[state.q].key, v = b.getAttribute("data-v");
+    state.ans[key] = v;
+    if (key === "who") state.gender = v === "m" || v === "f" ? v : "any";
+    drawQuestion();
+    setTimeout(function () {
+      if (state.step !== 3) return;
+      if (state.q < qList().length - 1) { state.q++; drawQuestion(); window.scrollTo(0, 0); }
+      else {
+        if (state.mode === "gift") track("gift/" + [state.ans.who, state.ans.character, state.ans.budget].join("/"));
+        track("result/" + state.mode);
+        go(4);
+      }
+    }, 220);
+  });
+  $("#qback").addEventListener("click", function () {
+    if (state.q > 0) { state.q--; drawQuestion(); return; }
+    if (state.mode === "known") go(2);
+    else if (state.mode === "novice") go(5);
+    else { state.mode = "known"; go(1); }
+  });
+
+  /* ======================= Подбор: сходство по конкретным нотам ======================= */
+  // Каждый аромат = 1) конкретные ноты: вес слоя (верх 0.8, сердце 1.0, база 1.2) × редкость (IDF),
+  // плюс родственные ноты («перечная мята» ~ «мята») с весом 0.6; 2) аккорды по значимости; 3) 10 общих вкусов.
+  // Вкус клиента = сумма его трёх ароматов с весами 3, 2, 1. Сходство = косинус: ноты 50%, аккорды 30%, вкусы 20%.
+  var LW = [0, 0.8, 1.0, 1.2], COARSE_W = 0.6, POSW = [1, 0.85, 0.7, 0.6, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2];
+  var WN = 0.5, WA = 0.3, WT = 0.2, LETTERS = "abcdefghijklmnopqrstuvwxyz";
+  var MOOD_ACC = { fresh: ["Fresh", "Citrus", "Aquatic", "Green"], sweet: ["Sweet", "Gourmand", "Fruity"],
+    woody: ["Woody", "Spicy", "Leathery", "Smoky", "Resinous"], floral: ["Floral", "Powdery"] };
+  var IDF = null;
+  function prepIdf() {
+    if (IDF) return IDF;
+    var nN = DB.n.length, nC = DB.cn.length, dfN = new Float64Array(nN), dfC = new Float64Array(nC), seenN = new Int32Array(nN).fill(-1), seenC = new Int32Array(nC).fill(-1);
+    P.forEach(function (p, i) {
+      p.raw.forEach(function (c) {
+        var f = c >> 2, g = DB.c[f];
+        if (seenN[f] !== i) { seenN[f] = i; dfN[f]++; }
+        if (g >= 0 && seenC[g] !== i) { seenC[g] = i; dfC[g]++; }
+      });
+    });
+    var n = P.length;
+    IDF = { n: Array.from(dfN, function (x) { return Math.log(n / (x + 1)) + 1; }), c: Array.from(dfC, function (x) { return Math.log(n / (x + 1)) + 1; }) };
+    return IDF;
+  }
+  function unitObj(o) { var s = 0, k; for (k in o) s += o[k] * o[k]; s = Math.sqrt(s); if (s) for (k in o) o[k] /= s; return o; }
+  function dotObj(a, b) { var s = 0; for (var k in a) if (b[k]) s += a[k] * b[k]; return s; }
+  function addObj(tg, v, w) { for (var k in v) tg[k] = (tg[k] || 0) + w * v[k]; return tg; }
+  function isEmpty(o) { for (var k in o) return false; return true; }
+  function noteVec(p) {
+    if (p._nv) return p._nv;
+    var I = prepIdf(), m = {};
+    p.raw.forEach(function (c) {
+      var f = c >> 2, l = c & 3, g = DB.c[f], w = LW[l] * I.n[f];
+      if (!(m[f] >= w)) m[f] = w;
+      if (g >= 0) { var k = "c" + g, w2 = COARSE_W * LW[l] * I.c[g]; if (!(m[k] >= w2)) m[k] = w2; }
+    });
+    return (p._nv = unitObj(m));
+  }
+  function accVec(p) { if (p._av) return p._av; var m = {}; for (var k = 0; k < p.acc.length; k++) m[p.acc[k]] = POSW[k] || 0.2; return (p._av = unitObj(m)); }
+  function tasteVec(p) { if (p._tv) return p._tv; var m = {}; p.v.forEach(function (x, k) { if (x) m["t" + k] = x; }); return (p._tv = unitObj(m)); }
+  function profileOf(favs, mood, wts) {
+    var w = wts || [3, 2, 1], pn = {}, pa = {}, pt = {};
+    favs.forEach(function (f, i) { var wi = w[i] || 1; addObj(pn, noteVec(f), wi); addObj(pa, accVec(f), wi); addObj(pt, tasteVec(f), wi); });
+    unitObj(pn); unitObj(pa); unitObj(pt);
+    if (mood && MOOD_ACC[mood]) {
+      var mv = {};
+      MOOD_ACC[mood].forEach(function (a) { var j = DB.a.indexOf(a); if (j >= 0) mv[LETTERS[j]] = 1; });
+      unitObj(addObj(pa, unitObj(mv), 0.5));
+    }
+    return { n: pn, a: pa, t: pt, wn: isEmpty(pn) ? 0 : WN, wa: isEmpty(pa) ? 0 : WA };
+  }
+  function similarity(pr, p) { return (pr.wn * dotObj(pr.n, noteVec(p)) + pr.wa * dotObj(pr.a, accVec(p)) + WT * dotObj(pr.t, tasteVec(p))) / (pr.wn + pr.wa + WT); }
+  function lineKey(p) { return p.b + "|" + norm(p.n).split(/[\s\-–]+/)[0]; }
+  // «Любимые» для формулы: три аромата клиента, выбранные запахи новичка или образ человека для подарка
+  function currentFavs() {
+    if (state.mode === "novice") return state.smells.map(function (id) { return smellObj(SMELL_BY[id]); });
+    if (state.mode === "gift") return [giftObj()];
+    return state.sel;
+  }
+  function favWeights() { return state.mode === "known" ? [3, 2, 1] : [1, 1, 1, 1]; }
+  function favName(f) { return f.smell ? smellName(f.smell) : f.n; }
+  function tasteVector() {
+    var w = favWeights(), v = new Array(10).fill(0);
+    currentFavs().forEach(function (f, i) { f.v.forEach(function (x, k) { v[k] += (w[i] || 1) * x; }); });
+    return unit(v);
+  }
+  function recommend() {
+    var favs = currentFavs(), gift = state.mode === "gift", se = state.ans.season, g = state.gender, budget = state.ans.budget;
+    var pr = profileOf(favs, state.mode === "known" ? state.ans.mood : null, favWeights());
+    var favLines = state.mode === "known" ? favs.map(lineKey) : [];
+    function poolFor(minPc) {
+      return P.filter(function (p) {
+        if (p.np || !(p.raw.length && p.acc) || !(p.pc >= minPc || p.hit)) return false;
+        if (favs.indexOf(p) !== -1 || favLines.indexOf(lineKey(p)) !== -1) return false;
+        if ((g === "m" && p.gen === 2) || (g === "f" && p.gen === 1)) return false;
+        if (gift && TIER_OK[budget] && TIER_OK[budget].indexOf(p.tier) === -1) return false;
+        return true;
+      });
+    }
+    // Для подарка — только известные ароматы; если с фильтрами их мало, берём шире
+    // Новичку и для подарка — более известные ароматы, их проще найти и примерить
+    var novice = state.mode === "novice";
+    var pool = poolFor(gift ? 300 : (novice ? 200 : 120));
+    if (pool.length < 15) pool = poolFor(30);
+    pool.forEach(function (p) {
+      p.sim = similarity(pr, p);
+      var pop = Math.min(1, Math.log(Math.max(p.pc, 1)) / Math.log(1000));
+      var s = p.sim + (gift ? 0.08 : (novice ? 0.06 : 0.03)) * pop + 0.02 * Math.max(0, Math.min(1, (p.r - 6.5) / 2.5)) + (p.price ? 0.04 : 0);
+      if (se === "summer") s += p.s === "s" ? 0.04 : (p.s === "c" ? -0.04 : 0);
+      if (se === "cool") s += p.s === "c" ? 0.04 : (p.s === "s" ? -0.04 : 0);
+      p.score = s;
+    });
+    pool.sort(function (a, b) { return b.score - a.score; });
+    var need = se === "summer" ? { s: 3, c: 1 } : (se === "cool" ? { s: 1, c: 3 } : { s: 2, c: 2 });
+    var out = [], used = [], perBrand = {}, usedLines = {}, floor = pool.length ? 0.75 * pool[0].sim : 0;
+    function take(pred, k, label) {
+      var n = 0;
+      for (var i = 0; i < pool.length && n < k; i++) {
+        var p = pool[i], lk = lineKey(p);
+        if (used.indexOf(p) !== -1 || usedLines[lk] || !pred(p) || (perBrand[p.b] || 0) >= 2) continue;
+        if (label !== "any" && p.sim < floor) continue;
+        used.push(p); usedLines[lk] = 1; perBrand[p.b] = (perBrand[p.b] || 0) + 1;
+        out.push({ p: p, label: label }); n++;
+      }
+      return n;
+    }
+    function bucket(season, k, label) { var got = take(function (p) { return p.s === season; }, k, label); if (got < k) take(function (p) { return p.s === "a"; }, k - got, label); }
+    if (se === "cool") { bucket("c", need.c, "cool"); bucket("s", need.s, "summer"); } else { bucket("s", need.s, "summer"); bucket("c", need.c, "cool"); }
+    take(function (p) { return p.hit; }, 1, "hit");
+    if (out.length < 5) take(function () { return true; }, 5 - out.length, "any");
+    out.forEach(function (r) {
+      if (r.label === "any") r.label = r.p.s === "s" ? "summer" : (r.p.s === "c" ? "cool" : "year");
+      if (r.label !== "hit" && r.p.s === "a") r.label = "year";
+      r.why = explain(r.p, favs);
+    });
+    // Хит всегда первым, остальные по сходству
+    out.sort(function (a, b) { return ((b.label === "hit") - (a.label === "hit")) || (b.p.score - a.p.score); });
+    return out;
+  }
+  // Объяснение: общие ноты с любимыми ароматами (индексы нот) и самый близкий из трёх
+  function explain(p, favs) {
+    var I = prepIdf(), favFine = {}, favCoarse = {}, shared = [], seen = {};
+    favs.forEach(function (f) { f.raw.forEach(function (c) { var g = DB.c[c >> 2]; favFine[c >> 2] = 1; if (g >= 0) favCoarse[g] = 1; }); });
+    p.raw.forEach(function (c) {
+      var f = c >> 2, g = DB.c[f], k = favFine[f] ? 1 : (g >= 0 && favCoarse[g] ? COARSE_W : 0);
+      if (k && !seen[f]) { seen[f] = 1; shared.push({ f: f, w: k * LW[c & 3] * I.n[f] }); }
+    });
+    shared.sort(function (a, b) { return b.w - a.w; });
+    var best = null, bs = -1;
+    if (state.mode !== "gift") favs.forEach(function (f) { var v = similarity(profileOf([f]), p); if (v > bs) { bs = v; best = f; } });
+    return { notes: shared.slice(0, 4).map(function (x) { return x.f; }), closest: best };
+  }
+  function keyNotes() {
+    var pr = profileOf(currentFavs(), null, favWeights()), arr = [];
+    for (var k in pr.n) if (k[0] !== "c") arr.push({ f: Number(k), w: pr.n[k] });
+    arr.sort(function (a, b) { return b.w - a.w; });
+    return arr.slice(0, 6).map(function (x) { return x.f; });
+  }
+  var LABEL_KEY = { summer: "lblSummer", cool: "lblCool", hit: "lblHit", year: "lblYear" };
+  var SEASON_KEY = { s: "sS", c: "sC", a: "sA" };
+
+  /* ======================= Шаг 4 ======================= */
+  function drawResults() {
+    var tv = tasteVector(), ax = L().ax;
+    var ranked = AX.map(function (a, k) { return { k: k, w: tv[k] }; }).sort(function (x, y) { return y.w - x.w; });
+    $("#rt").textContent = t(state.mode === "gift" ? "h2resGift" : "h2res");
+    $("#tastesentence").textContent = t(state.mode === "novice" ? "tasteNovice" : (state.mode === "gift" ? "tasteGift" : "taste"),
+      { list: ranked.slice(0, 3).map(function (x) { return ax[x.k]; }).join(", ") });
+    document.querySelectorAll("#gender button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-g") === state.gender)); });
+    var mx = ranked[0].w || 1;
+    $("#bars").innerHTML = ranked.slice(0, 5).map(function (x) {
+      return '<div class="brow"><span>' + esc(ax[x.k]) + '</span><div class="track"><div class="fill" style="width:' + Math.round(100 * x.w / mx) + '%"></div></div></div>';
+    }).join("");
+    var kn = keyNotes();
+    $("#keynotes").innerHTML = kn.map(function (f) { return '<span class="chip">' + esc(noteName(f)) + "</span>"; }).join("");
+    $("#keynotesbox").hidden = !kn.length;
+    if (!state.picks.length || state.picksFor !== pickKey()) { state.picks = recommend(); state.picksFor = pickKey(); }
+    drawPicks();
+    drawTips();
+    $("#pdfbtn").hidden = !downloadsApi;
+  }
+  function pickKey() {
+    return state.mode + "|" + (state.mode === "known" ? state.sel.map(function (p) { return p.i; }).join(",") : state.smells.join(",")) +
+      "|" + JSON.stringify(state.ans) + "|" + state.gender;
+  }
+  function cardText(r) {
+    var c = r.why.closest;
+    return {
+      pct: Math.round(100 * Math.max(0, Math.min(1, r.p.sim))),
+      why: r.why.notes.length ? t("whyNotes", { list: r.why.notes.map(noteName).join(", ") })
+        : t("whyAcc", { list: joinList(r.p.acc.split("").slice(0, 2).map(accName)) }),
+      closest: c ? (c.smell ? t("closestSmell", { n: smellName(c.smell) }) : t("closest", { n: c.n })) + " " : ""
+    };
+  }
+  function byLine(p) {
+    var tr = tierStr(p);
+    return esc(p.b) + (tr ? ' <span class="tier" title="' + esc(t("tierLabel", { t: L().tiers[p.tier] })) + '">· ' + tr + "</span>" : "");
+  }
+  function drawPicks() {
+    if (!state.picks.length) { $("#picks").innerHTML = '<li class="small">' + esc(t("noPicks")) + "</li>"; return; }
+    $("#picks").innerHTML = state.picks.map(function (r) {
+      var ct = cardText(r), pct = ct.pct, why = ct.why, closest = ct.closest, p = r.p;
+      var stock = p.price ? '<p class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</p>" : "";
+      var acts = '<div class="cardacts"><button type="button" class="btn ghost sm" data-sim="' + p.i + '">' + esc(t("simBtn")) + "</button>" +
+        (p.price && TELEGRAM ? '<a class="btn sm" data-order="' + p.i + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a>" : "") + "</div>";
+      return '<li class="card"><div class="head"><span class="badge' + (r.label === "hit" ? " hit" : "") + '">' + esc(t(LABEL_KEY[r.label])) + "</span>" +
+        '<span class="match" title="' + esc(t("matchTitle")) + '">' + pct + "%</span></div>" +
+        '<div class="body">' + bottleSvg(p) + "<div><h3>" + esc(p.n) + '</h3><div class="by">' + byLine(p) + '</div><div class="chips">' + chipsHtml(p) + "</div></div></div>" +
+        '<p class="why">' + esc(why) + '</p><p class="meta">' + esc(closest + t("season", { s: t(SEASON_KEY[p.s]) })) + "</p>" + stock + acts + "</li>";
+    }).join("");
+  }
+  // Кнопки на карточках: «Похожие» и «Заказать»
+  $("#picks").addEventListener("click", function (e) {
+    var s = e.target.closest("[data-sim]"), o = e.target.closest("[data-order]");
+    if (s) openSimilar(P[Number(s.getAttribute("data-sim"))], s);
+    if (o) orderClick(P[Number(o.getAttribute("data-order"))]);
+  });
+  function orderClick(p) {
+    track("order/" + p.b + " — " + p.n);
+    try { navigator.clipboard.writeText(t("orderText", { n: p.n, b: p.b, p: money(p.price) })).catch(function () {}); } catch (err) {}
+  }
+  // Фильтр «Все / Мужские / Женские»
+  $("#gender").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-g]"); if (!b) return;
+    state.gender = b.getAttribute("data-g");
+    drawResults();
+  });
+  $("#redo").addEventListener("click", function () {
+    state.mode = "known"; state.smells = []; state.gender = "any";
+    state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
+    $("#q").value = "";
+    document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
+    go(1);
+  });
+
+  /* ======================= Советы (бесплатно, без ИИ) ======================= */
+  // Тексты собираются из той же формулы: главные вкусы, главные ноты, к какому любимому аромату ближе подборка
+  function drawTips() {
+    if (!state.picks.length) return;
+    var tv = tasteVector(), ax = L().ax;
+    var axes = AX.map(function (a, k) { return { k: k, w: tv[k] }; }).sort(function (x, y) { return y.w - x.w; }).slice(0, 3).map(function (x) { return ax[x.k]; });
+    var notes = keyNotes().slice(0, 4).map(noteName);
+    var favs = currentFavs();
+    $("#tip1box").hidden = state.mode === "gift" || !notes.length;
+    if (state.mode !== "gift" && notes.length) {
+      var counts = favs.map(function (f) { return state.picks.filter(function (r) { return r.why.closest === f; }).length; });
+      var bi = counts.indexOf(Math.max.apply(null, counts));
+      $("#tip1text").textContent = t("tip1", { axes: joinList(axes), notes: joinList(notes), n: counts[bi], fav: favName(favs[bi]) });
+    }
+    var bySim = state.picks.slice().sort(function (a, b) { return b.p.sim - a.p.sim; });
+    var safe = bySim[0], bold = bySim[bySim.length - 1];
+    var pc = function (r) { return Math.round(100 * Math.max(0, Math.min(1, r.p.sim))); };
+    $("#tip2text").textContent = safe === bold ? t("tip2one", { safe: safe.p.n, safePct: pc(safe) })
+      : t("tip2", { safe: safe.p.n, safePct: pc(safe), bold: bold.p.n, boldPct: pc(bold) });
+    $("#tip3list").innerHTML = L().tip3.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
+  }
+
+  /* ======================= Сохранить в PDF ======================= */
+  // Печать в этой странице недоступна, поэтому отчёт рисуется в PDF и отдаётся как файл (viewer подтверждает сохранение).
+  var downloadsApi = null, pdfBusy = false, libsPromise = null;
+  var LIBS = ["https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+              "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"];
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script");
+      s.src = src; s.onload = res; s.onerror = function () { rej(new Error("load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+  function loadLibs() {
+    if (window.html2canvas && window.jspdf) return Promise.resolve();
+    if (!libsPromise) {
+      libsPromise = loadScript(LIBS[0]).then(function () { return loadScript(LIBS[1]); });
+      libsPromise.catch(function () { libsPromise = null; });
+    }
+    return libsPromise;
+  }
+  function reportBlocks() {
+    var loc = { ru: "ru-RU", tg: "tg-TJ", en: "en-GB" }[lang], date;
+    try { date = new Date().toLocaleDateString(loc, { year: "numeric", month: "long", day: "numeric" }); } catch (e) { date = new Date().toISOString().slice(0, 10); }
+    var tv = tasteVector(), ax = L().ax;
+    var ranked = AX.map(function (a, k) { return { k: k, w: tv[k] }; }).sort(function (x, y) { return y.w - x.w; });
+    var out = [];
+    out.push('<div class="rsub">' + esc(t("brandSub")) + "</div><h1>Shoh Parfumer</h1><div class=\"rmuted\">" + esc(date) + "</div>");
+    if (state.mode === "known") {
+      out.push("<h2>" + esc(t("pdfFavs")) + "</h2><ol>" + state.sel.map(function (p) {
+        return "<li><b>" + esc(p.n) + "</b> — " + esc(p.b) + '<div class="rmuted">' + esc(shownNotes(p).join(", ")) + "</div></li>";
+      }).join("") + "</ol>");
+    } else if (state.mode === "novice") {
+      out.push("<h2>" + esc(t("pdfSmells")) + "</h2><p>" + esc(state.smells.map(function (id) { return smellName(SMELL_BY[id]); }).join(", ")) + "</p>");
+    } else {
+      out.push("<h2>" + esc(t("pdfGift")) + "</h2><p>" + esc(qList().map(function (q) {
+        var o = q.opts.filter(function (x) { return x.v === state.ans[q.key]; })[0]; return o ? o.t : "";
+      }).filter(Boolean).join(" · ")) + "</p>");
+    }
+    var kn = keyNotes();
+    out.push("<p>" + esc(t(state.mode === "novice" ? "tasteNovice" : (state.mode === "gift" ? "tasteGift" : "taste"), { list: ranked.slice(0, 3).map(function (x) { return ax[x.k]; }).join(", ") })) + "</p>" +
+      (kn.length ? '<p class="rmuted">' + esc(t("keyNotes")) + ": " + esc(kn.map(noteName).join(", ")) + "</p>" : ""));
+    out.push("<h2 style=\"margin:0\">" + esc(t("pdfPicks")) + "</h2>");
+    state.picks.forEach(function (r) {
+      var ct = cardText(r);
+      out.push('<div class="rcard"><div class="rtop"><span class="rbadge' + (r.label === "hit" ? " hit" : "") + '">' + esc(t(LABEL_KEY[r.label])) + '</span><span class="rpct">' + ct.pct + "%</span></div>" +
+        '<div class="rname">' + esc(r.p.n) + '</div><div class="rmuted">' + esc(r.p.b) + (r.p.tier ? " · " + tierStr(r.p) : "") + "</div><div>" + esc(shownNotes(r.p).join(", ")) + "</div>" +
+        "<div>" + esc(ct.why) + '</div><div class="rmuted">' + esc(ct.closest + t("season", { s: t(SEASON_KEY[r.p.s]) })) + "</div>" +
+        (r.p.price ? "<div><b>" + esc(t("inStock", { p: money(r.p.price) })) + "</b></div>" : "") + "</div>");
+    });
+    out.push('<p class="rmuted">' + esc(t("pdfNote")) + "</p>");
+    return out;
+  }
+  async function savePdf() {
+    if (!downloadsApi || pdfBusy || !state.picks.length) return;
+    pdfBusy = true;
+    var st = $("#pdfstatus"), btn = $("#pdfbtn"), clip = null;
+    btn.disabled = true; st.textContent = t("pdfWorking");
+    try {
+      await loadLibs();
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      clip = document.createElement("div"); clip.className = "rep-clip"; clip.setAttribute("aria-hidden", "true");
+      var rep = document.createElement("div"); rep.className = "report";
+      clip.appendChild(rep); document.body.appendChild(clip);
+      // Страницы A4 рисуются на холсты: одни и те же картинки идут в PDF и в просмотр на экране
+      var M = 14, W = 210 - 2 * M, PH = 297, y = M, blocks = reportBlocks();
+      var PW = 1240, PHpx = Math.round(PW * PH / 210), k = PW / 210, pages = [], ctx = null;
+      function newPage() {
+        var pg = document.createElement("canvas"); pg.width = PW; pg.height = PHpx;
+        ctx = pg.getContext("2d"); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, PW, PHpx);
+        pages.push(pg); y = M;
+      }
+      newPage();
+      for (var i = 0; i < blocks.length; i++) {
+        rep.innerHTML = '<div class="rb">' + blocks[i] + "</div>";
+        var c = await window.html2canvas(rep, { scale: 2, backgroundColor: "#FFFFFF", logging: false, windowWidth: 800, scrollX: 0, scrollY: 0 });
+        var h = W * c.height / c.width;
+        if (y + h > PH - M && y > M) newPage();
+        ctx.drawImage(c, M * k, y * k, W * k, h * k);
+        y += h;
+      }
+      var doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
+      var urls = pages.map(function (pg) { return pg.toDataURL("image/jpeg", 0.9); });
+      urls.forEach(function (u, n) { if (n) doc.addPage(); doc.addImage(u, "JPEG", 0, 0, 210, PH); });
+      await downloadsApi.save({ filename: "Shoh-Parfumer.pdf", data: doc.output("blob") });
+      st.textContent = t("pdfSaved");
+      track("pdf");
+      showPreview(urls);
+    } catch (err) {
+      var code = err && err.code;
+      st.textContent = code === "declined" ? t("pdfDeclined") : (code === "rate_limited" ? t("aiBusy") : t("pdfErr"));
+      if (["unavailable", "not_granted", "capability_disabled", "capability_removed"].indexOf(code) !== -1) { downloadsApi = null; $("#pdfbtn").hidden = true; }
+    } finally {
+      if (clip) clip.remove();
+      pdfBusy = false; btn.disabled = false;
+    }
+  }
+  $("#pdfbtn").addEventListener("click", savePdf);
+
+  // Просмотр сохранённого PDF прямо на сайте
+  var pv = $("#pv");
+  function showPreview(urls) {
+    $("#pvpages").innerHTML = urls.map(function (u, n) {
+      return '<img src="' + u + '" alt="' + esc(t("pvPage", { n: n + 1 })) + '" width="1240" height="1754">';
+    }).join("");
+    pv.hidden = false;
+    pv.querySelector(".sheet").scrollTop = 0;
+    $("#pvclose").focus();
+  }
+  function closePreview() { pv.hidden = true; $("#pvpages").innerHTML = ""; $("#pdfbtn").focus(); }
+  $("#pvclose").addEventListener("click", closePreview);
+  $("#pvok").addEventListener("click", closePreview);
+  pv.addEventListener("click", function (e) { if (e.target === pv) closePreview(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pv.hidden) closePreview(); });
+  if (window.claude && typeof window.claude.use === "function") {
+    // Внутри Claude: сохранение через платформу (клиент подтверждает)
+    window.claude.use("downloads").then(function (d) { downloadsApi = d || null; if (state.step === 4) $("#pdfbtn").hidden = !downloadsApi; }).catch(function () { downloadsApi = null; });
+  } else {
+    // На обычном хостинге: обычное скачивание файла браузером
+    downloadsApi = {
+      save: function (req) {
+        var url = URL.createObjectURL(req.data), a = document.createElement("a");
+        a.href = url; a.download = req.filename; a.rel = "noopener";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+        return Promise.resolve({ status: "saved" });
+      }
+    };
+  }
+
+  /* ======================= Похожие ароматы (дешевле / дороже) ======================= */
+  var sim = $("#sim"), simSrc = null, simList = [], simFilter = "all", simOpener = null;
+  function openSimilar(src, opener) {
+    simSrc = src; simFilter = "all"; simOpener = opener || null;
+    var pr = profileOf([src], null, [1]), ln = lineKey(src);
+    simList = P.filter(function (p) { return p !== src && !p.np && p.raw.length && p.acc && (p.pc >= 50 || p.hit) && lineKey(p) !== ln; })
+      .map(function (p) { return { p: p, s: similarity(pr, p) }; })
+      .sort(function (a, b) { return (b.s + (b.p.price ? 0.03 : 0)) - (a.s + (a.p.price ? 0.03 : 0)); })
+      .slice(0, 80);
+    track("similar/" + src.b + " — " + src.n);
+    drawSimilar();
+    sim.hidden = false;
+    sim.querySelector(".sheet").scrollTop = 0;
+    $("#simclose").focus();
+  }
+  function drawSimilar() {
+    if (!simSrc) return;
+    $("#simtitle").textContent = t("simTitle", { n: simSrc.n });
+    var known = !!simSrc.tier;
+    document.querySelectorAll("#simtabs button").forEach(function (b) {
+      var f = b.getAttribute("data-f");
+      b.hidden = !known && f !== "all";
+      b.setAttribute("aria-pressed", String(f === simFilter));
+    });
+    $("#simhint").textContent = known ? t("simHint") : t("simNoTier");
+    var list = simList.filter(function (x) {
+      if (simFilter === "cheap") return x.p.tier && x.p.tier < simSrc.tier;
+      if (simFilter === "pricey") return x.p.tier && x.p.tier > simSrc.tier;
+      return true;
+    }).slice(0, 10);
+    $("#simlist").innerHTML = list.length ? list.map(function (x) {
+      var p = x.p, pct = Math.round(100 * Math.max(0, Math.min(1, x.s)));
+      return '<li class="simrow"><div class="txt"><b>' + esc(p.n) + "</b><span>" + byLine(p) + "</span>" +
+        (p.price ? '<span class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</span>" : "") + "</div>" +
+        '<span class="pct">' + pct + "%</span>" +
+        (p.price && TELEGRAM ? '<a class="btn sm" data-order="' + p.i + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a>" : "") + "</li>";
+    }).join("") : '<li class="small">' + esc(t("simNone")) + "</li>";
+  }
+  function closeSimilar() { sim.hidden = true; simSrc = null; if (simOpener && simOpener.focus) simOpener.focus(); }
+  $("#simtabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-f]"); if (!b) return; simFilter = b.getAttribute("data-f"); drawSimilar(); });
+  $("#simlist").addEventListener("click", function (e) { var o = e.target.closest("[data-order]"); if (o) orderClick(P[Number(o.getAttribute("data-order"))]); });
+  $("#simclose").addEventListener("click", closeSimilar);
+  sim.addEventListener("click", function (e) { if (e.target === sim) closeSimilar(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sim.hidden) closeSimilar(); });
+
+  /* ======================= Поделиться ======================= */
+  var sh = $("#sh");
+  function shareUrl() {
+    var base = SITE_URL || (!inClaude && /^https?:$/.test(location.protocol) ? location.origin + location.pathname : "");
+    if (!base) return "";
+    var a = state.ans, r;
+    if (state.mode === "known") r = ["k", a.season || "", a.mood || "", state.sel.map(function (p) { return p.uid; }).join("-")].join(".");
+    else if (state.mode === "novice") r = ["n", a.season || "", state.smells.join("-")].join(".");
+    else r = ["g", a.who || "", a.character || "", a.season || "", a.budget || ""].join(".");
+    return base + "?r=" + encodeURIComponent(r) + (state.gender !== "any" ? "&g=" + state.gender : "") + "&l=" + lang;
+  }
+  function shareMessage() { return t("shareText", { list: state.picks.map(function (r) { return r.p.n + " (" + r.p.b + ")"; }).join(", ") }); }
+  function openShare() {
+    var text = shareMessage(), url = shareUrl(), full = text + (url ? "\n" + url : "");
+    $("#shtext").textContent = full;
+    $("#shtg").href = "https://t.me/share/url?url=" + encodeURIComponent(url || text) + (url ? "&text=" + encodeURIComponent(text) : "");
+    $("#shwa").href = "https://wa.me/?text=" + encodeURIComponent(full);
+    $("#shstatus").textContent = "";
+    sh.hidden = false;
+    $("#shclose").focus();
+    track("share");
+  }
+  function closeShare() { sh.hidden = true; $("#sharebtn").focus(); }
+  $("#sharebtn").addEventListener("click", openShare);
+  $("#shclose").addEventListener("click", closeShare);
+  sh.addEventListener("click", function (e) { if (e.target === sh) closeShare(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sh.hidden) closeShare(); });
+  $("#shcopy").addEventListener("click", function () {
+    var txt = $("#shtext").textContent;
+    try {
+      navigator.clipboard.writeText(txt).then(function () { $("#shstatus").textContent = t("shareCopied"); }, function () { selectText($("#shtext")); });
+    } catch (err) { selectText($("#shtext")); }
+  });
+  function selectText(el) { try { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
+
+  // Открытие подборки по ссылке «Поделиться» (только на настоящем сайте)
+  function restoreFromUrl() {
+    if (inClaude) return false;
+    var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
+    var r = q.get("r"); if (!r) return false;
+    var parts = r.split("."), ok = function (v, list) { return list.indexOf(v) !== -1 ? v : undefined; };
+    var SEAS = ["summer", "cool", "any"];
+    if (parts[0] === "k") {
+      var favs = (parts[3] || "").split("-").map(function (u) { return BY_UID[u]; }).filter(Boolean);
+      if (favs.length !== 3) return false;
+      state.mode = "known"; state.sel = favs; state.slots = favs.slice();
+      state.ans = { season: ok(parts[1], SEAS), mood: ok(parts[2], ["fresh", "sweet", "woody", "floral"]) };
+    } else if (parts[0] === "n") {
+      var ids = (parts[2] || "").split("-").filter(function (id) { return SMELL_BY[id]; }).slice(0, 4);
+      if (ids.length < 2) return false;
+      state.mode = "novice"; state.smells = ids; state.ans = { season: ok(parts[1], SEAS) };
+    } else if (parts[0] === "g") {
+      state.mode = "gift";
+      state.ans = { who: ok(parts[1], ["m", "f", "any"]), character: ok(parts[2], ["calm", "bold", "business", "romantic"]),
+        season: ok(parts[3], SEAS), budget: ok(parts[4], ["low", "mid", "high", "any"]) };
+      if (state.ans.who === "m" || state.ans.who === "f") state.gender = state.ans.who;
+    } else return false;
+    var g = q.get("g"); if (g === "m" || g === "f") state.gender = g;
+    var l = q.get("l"); if (LANGS.indexOf(l) !== -1) lang = l;
+    state.step = 4;
+    return true;
+  }
+
+  /* ======================= Обратная связь ======================= */
+  var fb = $("#fb"), lastFocus = null;
+  function fbText() {
+    var name = $("#fbname").value.trim(), msg = $("#fbmsg").value.trim();
+    return t("fbHeader") + (name ? "\n" + t("fbFrom") + ": " + name : "") + "\n\n" + msg;
+  }
+  function fbUpdate() {
+    var a = $("#fbsend");
+    if (TELEGRAM) {
+      a.hidden = false;
+      a.href = "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(fbText());
+      a.setAttribute("aria-disabled", String(!$("#fbmsg").value.trim()));
+      $("#fbcontact").textContent = "Telegram: @" + TELEGRAM;
+    } else {
+      a.hidden = true;
+      $("#fbcontact").textContent = t("fbNoContact");
+    }
+  }
+  function fbOpen() { lastFocus = document.activeElement; fb.hidden = false; $("#fbstatus").textContent = ""; fbUpdate(); $("#fbmsg").focus(); track("feedback"); }
+  function fbClose() { fb.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $("#fbopen").addEventListener("click", fbOpen);
+  $("#fbclose").addEventListener("click", fbClose);
+  fb.addEventListener("click", function (e) { if (e.target === fb) fbClose(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !fb.hidden) fbClose(); });
+  $("#fbmsg").addEventListener("input", fbUpdate);
+  $("#fbname").addEventListener("input", fbUpdate);
+  $("#fbsend").addEventListener("click", function (e) {
+    if (!$("#fbmsg").value.trim()) { e.preventDefault(); $("#fbstatus").textContent = t("fbEmpty"); $("#fbmsg").focus(); return; }
+    var txt = fbText();
+    try {
+      navigator.clipboard.writeText(txt).then(function () { $("#fbstatus").textContent = t("fbCopied"); }, function () {});
+    } catch (err) {}
+  });
+
+  /* ======================= Язык ======================= */
+  function applyLang() {
+    root.lang = lang;
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    document.querySelectorAll("[data-tp]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-tp"))); });
+    document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
+    document.querySelectorAll(".langs button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang)); });
+    render();
+    if (!fb.hidden) fbUpdate();
+    if (!sim.hidden) drawSimilar();
+    if (!sh.hidden) openShare();
+  }
+  document.querySelector(".langs").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-lang]"); if (!b) return;
+    lang = b.getAttribute("data-lang");
+    try { localStorage.setItem("sp-lang", lang); } catch (err) {}
+    applyLang();
+  });
+
+  if (restoreFromUrl()) track("opened-shared-link");
+  applyLang();
+})();
+</script>
