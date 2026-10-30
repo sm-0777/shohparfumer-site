@@ -1,5 +1,0 @@
-# Netlify публикует только папку public (там готовый сайт index.html).
-# Сборка на стороне Netlify не нужна: index.html уже собран.
-[build]
-  publish = "public"
-  command = ""

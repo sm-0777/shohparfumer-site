@@ -10,4 +10,5 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Design: dark-first, yellow buttons (#FFC61A) in both themes, theme follows the phone (not persisted).
 - Bottles are generic drawn SVGs (minimal style), never copies of brand bottles. No scraped photos.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
-- Netlify publishes `public/` on every push to `main`.
+- Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,
+  serving shoh-parfumer.com and www. Netlify is no longer used (its free plan forces a badge).

@@ -7,12 +7,12 @@
 
 | Путь | Что это |
 |---|---|
-| `public/index.html` | Готовый сайт. Его публикует Netlify. Это единственный файл, который видят клиенты. |
+| `public/index.html` | Готовый сайт. Его публикует Cloudflare. Это единственный файл, который видят клиенты. |
 | `src/site.html` | Шаблон сайта (код и тексты). Правки делаются здесь. |
 | `data/db.json` | База ароматов (≈17 300 духов, ноты, аккорды, пол, категория бренда). |
 | `src/make_site.py` | Собирает `public/index.html` из шаблона и базы. |
 | `src/build_db.py`, `src/postprocess.py` | Собирают базу из открытых данных Parfumo (TidyTuesday, 2024-12-10). |
-| `netlify.toml` | Настройка Netlify: публиковать папку `public`. |
+| `wrangler.jsonc` | Настройка Cloudflare: публиковать папку `public` на shoh-parfumer.com. |
 
 ## Настройки владельца (в начале скрипта в `src/site.html`)
 
@@ -32,7 +32,7 @@ python3 -I src/make_site.py src/site.html data/db.json public/index.html --stand
 git add -A && git commit -m "Обновление сайта" && git push
 ```
 
-Netlify опубликует изменения сам примерно через минуту.
+Cloudflare (Workers, проект shoh-parfumer) опубликует изменения сам примерно через минуту.
 
 ## Пересобрать базу (редко)
 
