@@ -137,6 +137,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .bcard.more span { color: var(--accent-ink); opacity: .75; }
 .bcard.more:hover { border-color: var(--fg); }
 .dupebtn { width: 100%; min-height: 84px; margin-top: 10px; }
+/* Строка поиска брендов и дюпов остаётся видна при прокрутке (под шапкой сайта) */
+.stickysearch { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 64px)); z-index: 6; background: var(--bg); padding-block: 8px; margin-block: -8px; }
 .dupebtn b { font-size: 1.125rem; }
 .dsrc { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 .dsrc .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -329,7 +331,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
           <h2 data-t="otherBrands">Другие бренды</h2>
           <button type="button" class="btn ghost sm" id="hideb" data-t="hide">Скрыть</button>
         </div>
-        <input id="bq" class="search" type="search" data-tp="brandSearch" placeholder="Найти бренд" autocomplete="off" data-ta="brandSearch" aria-label="Найти бренд">
+        <div class="stickysearch"><input id="bq" class="search" type="search" data-tp="brandSearch" placeholder="Найти бренд" autocomplete="off" data-ta="brandSearch" aria-label="Найти бренд"></div>
         <p class="small" id="bhint"></p>
         <div class="bchips" id="bchips"></div>
         <button type="button" class="btn ghost" id="bmore" data-t="moreBrandsBtn" hidden>Показать ещё бренды</button>
@@ -360,7 +362,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     <h1 id="h6" data-t="h6">Найти дюп</h1>
     <p class="lead" data-t="lead6">Выберите один парфюм — покажем до 5 недорогих ароматов, которые пахнут похоже.</p>
     <div class="stack" id="dpick" style="gap:12px">
-      <input id="dq" class="search" type="search" data-tp="dupeSearchPh" placeholder="Название духов или бренд" autocomplete="off" data-ta="dupeSearchPh" aria-label="Название духов или бренд">
+      <div class="stickysearch"><input id="dq" class="search" type="search" data-tp="dupeSearchPh" placeholder="Название духов или бренд" autocomplete="off" data-ta="dupeSearchPh" aria-label="Название духов или бренд"></div>
       <p class="small" id="dhint"></p>
       <ul class="list" id="dlist"></ul>
       <button type="button" class="btn ghost" id="dmore" data-t="showMore" hidden>Показать ещё</button>
@@ -1239,6 +1241,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     dq: "", dsrc: null, dlimit: PAGE, dlist: [] };
 
   function $(s) { return document.querySelector(s); }
+  // Высота шапки — чтобы закреплённая строка поиска вставала сразу под ней
+  function setHdr() { var h = document.querySelector(".topbar"); if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); }
+  setHdr(); window.addEventListener("resize", setHdr);
   function norm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   function unit(v) { var n = Math.sqrt(v.reduce(function (a, x) { return a + x * x; }, 0)) || 1; return v.map(function (x) { return x / n; }); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
