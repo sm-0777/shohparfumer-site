@@ -2120,9 +2120,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       a.hidden = false;
       a.href = "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(fbText());
       a.setAttribute("aria-disabled", String(!$("#fbmsg").value.trim()));
-      $("#fbcontact").textContent = "Telegram: @" + TELEGRAM;
+      $("#fbcontact").hidden = true;          // ник владельца на сайте не показываем, кнопка сама открывает чат
     } else {
       a.hidden = true;
+      $("#fbcontact").hidden = false;
       $("#fbcontact").textContent = t("fbNoContact");
     }
   }
