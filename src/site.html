@@ -537,7 +537,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     ru: {
       dupeBtn: "Найти дюп", dupeSearchPh: "Название духов или бренд", dupeBtnSub: "Один парфюм → 5 недорогих аналогов", h6: "Найти дюп",
       lead6: "Выберите один парфюм — покажем до 5 недорогих ароматов, которые пахнут похоже.",
-      dupePopular: "Популярные духи, для которых есть известные дюпы. Или найдите свой через поиск.",
+      dupePopular: "Популярные духи. Нет вашего — найдите через поиск.",
       dupeHas: "есть известные дюпы", dupeOriginal: "Оригинал", dupeOther: "Выбрать другой",
       dupeKnown: "Известный дюп", dupeSimilar: "Похож по нотам", dupeMatch: "Сходство с оригиналом по нотам и аккордам",
       dupeNotesCommon: "Общие ноты:", dupeNotesOrig: "Ноты оригинала:",
@@ -600,7 +600,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     tg: {
       dupeBtn: "Ёфтани дюп", dupeSearchPh: "Номи атр ё бренд", dupeBtnSub: "Як атр → 5 монанди арзон", h6: "Ёфтани дюп",
       lead6: "Як атрро интихоб кунед — то 5 атри арзонро нишон медиҳем, ки бӯяшон монанд аст.",
-      dupePopular: "Атрҳои машҳур, ки дюпҳои маълум доранд. Ё атри худро тавассути ҷустуҷӯ ёбед.",
+      dupePopular: "Атрҳои машҳур. Агар атри шумо нест — тавассути ҷустуҷӯ ёбед.",
       dupeHas: "дюпҳои маълум дорад", dupeOriginal: "Оригинал", dupeOther: "Дигареро интихоб кардан",
       dupeKnown: "Дюпи маълум", dupeSimilar: "Аз рӯи нотаҳо монанд", dupeMatch: "Монандӣ бо оригинал аз рӯи нотаҳо ва аккордҳо",
       dupeNotesCommon: "Нотаҳои умумӣ:", dupeNotesOrig: "Нотаҳои оригинал:",
@@ -663,7 +663,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     en: {
       dupeBtn: "Find a dupe", dupeSearchPh: "Perfume name or brand", dupeBtnSub: "One perfume → 5 affordable alternatives", h6: "Find a dupe",
       lead6: "Pick one perfume and we'll show up to 5 affordable fragrances that smell similar.",
-      dupePopular: "Popular perfumes with known dupes. Or search for yours.",
+      dupePopular: "Popular perfumes. Not here? Use the search.",
       dupeHas: "has known dupes", dupeOriginal: "Original", dupeOther: "Choose another",
       dupeKnown: "Known dupe", dupeSimilar: "Similar notes", dupeMatch: "Similarity to the original by notes and accords",
       dupeNotesCommon: "Shared notes:", dupeNotesOrig: "Notes of the original:",
@@ -1606,7 +1606,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.mode = "known"; state.smells = []; state.gender = "any";
     state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
     state.showBrands = false; state.bq = ""; state.blimit = 60;
-    state.dq = ""; state.dsrc = null; state.dlimit = PAGE; state.dlist = [];
+    state.dq = ""; state.dsrc = null; state.dlimit = DUPE_TOP_N; state.dlist = [];
     $("#q").value = ""; $("#bq").value = ""; $("#dq").value = "";
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
     ["#fb", "#sim", "#sh", "#pv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
@@ -1624,6 +1624,15 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Формула ищет дюпы только у брендов, которые делают дюпы (арабские дома и Zara)
   var DUPE_HOUSES = { "Armaf": 1, "Lattafa": 1, "Afnan Perfumes": 1, "Zimaya": 1, "Rasasi": 1, "Al Haramain": 1, "Swiss Arabian": 1, "Nabeel": 1, "Ard Al Zaafaran": 1, "Zara": 1 };
   (DB.du || []).forEach(function (e) { DUPES[e[0]] = e[1]; });
+  // Подсказки на экране «Найти дюп»: 15 самых известных духов, по одному от бренда (порядок — как здесь)
+  var DUPE_TOP = ["Creed|Aventus", "Maison Francis Kurkdjian|Baccarat Rouge 540 Eau de Parfum", "Dior|Sauvage Eau de Parfum",
+    "Chanel|Bleu de Chanel Eau de Parfum", "Tom Ford|Tobacco Vanille Eau de Parfum", "Louis Vuitton|Imagination", "Kilian|Angels' Share",
+    "Parfums de Marly|Althaïr", "Initio|Oud for Greatness", "XerJoff|Erba Pura", "Yves Saint Laurent|Black Opium Eau de Parfum",
+    "Lancôme|La Vie est Belle L'Eau de Parfum", "Giorgio Armani|Emporio Armani - Stronger With You", "Jean Paul Gaultier|Ultra Mâle",
+    "Carolina Herrera|Good Girl Eau de Parfum"];
+  var DUPE_TOP_N = DUPE_TOP.length, BY_KEY = {};
+  P.forEach(function (p) { BY_KEY[p.b + "|" + p.n] = p; });
+  DUPE_TOP = DUPE_TOP.map(function (k) { return BY_KEY[k]; }).filter(Boolean);
   function dupeObj(ref, src) {
     if (ref >= 0) return P[ref];
     var x = XD[-ref - 1], pr = STOCK[x[1] + "|" + x[0]];
@@ -1668,7 +1677,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }
   function dupeItems() {
     var q = expandQuery(norm(state.dq.trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
-    if (!q) return { pop: true, items: Object.keys(DUPES).map(function (i) { return P[i]; }).sort(byPop) };
+    if (!q) return { pop: true, items: DUPE_TOP.concat(Object.keys(DUPES).map(function (i) { return P[i]; })
+      .filter(function (p) { return DUPE_TOP.indexOf(p) === -1; }).sort(byPop)) };
     var toks = q.split(/\s+/).filter(Boolean);
     return { pop: false, items: P.filter(function (p) {
       if (p.np) return false;
@@ -1704,10 +1714,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     }).join("") : '<li class="small">' + esc(t("dupeNone")) + "</li>";
   }
   $("#goDupe").addEventListener("click", function () {
-    state.mode = "dupe"; state.dsrc = null; state.dq = ""; state.dlimit = PAGE; $("#dq").value = "";
+    state.mode = "dupe"; state.dsrc = null; state.dq = ""; state.dlimit = DUPE_TOP_N; $("#dq").value = "";
     go(6); track("dupe-open");
   });
-  $("#dq").addEventListener("input", function (e) { state.dq = e.target.value; state.dlimit = PAGE; drawDupe(); });
+  $("#dq").addEventListener("input", function (e) { state.dq = e.target.value; state.dlimit = state.dq.trim() ? PAGE : DUPE_TOP_N; drawDupe(); });
   $("#dmore").addEventListener("click", function () { state.dlimit += PAGE; drawDupe(); });
   $("#dlist").addEventListener("click", function (e) {
     var b = e.target.closest("[data-d]"); if (!b) return;
