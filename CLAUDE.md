@@ -6,6 +6,10 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Edit `src/site.html` (template), never hand-edit `public/index.html`.
 - Rebuild: `python3 -I src/make_site.py src/site.html data/db.json public/index.html --standalone`.
 - Owner settings live at the top of the script in `src/site.html`: TELEGRAM, GOATCOUNTER, SITE_URL, STOCK.
+- Workflow (owner's rule): never push to `main` right away. Build a test version first (non-standalone build →
+  Claude artifact link), let the owner check it, and push only after he says «загружай».
+- Known dupes live in `data/dupes.txt`; apply with `python3 -I src/add_dupes.py data/db.json data/dupes.txt`
+  (adds `du`/`xd` to the DB), then rebuild. The «Найти дюп» screen fills the rest by formula from dupe houses.
 - All UI text exists in three languages (ru / tg / en): keep them in sync (I18N and I18N_X objects).
 - Design: dark-first, yellow buttons (#FFC61A) in both themes, theme follows the phone (not persisted).
 - Bottles are generic drawn SVGs (minimal style), never copies of brand bottles. No scraped photos.

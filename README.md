@@ -34,12 +34,25 @@ git add -A && git commit -m "Обновление сайта" && git push
 
 Cloudflare (Workers, проект shoh-parfumer) опубликует изменения сам примерно через минуту.
 
+## Дюпы (раздел «Найти дюп»)
+
+Список известных дюпов — `data/dupes.txt`, одна строка на пару:
+`Бренд оригинала | Название оригинала => Бренд дюпа | Название дюпа`.
+После правки:
+
+```bash
+python3 -I src/add_dupes.py data/db.json data/dupes.txt
+```
+
+и пересобрать сайт. Остальные места в пятёрке подбираются по формуле среди брендов дюпов (Armaf, Lattafa, Afnan, Rasasi, Al Haramain, Swiss Arabian, Zara…).
+
 ## Пересобрать базу (редко)
 
 ```bash
 curl -L -o parfumo.csv https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-12-10/parfumo_data_clean.csv
 python3 -I src/build_db.py parfumo.csv data/db.json
 python3 -I src/postprocess.py data/db.json
+python3 -I src/add_dupes.py data/db.json data/dupes.txt
 ```
 
 Источник данных: [Parfumo Fragrance Dataset (TidyTuesday)](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-12-10).

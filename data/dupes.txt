@@ -1,0 +1,104 @@
+# Известные дюпы: «Оригинал» => «Дюп». Формат строки:
+#   Бренд оригинала | Название оригинала => Бренд дюпа | Название дюпа
+# Название оригинала — точно как в базе (data/db.json). Если дюпа нет в базе, он добавится отдельно.
+# Источники: открытые списки дюпов (scentverdict.com, sensabeauty.com, whatscent.app) и известные пары.
+# После правки: python3 -I src/add_dupes.py data/db.json data/dupes.txt, затем пересобрать сайт.
+
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Armaf | Club de Nuit Uńtōld
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Lattafa | Ana Abiyedh Rouge
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Al Haramain | Amber Oud Rouge
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Maison Alhambra | La Baroque Rouge
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Zara | Red Temptation Women Eau de Parfum
+Maison Francis Kurkdjian | Baccarat Rouge 540 Eau de Parfum => Fragrance World | Barakkat Rouge 540
+Maison Francis Kurkdjian | Baccarat Rouge 540 Extrait de Parfum => Al Haramain | Amber Oud Ruby Edition
+
+Creed | Aventus => Armaf | Club de Nuit Intense Man Eau de Parfum
+Creed | Aventus => Al Haramain | L'Aventure
+Creed | Aventus => Afnan Perfumes | Supremacy (Silver)
+Creed | Silver Mountain Water => Armaf | Club de Nuit Sillage Eau de Parfum
+Creed | Green Irish Tweed => Armaf | Tres Nuit Eau de Toilette
+Creed | Millésime Impérial => Armaf | Club de Nuit Milestone Eau de Parfum
+
+Dior | Sauvage Eau de Parfum => Maison Alhambra | Salvo
+Dior | Sauvage Elixir => Lattafa | Asad
+
+Chanel | Bleu de Chanel Eau de Parfum => Armaf | Club de Nuit Iconic
+Chanel | Bleu de Chanel Eau de Parfum => Al Haramain | Amber Oud Bleu Edition
+Chanel | Bleu de Chanel Eau de Parfum => French Avenue | Zenith Deep
+Chanel | Bleu de Chanel Eau de Toilette => Armaf | Club de Nuit Iconic
+Chanel | Coco Mademoiselle Eau de Parfum => Armaf | Magnifiq
+Chanel | Coco Mademoiselle Eau de Parfum => Maison Alhambra | Como Moiselle
+Chanel | Chance Eau Tendre Eau de Toilette => Zara | Zara Day Collection: 05 - Applejuice Eau de Toilette
+
+Tom Ford | Tobacco Vanille Eau de Parfum => Al Haramain | Amber Oud Tobacco Edition
+Tom Ford | Tobacco Vanille Eau de Parfum => Maison Alhambra | Tobacco Touch
+Tom Ford | Tobacco Vanille Eau de Parfum => Zara | Tobacco Collection Rich Warm Addictive
+Tom Ford | Black Orchid Eau de Parfum => Maison Alhambra | Black Origami
+Tom Ford | Neroli Portofino Eau de Parfum => Maison Alhambra | Porto Neroli
+Tom Ford | Bitter Peach Eau de Parfum => Lattafa | Sutoor
+Tom Ford | Oud Wood Eau de Parfum => Zara | Zara Exclusive N°03 - Universal Oud
+
+Kilian | Angels' Share => Lattafa | Khamrah
+Kilian | Angels' Share => Lattafa | Zikra
+Kilian | Angels' Share => Zara | Sand Desert at Sunset Intense
+Kilian | Smoking Hot => French Avenue | Veneno
+
+Initio | Oud for Greatness => Lattafa | Bade'e Al Oud Oud for Glory
+Initio | Oud for Happiness => French Avenue | Happiness Oud
+Initio | Paragon => Lattafa | Vintage Radio
+
+Parfums de Marly | Layton => Armaf | Rugir
+Parfums de Marly | Layton => Al Haramain | Détour Noir
+Parfums de Marly | Althaïr => French Avenue | Liquid Brun
+Parfums de Marly | Althaïr => Armaf | Monarque
+Parfums de Marly | Greenley => Lattafa | Sherif
+Parfums de Marly | Greenley => French Avenue | Aether
+Parfums de Marly | Sedley => Lattafa | Maahir Legacy
+Parfums de Marly | Oriana => French Avenue | Olena
+Parfums de Marly | Oriana => Zara | Into The Gourmand - Number 1: Velvet Shadow
+Parfums de Marly | Delina Eau de Parfum => Maison Alhambra | Delilah
+Parfums de Marly | Delina Eau de Parfum => Zara | Zara Olfactive N°04 - Fashionably London
+
+XerJoff | Erba Pura => Al Haramain | Amber Oud Gold Edition
+XerJoff | Naxos => French Avenue | Fierte Luna
+
+Giorgio Armani | Acqua di Giò Profumo Parfum => Maison Alhambra | Jorge Di Profumo
+Giorgio Armani | My Way Eau de Parfum => Lattafa | Emaan
+Giorgio Armani | My Way Eau de Parfum => Zara | Sublime Époque
+Giorgio Armani | Sì Eau de Parfum => Lattafa | Yara Moi
+
+Yves Saint Laurent | Y Eau de Parfum => Lattafa | Fakhar Black
+Yves Saint Laurent | Y Eau de Parfum => Maison Alhambra | Yeah! Man
+Yves Saint Laurent | Y Le Parfum => Armaf | Connoisseur Man
+Yves Saint Laurent | Libre Eau de Parfum => Armaf | Le Parfait Opus
+Yves Saint Laurent | Libre Eau de Parfum => Zara | Chapter - No. 3: Golden Decade Eau de Parfum
+Yves Saint Laurent | Black Opium Eau de Parfum => Maison Alhambra | Opera Noir
+Yves Saint Laurent | Black Opium Eau de Parfum => Armaf | Le Parfait Mon Amour
+Yves Saint Laurent | Black Opium Eau de Parfum => Zara | Gardenia
+Yves Saint Laurent | Mon Paris Eau de Parfum => Armaf | Chic
+
+Jean Paul Gaultier | Ultra Mâle => Afnan Perfumes | 9 PM
+Jean Paul Gaultier | Le Mâle Elixir => Armaf | Club de Nuit Lionheart Man
+Jean Paul Gaultier | Scandal pour Homme => Armaf | Odyssey Mandarin Sky
+Jean Paul Gaultier | Scandal pour Homme => Maison Alhambra | Candid Pour Homme
+Jean Paul Gaultier | Le Beau => Maison Alhambra | Glacier Bold
+
+Carolina Herrera | Good Girl Eau de Parfum => Maison Alhambra | B.A.D. Femme
+Burberry | Goddess => Lattafa | Angham
+Prada | Paradoxe => Armaf | Connoisseur Women
+Hermès | Terre d'Hermès Eau de Toilette => Armaf | Derby Club House Belmont Eau de Toilette
+Paco Rabanne | Lady Million Eau de Parfum => Armaf | Edition One pour Femme Eau de Parfum
+Paco Rabanne | Black XS Eau de Toilette => Zara | Zara Man Gold Eau de Toilette
+Lancôme | La Vie est Belle L'Eau de Parfum => Zara | Red Vanilla
+Louis Vuitton | Imagination => Zara | Sunrise on the Red Sand Dunes
+Louis Vuitton | L'Immensité => Maison Alhambra | Jean Lowe Immortal
+Gucci | Guilty pour Homme Eau de Parfum => Zara | Zara Man Silver Eau de Toilette
+Montblanc | Explorer Ultra Blue => Maison Alhambra | Encode Blue
+Marc-Antoine Barrois | Ganymede Extrait => Maison Alhambra | Minérale
+Marc-Antoine Barrois | Ganymede Extrait => Zara | Platinum Sky
+Mancera | Instant Crush => Lattafa | Afkaar
+Mancera | Coco Vanille => Lattafa | Qaed Al Fursan Unlimited
+Tiziana Terenzi | Kirkè Extrait de Parfum => Lattafa | Confidential Private Gold
+Nishane | Ani Extrait de Parfum => French Avenue | Spectre Ghost
+Maison Margiela | Replica - Jazz Club => French Avenue | Scorpio
+Dolce & Gabbana | L'Impératrice => Lattafa | Tamima
