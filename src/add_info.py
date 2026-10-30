@@ -9,9 +9,15 @@
 Запуск: python3 -I src/add_info.py data/db.json parfumo.csv data/info_manual.txt
 """
 import csv
+import importlib.util
 import json
 import re
 import sys
+
+# Названия на сайте очищены src/clean_names.py — исходные названия приводим к тому же виду
+_spec = importlib.util.spec_from_file_location("clean_names", "src/clean_names.py")
+cn = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(cn)
 
 # Коды концентраций (на сайте — CONC_NAMES в src/site.html, три языка)
 CONC = {"EDT": 1, "EDP": 2, "EXT": 3, "PAR": 4, "EDC": 5, "OIL": 6}
@@ -67,6 +73,7 @@ for r in csv.DictReader(open(csv_path, encoding="utf-8")):
     if not clean(r["Main_Accords"]) and not (clean(r["Top_Notes"]) or clean(r["Middle_Notes"]) or clean(r["Base_Notes"])):
         continue
     brand = clean_brand(r["Brand"])
+    brand = cn.BRAND_FIX.get(brand, brand)
     pc = int(float(r["Rating_Count"])) if clean(r["Rating_Count"]) else 0
     if pc < 20 and brand not in PRIORITY:
         continue
@@ -75,7 +82,7 @@ for r in csv.DictReader(open(csv_path, encoding="utf-8")):
     name = clean_name(r["Name"], brand, year)
     if not name:
         continue
-    key = (brand.lower(), name.lower())
+    key = (brand.lower(), cn.fix(brand, name).lower())
     if key not in best or best[key][0] < pc:
         best[key] = (pc, int(year) if year else 0, clean(r["Concentration"]).lower())
 
