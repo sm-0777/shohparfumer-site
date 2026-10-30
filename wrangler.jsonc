@@ -1,0 +1,9 @@
+// Cloudflare публикует папку public (там готовый сайт index.html).
+// Сборка не нужна: index.html уже собран. Имя должно совпадать с проектом в Cloudflare.
+{
+  "name": "shoh-parfumer",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./public"
+  }
+}
