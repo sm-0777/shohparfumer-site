@@ -58,7 +58,7 @@ button, a.btn { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- Закреплённая шапка ---------- */
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 25; background: var(--bg); border-bottom: 1px solid var(--line); }
 .topbar .in { max-width: 720px; margin-inline: auto; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.brand { display: flex; align-items: center; gap: 10px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: inherit; text-decoration: none; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
 .dots { display: inline-flex; gap: 4px; flex: none; }
 .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: block; }
 .dots i:nth-child(2) { opacity: .65; }
@@ -267,7 +267,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 
 <header class="topbar gutter">
   <div class="in">
-    <div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="name">Shoh Parfumer<small class="sub" data-t="brandSub">Подбор Парфюма</small></span></div>
+    <a class="brand" id="home" href="./" title="На главную" data-tt="homeAria"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="name">Shoh Parfumer<small class="sub" data-t="brandSub">Подбор Парфюма</small></span></a>
     <div class="tools">
       <button type="button" class="tool fb" id="fbopen" data-ta="fbOpen" aria-label="Обратная связь" aria-haspopup="dialog">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg>
@@ -502,7 +502,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   var LANGS = ["ru", "tg", "en"];
   var I18N = {
     ru: {
-      brandSub: "Подбор Парфюма", fbBtn: "Отзыв", fbOpen: "Обратная связь", langAria: "Язык сайта", themeAria: "Светлая или тёмная тема",
+      brandSub: "Подбор Парфюма", homeAria: "На главную", fbBtn: "Отзыв", fbOpen: "Обратная связь", langAria: "Язык сайта", themeAria: "Светлая или тёмная тема",
       stepsAria: "Шаги", steps: ["Выбор", "Порядок", "Вопросы", "Итог"],
       h1: "Выберите три любимых аромата", lead1: "Мы подберём пять новых духов по вашему вкусу. Это займёт около минуты.",
       slot: "Место {n}", searchPh: "Найти аромат или бренд", hintHome: "Выберите бренд или введите название. В базе {n}.",
@@ -557,7 +557,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       perfume: ["аромат", "аромата", "ароматов"], brand: ["бренд", "бренда", "брендов"]
     },
     tg: {
-      brandSub: "Интихоби Атр", fbBtn: "Фикр", fbOpen: "Алоқаи бозгашт", langAria: "Забони сайт", themeAria: "Мавзӯи равшан ё торик",
+      brandSub: "Интихоби Атр", homeAria: "Ба саҳифаи асосӣ", fbBtn: "Фикр", fbOpen: "Алоқаи бозгашт", langAria: "Забони сайт", themeAria: "Мавзӯи равшан ё торик",
       stepsAria: "Қадамҳо", steps: ["Интихоб", "Тартиб", "Саволҳо", "Натиҷа"],
       h1: "Се атри дӯстдоштаи худро интихоб кунед", lead1: "Мо аз рӯи завқи шумо панҷ атри нав пешниҳод мекунем. Ин тақрибан як дақиқа вақт мегирад.",
       slot: "Ҷойи {n}", searchPh: "Ҷустуҷӯи атр ё бренд", hintHome: "Брендро интихоб кунед ё номро нависед. Дар пойгоҳ {n} ҳаст.",
@@ -612,7 +612,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       perfume: ["атр"], brand: ["бренд"]
     },
     en: {
-      brandSub: "Perfume Finder", fbBtn: "Feedback", fbOpen: "Feedback", langAria: "Site language", themeAria: "Light or dark theme",
+      brandSub: "Perfume Finder", homeAria: "Home", fbBtn: "Feedback", fbOpen: "Feedback", langAria: "Site language", themeAria: "Light or dark theme",
       stepsAria: "Steps", steps: ["Choose", "Rank", "Questions", "Results"],
       h1: "Pick your three favourite fragrances", lead1: "We'll find five new fragrances that match your taste. It takes about a minute.",
       slot: "Spot {n}", searchPh: "Search a fragrance or brand", hintHome: "Choose a brand or type a name. {n} in the database.",
@@ -1540,13 +1540,21 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.gender = b.getAttribute("data-g");
     drawResults();
   });
-  $("#redo").addEventListener("click", function () {
+  // Начать с чистого листа: как при первом открытии сайта
+  function resetAll() {
     state.mode = "known"; state.smells = []; state.gender = "any";
     state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
-    $("#q").value = "";
+    state.showBrands = false; state.bq = ""; state.blimit = 60;
+    $("#q").value = ""; $("#bq").value = "";
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
+    ["#fb", "#sim", "#sh", "#pv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    $("#pvpages").innerHTML = "";
+    try { if (location.search) history.replaceState(null, "", location.pathname); } catch (e) {}
     go(1);
-  });
+  }
+  $("#redo").addEventListener("click", resetAll);
+  // Логотип «Shoh Parfumer» ведёт на главную с любого шага
+  $("#home").addEventListener("click", function (e) { e.preventDefault(); resetAll(); track("home"); });
 
   /* ======================= Советы (бесплатно, без ИИ) ======================= */
   // Тексты собираются из той же формулы: главные вкусы, главные ноты, к какому любимому аромату ближе подборка
@@ -1847,6 +1855,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll("[data-tp]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-tp"))); });
     document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
+    document.querySelectorAll("[data-tt]").forEach(function (el) { el.setAttribute("title", t(el.getAttribute("data-tt"))); });
     document.querySelectorAll(".langs button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang)); });
     render();
     if (!fb.hidden) fbUpdate();
