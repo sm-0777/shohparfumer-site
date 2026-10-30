@@ -18,8 +18,8 @@
 
 ```js
 var TELEGRAM = "sm_0777";   // куда приходят отзывы и заказы
-var GOATCOUNTER = "";       // код счётчика статистики GoatCounter
-var SITE_URL = "";          // адрес сайта для «Поделиться»
+var GOATCOUNTER = "shoh-parfumer"; // статистика: https://shoh-parfumer.goatcounter.com
+var SITE_URL = "https://shoh-parfumer.com/"; // адрес сайта для «Поделиться»
 var STOCK = {               // духи в наличии: "Бренд|Название": цена в сомони
   // "Creed|Aventus": 2500,
 };
