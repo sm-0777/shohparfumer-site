@@ -22,6 +22,16 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - All UI text exists in three languages (ru / tg / en): keep them in sync (I18N and I18N_X objects).
 - Design: dark-first, yellow buttons (#FFC61A) in both themes, theme follows the phone (not persisted).
 - Bottles are generic drawn SVGs (minimal style), never copies of brand bottles. No scraped photos.
+- Results are sorted by match % (owner's decision); the «Хит» label stays on its perfume wherever it lands.
+- History: every screen is a history entry with a state snapshot (snap/applySnap/histPush in `src/site.html`), so the
+  phone Back button goes to the previous screen or closes an open sheet, and reload keeps the selection. In-page «Назад»
+  buttons use navBack(). Disabled inside the Claude preview. New screens must call go()/histPush(); new sheets must call
+  histOverlay() on open and histOverlayClosed() on close.
+- Search keys are prepared in the background (prepLoop); until ready, search matches by spelling and refreshes itself.
+  Keep the first screen free of long synchronous work (weak Android phones: test with CPU throttling ×4–×6).
+- Link preview: og tags are added by make_site.py (--standalone); image `public/og.png` from `src/og.html`.
+  Unknown paths → `public/404.html` (redirects home) via `not_found_handling` in wrangler.jsonc.
+- Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,
   serving shoh-parfumer.com and www. Netlify is no longer used (its free plan forces a badge).

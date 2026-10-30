@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- Картинка для превью ссылки (Telegram, WhatsApp): 1200×630. Собирается в public/og.png командой из README. -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; }
+  body { width: 1200px; height: 630px; background: #0B0B0A; color: #F5F2E9; font-family: "Onest", system-ui, sans-serif; overflow: hidden; position: relative; }
+  .in { position: absolute; inset: 72px 80px; display: flex; flex-direction: column; }
+  .dots { display: flex; gap: 14px; margin-bottom: 40px; }
+  .dots i { width: 26px; height: 26px; border-radius: 50%; background: #FFC61A; display: block; }
+  .dots i:nth-child(2) { opacity: .65; } .dots i:nth-child(3) { opacity: .35; }
+  h1 { margin: 0; font-family: "Unbounded", system-ui, sans-serif; font-weight: 600; font-size: 84px; line-height: 1.05; letter-spacing: -0.01em; }
+  .sub { margin-top: 18px; font-weight: 600; font-size: 30px; letter-spacing: 0.08em; text-transform: uppercase; color: #FFC61A; }
+  .lead { margin-top: auto; font-size: 34px; line-height: 1.35; color: #D8D4C7; max-width: 640px; }
+  .lead b { color: #F5F2E9; font-weight: 600; }
+  .langs { margin-top: 22px; font-size: 24px; font-weight: 600; letter-spacing: 0.06em; color: #A8A496; }
+  .bottles { position: absolute; right: 70px; bottom: 60px; display: flex; align-items: flex-end; gap: 22px; }
+  .bottles svg { display: block; }
+</style>
+</head>
+<body>
+  <div class="in">
+    <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    <h1>Shoh Parfumer</h1>
+    <div class="sub">Подбор парфюма</div>
+    <p class="lead"><b>3 любимых аромата → 5 новых.</b><br>Дюпы, ноты, советы — за минуту.</p>
+    <div class="langs">RU · TJ · EN</div>
+  </div>
+  <!-- Флаконы нарисованы обобщённо (как на сайте), это не флаконы брендов -->
+  <div class="bottles" aria-hidden="true">
+    <svg width="150" height="200" viewBox="0 0 120 160"><defs><clipPath id="a"><rect x="42" y="46" width="36" height="102" rx="12"/></clipPath></defs><g clip-path="url(#a)"><rect x="0" y="82" width="120" height="78" fill="#5FC3D9" opacity=".85"/></g><g fill="none" stroke="#8C8777" stroke-width="1.6"><rect x="42" y="46" width="36" height="102" rx="12"/></g><path d="M47 56 l0 46" stroke="#FFF" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><rect x="50" y="37" width="20" height="10" rx="2" fill="#B9B3A3" stroke="#8C8777"/><g fill="#BFC1C4" stroke="#7E8187"><circle cx="60" cy="23" r="15"/></g></svg>
+    <svg width="190" height="253" viewBox="0 0 120 160"><defs><clipPath id="b"><path d="M30 148 L30 88 Q30 58 60 58 Q90 58 90 88 L90 148 Z"/></clipPath></defs><g clip-path="url(#b)"><rect x="0" y="89" width="120" height="71" fill="#D9A15B" opacity=".85"/></g><g fill="none" stroke="#8C8777" stroke-width="1.6"><path d="M30 148 L30 88 Q30 58 60 58 Q90 58 90 88 L90 148 Z"/></g><path d="M37 68 l0 41" stroke="#FFF" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><rect x="50" y="49" width="20" height="10" rx="2" fill="#B9B3A3" stroke="#8C8777"/><g fill="#E2A92B" stroke="#A8761A"><rect x="43" y="23" width="34" height="26" rx="3"/></g></svg>
+    <svg width="160" height="213" viewBox="0 0 120 160"><defs><clipPath id="c"><rect x="24" y="72" width="72" height="76" rx="9"/></clipPath></defs><g clip-path="url(#c)"><rect x="0" y="99" width="120" height="61" fill="#A9774A" opacity=".85"/></g><g fill="none" stroke="#8C8777" stroke-width="1.6"><rect x="24" y="72" width="72" height="76" rx="9"/></g><path d="M37 82 l0 34" stroke="#FFF" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><rect x="50" y="63" width="20" height="10" rx="2" fill="#B9B3A3" stroke="#8C8777"/><g fill="#8E5E33" stroke="#5C3A1E"><rect x="45" y="33" width="30" height="30" rx="7"/></g></svg>
+  </div>
+</body>
+</html>

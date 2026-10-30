@@ -4,7 +4,9 @@
   "name": "shoh-parfumer",
   "compatibility_date": "2026-06-01",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    // Неверный адрес (например /abc) — страница public/404.html, она сразу открывает главную
+    "not_found_handling": "404-page"
   },
   "workers_dev": true,
   // Домен сайта: Cloudflare сам создаёт записи DNS и сертификат.

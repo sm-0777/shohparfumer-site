@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Подбор парфюма по трём любимым ароматам: 17 000+ духов, ноты и советы. Русский, тоҷикӣ, English.">
 <meta name="theme-color" content="#0B0B0A">
+<link rel="canonical" href="https://shoh-parfumer.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shoh Parfumer">
+<meta property="og:title" content="Shoh Parfumer · Подбор парфюма">
+<meta property="og:description" content="3 любимых аромата → 5 новых. Дюпы, ноты, советы — за минуту. Русский, тоҷикӣ, English.">
+<meta property="og:url" content="https://shoh-parfumer.com/">
+<meta property="og:image" content="https://shoh-parfumer.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shoh Parfumer — подбор парфюма">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0B0A'/%3E%3Ccircle cx='9' cy='16' r='4' fill='%23FFC61A'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23FFC61A' fill-opacity='.65'/%3E%3Ccircle cx='23' cy='16' r='4' fill='%23FFC61A' fill-opacity='.35'/%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Shoh Parfumer · Подбор Парфюма</title>
@@ -66,7 +78,7 @@ button, a.btn { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- Закреплённая шапка ---------- */
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 25; background: var(--bg); border-bottom: 1px solid var(--line); }
 .topbar .in { max-width: 720px; margin-inline: auto; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.brand { display: flex; align-items: center; gap: 10px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: inherit; text-decoration: none; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 44px; font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: inherit; text-decoration: none; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
 .dots { display: inline-flex; gap: 4px; flex: none; }
 .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: block; }
 .dots i:nth-child(2) { opacity: .65; }
@@ -74,11 +86,11 @@ button, a.btn { font: inherit; color: inherit; cursor: pointer; }
 .brand .name { display: flex; flex-direction: column; gap: 2px; line-height: 1.15; min-width: 0; }
 .brand .sub { font-family: var(--font-body); font-weight: 500; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tools { display: flex; align-items: center; gap: 6px; flex: none; }
-.tool { height: 36px; min-width: 36px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.8125rem; font-weight: 600; }
+.tool { height: 40px; min-width: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.8125rem; font-weight: 600; }
 .tool svg { width: 18px; height: 18px; flex: none; }
 .tool.fb { border-color: var(--accent); color: var(--accent-text); }
 .langs { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
-.langs button { height: 34px; min-width: 32px; padding: 0 7px; border: 0; background: transparent; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.langs button { height: 38px; min-width: 40px; padding: 0 8px; border: 0; background: transparent; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .langs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 #themebtn .sun { display: none; }
 :root[data-site="light"] #themebtn .sun { display: block; }
@@ -87,12 +99,28 @@ button, a.btn { font: inherit; color: inherit; cursor: pointer; }
   :root:not([data-site="dark"]) #themebtn .sun { display: block; }
   :root:not([data-site="dark"]) #themebtn .moon { display: none; }
 }
-@media (max-width: 459px) { .tool.fb .lbl { display: none; } .tool.fb { padding: 0; width: 36px; } }
-@media (max-width: 419px) { .dots { display: none; } .brand { font-size: 0.875rem; } .brand .name { white-space: nowrap; } }
+/* Кнопки шапки — не меньше 40 px (удобно нажимать пальцем); на узких телефонах ужимаем отступы и шрифт названия,
+   а на самых узких (меньше 360 px) название и подпись переносятся на две строки — но никогда не обрезаются */
+@media (max-width: 519px) { .tool.fb .lbl { display: none; } .tool.fb { padding: 0; width: 40px; } }
+@media (max-width: 479px) { .dots { display: none; } .brand { font-size: 0.875rem; } .brand .name { white-space: nowrap; } }
+@media (max-width: 389px) {
+  .topbar.gutter { padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .topbar .in { gap: 8px; } .tools { gap: 4px; } .langs button { min-width: 36px; padding: 0 6px; } .brand { font-size: 0.84375rem; }
+}
+@media (max-width: 359px) {
+  .langs button { min-width: 34px; padding: 0 5px; }
+  .brand .name, .brand .sub { white-space: normal; } .brand .sub { overflow: visible; font-size: 0.625rem; }
+  .topbar .in { padding-block: 5px; }
+}
+@media (max-width: 319px) {
+  .topbar.gutter { padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+  .brand { font-size: 0.75rem; } .langs button { min-width: 30px; padding: 0 4px; }
+}
 
 main.gutter { padding-top: 20px; }
 .steps { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; }
-.steps li { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); overflow-wrap: anywhere; }
+.steps li { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); overflow-wrap: break-word; }
+@media (max-width: 379px) { .steps li { font-size: 0.6875rem; letter-spacing: 0.03em; } }
 .steps li::before { content: ""; height: 4px; border-radius: 2px; background: var(--line); }
 .steps li.done::before, .steps li.now::before { background: var(--accent); }
 .steps li.now { color: var(--fg); font-weight: 600; }
@@ -130,7 +158,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .brands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 @media (min-width: 560px) { .brands { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .bcard { min-height: 76px; padding: 12px 14px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
-.bcard b { font-family: var(--font-display); font-weight: 500; font-size: 0.9375rem; line-height: 1.2; overflow-wrap: anywhere; }
+.bcard b { font-family: var(--font-display); font-weight: 500; font-size: 0.9375rem; line-height: 1.2; overflow-wrap: break-word; }
+@media (max-width: 359px) { .bcard b { font-size: 0.84375rem; } }
 .bcard span { color: var(--muted); font-size: 0.8125rem; }
 .bcard:hover { border-color: var(--accent); }
 .bcard.more { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -140,9 +169,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 /* Строка поиска брендов и дюпов остаётся видна при прокрутке (под шапкой сайта) */
 .stickysearch { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 64px)); z-index: 6; background: var(--bg); padding-block: 8px; margin-block: -8px; }
 .dupebtn b { font-size: 1.125rem; }
-.dsrc { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
-.dsrc .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.dsrc b { font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; overflow-wrap: anywhere; }
+.dsrc { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.dsrc .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 10rem; }
+.dsrc b { font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; overflow-wrap: break-word; }
 .dsrc .txt > span:last-child { color: var(--muted); font-size: 0.9375rem; }
 .dsrc .btn { flex: 0 0 auto; }
 .row .go { flex: none; color: var(--muted); font-size: 1.125rem; }
@@ -564,7 +593,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       knownBrands: "Известные бренды", moreBrands: "Посмотреть другие бренды", hideBrands: "Скрыть бренды", moreBrandsCount: "ещё {n}",
       otherBrands: "Другие бренды", hide: "Скрыть", brandSearch: "Найти бренд", brandsPopular: "Сначала самые популярные.",
       brandsFound: "Найдено: {n}", brandsNone: "Такого бренда нет в базе. Попробуйте написать иначе.", moreBrandsBtn: "Показать ещё бренды",
-      allBrands: "Все бренды", found: "Найдено: {n}", notFound: "Ничего не нашли. Попробуйте другое слово или выберите похожий аромат.",
+      allBrands: "Все бренды", found: "Найдено: {n}", notFound: "Ничего не нашли. Попробуйте другое слово или выберите похожий аромат.", searching: "Ищем…",
       showMore: "Показать ещё", selected: "Выбрано: {n} из 3", next: "Дальше", back: "Назад",
       showSlot: "Показать в списке: {n}", removeSlot: "Убрать: {n}", slotTitle: "Выбранный аромат",
       slotHint: "Чтобы убрать этот аромат, нажмите × на блоке или снимите галочку ниже.",
@@ -628,7 +657,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       knownBrands: "Брендҳои машҳур", moreBrands: "Дигар брендҳоро дидан", hideBrands: "Пинҳон кардани брендҳо", moreBrandsCount: "боз {n}",
       otherBrands: "Брендҳои дигар", hide: "Пинҳон", brandSearch: "Ҷустуҷӯи бренд", brandsPopular: "Аввал машҳуртаринҳо.",
       brandsFound: "Ёфт шуд: {n}", brandsNone: "Чунин бренд дар пойгоҳ нест. Тарзи дигар нависед.", moreBrandsBtn: "Боз брендҳо",
-      allBrands: "Ҳамаи брендҳо", found: "Ёфт шуд: {n}", notFound: "Чизе ёфт нашуд. Калимаи дигарро санҷед ё атри монандро интихоб кунед.",
+      allBrands: "Ҳамаи брендҳо", found: "Ёфт шуд: {n}", notFound: "Чизе ёфт нашуд. Калимаи дигарро санҷед ё атри монандро интихоб кунед.", searching: "Ҷустуҷӯ…",
       showMore: "Боз нишон додан", selected: "Интихоб шуд: {n} аз 3", next: "Идома", back: "Бозгашт",
       showSlot: "Дар рӯйхат нишон додан: {n}", removeSlot: "Хориҷ кардан: {n}", slotTitle: "Атри интихобшуда",
       slotHint: "Барои хориҷ кардани ин атр × -ро дар блок пахш кунед ё қайдро дар поён бардоред.",
@@ -692,7 +721,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       knownBrands: "Popular brands", moreBrands: "See other brands", hideBrands: "Hide brands", moreBrandsCount: "{n} more",
       otherBrands: "Other brands", hide: "Hide", brandSearch: "Search brands", brandsPopular: "Most popular first.",
       brandsFound: "Found: {n}", brandsNone: "No such brand in the database. Try another spelling.", moreBrandsBtn: "Show more brands",
-      allBrands: "All brands", found: "Found: {n}", notFound: "Nothing found. Try another word or choose a similar fragrance.",
+      allBrands: "All brands", found: "Found: {n}", notFound: "Nothing found. Try another word or choose a similar fragrance.", searching: "Searching…",
       showMore: "Show more", selected: "Selected: {n} of 3", next: "Next", back: "Back",
       showSlot: "Show in list: {n}", removeSlot: "Remove: {n}", slotTitle: "Selected fragrance",
       slotHint: "To remove this fragrance, tap × on its box or untick it below.",
@@ -1130,14 +1159,19 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (!w) return "";
     return (w[0] + w.slice(1).replace(/[aeiouy]/g, "")).replace(/(.)\1+/g, "$1");
   }
+  // Одни и те же слова (бренды, «eau de parfum») встречаются тысячи раз — ключ слова считаем один раз
+  var PHON_M = new Map(), SKEL_M = new Map();
+  function phonM(w) { var r = PHON_M.get(w); if (r === undefined) { r = phon(w); PHON_M.set(w, r); } return r; }
+  function skelM(w) { var r = SKEL_M.get(w); if (r === undefined) { r = skel(w); SKEL_M.set(w, r); } return r; }
   // Ключи названия: каждое слово и соседние слова слитно (L'Immensité → «limmensite»): как написано, по звучанию, скелет
-  function withKeys(x, text) {
+  function withKeys(x, text, isNorm) {
     if (x.sk) return x;
-    var w = translit(norm(text)).split(/[^a-z0-9]+/).filter(Boolean), rk = [];
+    var w = translit(isNorm ? text : norm(text)).split(/[^a-z0-9]+/).filter(Boolean), rk = [];
     w.forEach(function (a, i) { rk.push(a); if (i + 1 < w.length) rk.push(a + w[i + 1]); });
-    x.rk = rk; x.sk = rk.map(phon); x.ck = rk.map(skel);
+    x.rk = rk; x.sk = rk.map(phonM); x.ck = rk.map(skelM);
+    x.rkm = rk.map(cmask); x.skm = x.sk.map(cmask);   // наборы букв — для быстрого отсева при поиске опечаток
     x.rks = " " + rk.join(" "); x.sks = " " + x.sk.join(" "); x.cks = " " + x.ck.join(" ");
-    x.cks1 = " " + w.map(skel).join(" ");   // скелеты отдельных слов (без слитных пар) — для коротких запросов
+    x.cks1 = " " + w.map(skelM).join(" ");   // скелеты отдельных слов (без слитных пар) — для коротких запросов
     return x;
   }
   // Запрос → слова (после словаря сокращений): как написаны, латиницей и звуковым ключом
@@ -1150,64 +1184,88 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     // скелет — для русских букв (там написание всегда «на слух»); для латиницы хватает звукового ключа и опечаток
     var cyr = /[а-яёӣӯҳқғҷ]/.test(q);
     var ctoks = rtoks.map(function (w) { var k = skel(w); return cyr && w.length >= 3 && k.length >= (w.length >= 6 ? 3 : 2) && k.length * 3 >= w.length ? k : ""; });
-    return { q: q, toks: toks, rtoks: rtoks, ptoks: ptoks, ctoks: ctoks, cyr: cyr };
+    var sp = function (w) { return " " + w; };   // слова с пробелом впереди — «с начала слова» (готовим один раз на запрос)
+    return { q: q, toks: toks, rtoks: rtoks, ptoks: ptoks, ctoks: ctoks, cyr: cyr, st: toks.map(sp), srt: rtoks.map(sp), spt: ptoks.map(sp), sct: ctoks.map(sp) };
   }
   // Совпадение слова запроса: 0 — как написано, 1 — по звучанию, 2 — по скелету (начало слова), -1 — нет
-  function hitLevel(x, hay, tok, rtok, ptok, ctok) {
+  function hitLevel(x, hay, Q, k) {
+    var h1 = x.hay1 || (x.hay1 = " " + hay), tok = Q.toks[k], rtok = Q.rtoks[k];
+    // ключи этого аромата ещё готовятся (первые секунды после открытия) — пока ищем только по написанию
+    if (!x.rks) return (h1.indexOf(Q.st[k]) !== -1 || (rtok.length >= 2 && h1.indexOf(Q.srt[k]) !== -1)) ? 0 : (hay.indexOf(tok) !== -1 ? 1 : -1);
     // с начала слова — лучше, чем в середине («rose» → «Les Sables Roses» выше, чем «Tuberose»)
-    if ((" " + hay).indexOf(" " + tok) !== -1 || (rtok.length >= 2 && x.rks.indexOf(" " + rtok) !== -1)) return 0;
-    if (hay.indexOf(tok) !== -1 || (ptok.length >= 2 && x.sks.indexOf(" " + ptok) !== -1)) return 1;
+    if (h1.indexOf(Q.st[k]) !== -1 || (rtok.length >= 2 && x.rks.indexOf(Q.srt[k]) !== -1)) return 0;
+    var ptok = Q.ptoks[k];
+    if (hay.indexOf(tok) !== -1 || (ptok.length >= 2 && x.sks.indexOf(Q.spt[k]) !== -1)) return 1;
+    var ctok = Q.ctoks[k];
     if (!ctok) return -1;
-    return (ctok.length >= 4 ? x.cks : x.cks1).indexOf(" " + ctok) !== -1 ? 2 : -1;
+    return (ctok.length >= 4 ? x.cks : x.cks1).indexOf(Q.sct[k]) !== -1 ? 2 : -1;
   }
   // Все слова запроса нашлись: 0 — как написано, 1 — по звучанию, 2 — по скелету, -1 — нет
   function nameLevel(x, hay, Q) {
     var lv = 0;
     for (var k = 0; k < Q.toks.length; k++) {
-      var h = hitLevel(x, hay, Q.toks[k], Q.rtoks[k], Q.ptoks[k], Q.ctoks[k]);
+      var h = hitLevel(x, hay, Q, k);
       if (h < 0) return -1; if (h > lv) lv = h;
     }
     return lv;
   }
   // Расстояние между словами с перестановкой соседних букв; если больше k — возвращает k + 1
-  function osa(a, b, k) {
-    var n = a.length, m = b.length, j;
+  // Буферы переиспользуются (без лишней работы для памяти телефона); bl — сравнить только начало слова b
+  var OSA_A = new Int32Array(48), OSA_B = new Int32Array(48), OSA_C = new Int32Array(48);
+  function osa(a, b, k, bl) {
+    var n = a.length, m = bl === undefined ? b.length : Math.min(bl, b.length), j;
     if (Math.abs(n - m) > k) return k + 1;
-    var prev2 = null, prev = [], cur;
+    if (m + 1 > OSA_A.length) { OSA_A = new Int32Array(m + 1); OSA_B = new Int32Array(m + 1); OSA_C = new Int32Array(m + 1); }
+    var prev2 = OSA_A, prev = OSA_B, cur = OSA_C, has2 = false, tmp;
     for (j = 0; j <= m; j++) prev[j] = j;
     for (var i = 1; i <= n; i++) {
-      cur = [i]; var best = i;
+      var ai = a.charCodeAt(i - 1), best = i;
+      cur[0] = i;
       for (j = 1; j <= m; j++) {
-        var v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-        if (prev2 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
+        var bj = b.charCodeAt(j - 1);
+        var v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ai === bj ? 0 : 1));
+        if (has2 && j > 1 && ai === b.charCodeAt(j - 2) && a.charCodeAt(i - 2) === bj) v = Math.min(v, prev2[j - 2] + 1);
         cur[j] = v; if (v < best) best = v;
       }
       if (best > k) return k + 1;
-      prev2 = prev; prev = cur;
+      tmp = prev2; prev2 = prev; prev = cur; cur = tmp; has2 = true;
     }
     return prev[m];
   }
+  // Набор букв слова (битовая маска). Если в слове запроса больше k букв, которых вообще нет в слове названия,
+  // то опечаток точно больше k — такое слово можно не сравнивать (ответ тот же, только быстрее).
+  function cmask(w) {
+    var m = 0;
+    for (var i = 0; i < w.length; i++) {
+      var c = w.charCodeAt(i);
+      if (c >= 97 && c <= 122) m |= 1 << (c - 97); else if (c === 83) m |= 1 << 26; else if (c === 74) m |= 1 << 27; else if (c >= 48 && c <= 57) m |= 1 << 28;
+    }
+    return m;
+  }
+  function popc(m) { var n = 0; while (m) { m &= m - 1; n++; } return n; }
   // Сколько опечаток прощаем: в коротких словах 1, в длинных (8+ букв) 2; в словах из 3 букв — только если в запросе несколько слов
   function typos(len, multi) { return len >= 8 ? 2 : (len >= 4 ? 1 : (multi && len === 3 ? 1 : 0)); }
   // Меньше всего опечаток между словом запроса и словами названия (или их началом, если слово набрано не до конца)
-  function bestTypos(keys, tk, k) {
-    var best = k + 1;
+  function bestTypos(keys, tk, k, masks) {
+    var best = k + 1, tm = masks ? cmask(tk) : 0;
     for (var i = 0; i < keys.length && best > 0; i++) {
       var w = keys[i];
       if (w.indexOf(tk) !== -1) return 0;
       if (!k) continue;
+      if (masks && popc(tm & ~masks[i]) > k) continue;
       best = Math.min(best, osa(tk, w, k));
-      if (w.length > tk.length) best = Math.min(best, osa(tk, w.slice(0, tk.length), k));
+      if (w.length > tk.length) best = Math.min(best, osa(tk, w, k, tk.length));
     }
     return best;
   }
   function fuzzyAll(x, Q) {
+    if (!x.rk) return -1;   // ключи ещё не готовы
     var sum = 0, multi = Q.toks.length > 1;
     for (var t = 0; t < Q.toks.length; t++) {
       var rt = Q.rtoks[t], pt = Q.ptoks[t]; if (!rt) continue;
       // как написано (rk) или по звучанию (sk); у каждого способа свой допуск опечаток
       var k = typos(rt.length, multi), kp = pt ? typos(pt.length, multi) : -1;
-      var a = bestTypos(x.rk, rt, k), bp = pt ? bestTypos(x.sk, pt, kp) : kp + 1;
+      var a = bestTypos(x.rk, rt, k, x.rkm), bp = pt ? bestTypos(x.sk, pt, kp, x.skm) : kp + 1;
       if (a > k && bp > kp) return -1;
       sum += Math.min(a <= k ? a : 99, bp <= kp ? bp : 99);
     }
@@ -1233,8 +1291,39 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     return l0.concat(l1, l2).sort(function (a, b) { return sc.get(b) - sc.get(a); });
   }
   var SEARCH_READY = false;
-  function prepSearch() { if (!SEARCH_READY) { SEARCH_READY = true; P.forEach(function (p) { withKeys(p, p.n + " " + p.b); }); } }
-  setTimeout(prepSearch, 1200);   // ключи поиска готовим заранее, пока человек читает страницу
+  // Ключи поиска (звучание, скелет, опечатки) готовим в фоне маленькими порциями (~12 мс), популярные ароматы — первыми,
+  // чтобы телефон не «замирал» после открытия сайта. Пока они готовятся, поиск уже работает по написанию,
+  // а когда всё готово — открытый поиск сам обновляется.
+  var PREP_I = 0, PREP_ORDER = null, SEARCH_WAIT = false;
+  function prepSome(ms) {
+    if (!PREP_ORDER) PREP_ORDER = P.filter(function (p) { return p.pc >= 100; }).concat(P.filter(function (p) { return !(p.pc >= 100); }));
+    var end = Date.now() + ms;
+    while (PREP_I < PREP_ORDER.length) {
+      var p = PREP_ORDER[PREP_I++];
+      withKeys(p, p.hay, true);
+      if ((PREP_I & 31) === 0 && Date.now() > end) break;
+    }
+    if (PREP_I >= PREP_ORDER.length) SEARCH_READY = true;
+    return SEARCH_READY;
+  }
+  function prepSearch() { if (!SEARCH_READY) SEARCH_WAIT = true; }
+  function prepLoop() {
+    if (!prepSome(12)) { setTimeout(prepLoop, 0); return; }
+    if (SEARCH_WAIT) {
+      SEARCH_WAIT = false;
+      // перерисовываем список, только если найденное изменилось (чтобы строка не «уехала» из-под пальца)
+      var ids = function (sel, attr) { return Array.prototype.map.call(document.querySelectorAll(sel), function (b) { return b.getAttribute(attr); }).join(","); };
+      if (state.step === 1 && state.query.trim() && state.focus === null) {
+        var L1 = listItems().items.slice(0, state.limit).map(function (p) { return String(p.i); }).join(",");
+        if (!L1 || L1 !== ids("#list .row", "data-id")) drawPicker();
+      }
+      if (state.step === 6 && !state.dsrc && state.dq.trim()) {
+        var L6 = dupeItems().items.slice(0, state.dlimit).map(function (p) { return String(p.i); }).join(",");
+        if (!L6 || L6 !== ids("#dlist .row", "data-d")) drawDupe();
+      }
+    }
+  }
+  setTimeout(prepLoop, 200);   // начинаем после первой отрисовки страницы
 
   var state = { step: 1, mode: "known", sel: [], slots: [null, null, null], cur: null, focus: null, smells: [], gender: "any",
     ans: {}, q: 0, query: "", brand: null, limit: PAGE, picks: [], showBrands: false, bq: "", blimit: 60,
@@ -1310,7 +1399,96 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (state.step === 4) drawResults();
     if (state.step === 6) drawDupe();
   }
-  function go(n) { state.step = n; render(); window.scrollTo(0, 0); }
+  function go(n) { state.step = n; render(); window.scrollTo(0, 0); histPush(); }
+
+  /* ======================= История: кнопка «Назад» телефона и обновление страницы ======================= */
+  // Каждый экран — запись в истории браузера с «снимком» подбора. «Назад» телефона возвращает на прошлый экран
+  // (или закрывает открытое окно), а после обновления страницы или возврата из другого приложения подбор не теряется.
+  // В превью Claude историю не трогаем, чтобы не мешать самому приложению.
+  var HIST = false, histTimer = 0, histClosing = false;
+  try { HIST = !inClaude && !!(window.history && history.pushState && history.replaceState); if (HIST && "scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) { HIST = false; }
+  function uidOf(p) { return p && p.uid ? p.uid : null; }
+  function snap() {
+    return { st: state.step, m: state.mode, sl: state.slots.map(uidOf), se: state.sel.map(uidOf), sm: state.smells.slice(), g: state.gender,
+      a: state.ans, q: state.q, qy: state.query, br: state.brand, sb: state.showBrands, bq: state.bq, dq: state.dq, ds: uidOf(state.dsrc) };
+  }
+  function modeOf(s) { return s.st === 1 || s.st === 2 ? "known" : (s.st === 5 ? "novice" : (s.st === 6 ? "dupe" : s.m)); }
+  // Ключ экрана: шаг, номер вопроса, результат дюпа, способ подбора
+  function keyOf(s) { return [s.st, s.st === 3 ? s.q : "", s.st === 6 && s.ds ? "r" : "", modeOf(s)].join(":"); }
+  function applySnap(s) {
+    if (!s || typeof s !== "object") return false;
+    var byU = function (u) { return (u && BY_UID[u]) || null; };
+    var step = [1, 2, 3, 4, 5, 6].indexOf(s.st) !== -1 ? s.st : 1, mode = modeOf({ st: step, m: s.m });
+    if (!MODE_STEPS[mode]) mode = "known";
+    var slots = (s.sl || []).slice(0, 3).map(byU); while (slots.length < 3) slots.push(null);
+    var sel = (s.se || []).map(byU).filter(Boolean), smells = (s.sm || []).filter(function (id) { return SMELL_BY[id]; }).slice(0, 4);
+    // без выбранных ароматов / запахов дальние шаги не открываем
+    if (mode === "known" && step >= 2 && step <= 4 && sel.length !== 3) step = 1;
+    if (mode === "novice" && (step === 3 || step === 4) && smells.length < 2) step = 5;
+    state.step = step; state.mode = mode; state.slots = slots; state.sel = sel; state.smells = smells;
+    state.gender = s.g === "m" || s.g === "f" ? s.g : "any";
+    state.ans = s.a && typeof s.a === "object" ? s.a : {};
+    state.q = step === 3 ? Math.max(0, Math.min(Number(s.q) || 0, MODE_Q[mode].length - 1)) : 0;
+    state.query = String(s.qy || ""); state.brand = s.br ? String(s.br) : null; state.showBrands = !!s.sb; state.bq = String(s.bq || "");
+    state.cur = null; state.focus = null; state.limit = PAGE; state.blimit = 60; state.picks = []; state.picksFor = "";
+    state.dq = String(s.dq || ""); state.dsrc = mode === "dupe" ? byU(s.ds) : null; state.dlimit = state.dq.trim() ? PAGE : DUPE_TOP_N;
+    $("#q").value = state.query; $("#bq").value = state.bq; $("#dq").value = state.dq;
+    return true;
+  }
+  // Сохранить текущий экран в его запись истории (сразу или чуть позже — при наборе текста)
+  function histFlush() {
+    if (!HIST) return;
+    clearTimeout(histTimer); histTimer = 0;
+    try { var st = history.state || {}; history.replaceState({ sp: snap(), d: st.d || 0, bk: st.bk || "", ov: st.ov || 0 }, ""); } catch (e) {}
+  }
+  function histSave() { if (HIST) { clearTimeout(histTimer); histTimer = setTimeout(histFlush, 250); } }
+  // Новый экран — новая запись (тот же экран — просто обновить запись)
+  function histPush() {
+    if (!HIST) return;
+    clearTimeout(histTimer); histTimer = 0;
+    try {
+      var st = history.state || {}, prev = st.sp, s = snap(), url = location.search ? location.pathname : undefined;
+      if (prev && keyOf(prev) === keyOf(s)) { history.replaceState({ sp: s, d: st.d || 0, bk: st.bk || "", ov: st.ov || 0 }, ""); return; }
+      // ушли на другой экран при открытом окне — запись окна становится записью нового экрана
+      if (st.ov) { history.replaceState({ sp: s, d: st.d || 0, bk: st.bk || "" }, "", url); return; }
+      history.pushState({ sp: s, d: (st.d || 0) + 1, bk: prev ? keyOf(prev) : "" }, "", url);
+    } catch (e) {}
+  }
+  // Кнопка «Назад» на странице: если прошлая запись истории — нужный экран, идём по истории (как кнопка телефона)
+  function navBack(expect, fallback) {
+    var st = HIST ? history.state : null;
+    if (st && st.d > 0 && st.bk === expect) { history.back(); return; }
+    histFlush(); fallback();
+  }
+  // Окна («Похожие», «Поделиться», «Отзыв», PDF) — тоже запись в истории: «Назад» телефона закрывает окно
+  function histOverlay() {
+    if (!HIST) return;
+    try {
+      var st = history.state || {}; if (st.ov) return;
+      histFlush();
+      var s = snap(); history.pushState({ sp: s, d: (st.d || 0) + 1, bk: keyOf(s), ov: 1 }, "");
+    } catch (e) {}
+  }
+  // окно закрыли крестиком — убираем его запись из истории
+  function histOverlayClosed() { if (!HIST || histClosing) return; try { if (history.state && history.state.ov) history.back(); } catch (e) {} }
+  function closeOverlays() {
+    if (!$("#pv").hidden) closePreview();
+    if (!$("#sh").hidden) closeShare();
+    if (!$("#sim").hidden) closeSimilar();
+    if (!$("#fb").hidden) fbClose();
+  }
+  window.addEventListener("popstate", function (e) {
+    if (!HIST) return;
+    var st = e.state || {};
+    if (["#fb", "#sim", "#sh", "#pv"].some(function (q) { return !$(q).hidden; })) {
+      histClosing = true;
+      try { closeOverlays(); } finally { histClosing = false; }
+    }
+    clearTimeout(histTimer); histTimer = 0;
+    if (st.sp && keyOf(st.sp) === keyOf(snap())) return;   // тот же экран (закрылось окно) — ничего не перерисовываем
+    if (!applySnap(st.sp)) applySnap({ st: 1 });
+    render(); window.scrollTo(0, 0);
+  });
 
   /* ======================= Шаг 1 ======================= */
   var BSTATS = null;
@@ -1343,17 +1521,18 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       prepSearch();
       var Q = qParse(state.query), toks = Q.toks, sets = toks.map(noteSetFor), byName = [], bySound = [], bySkel = [], byNotes = [];
       P.forEach(function (p) {
-        var lv = nameLevel(p, p.hay, Q);
-        if (lv >= 0) { (lv === 0 ? byName : (lv === 1 ? bySound : bySkel)).push(p); return; }
-        var nameAll = true;
+        // каждое слово запроса: нашлось в названии (уровень) или нет; ненайденные слова ищем в нотах
+        var lv = 0, miss = false;
         for (var k = 0; k < toks.length; k++) {
-          if (hitLevel(p, p.hay, toks[k], Q.rtoks[k], Q.ptoks[k], Q.ctoks[k]) >= 0) continue;
-          nameAll = false;
+          var h = hitLevel(p, p.hay, Q, k);
+          if (h > lv) lv = h;
+          if (h >= 0) continue;
+          miss = true;
           var hit = false;
           if (sets[k]) for (var j = 0; j < p.raw.length; j++) { if (sets[k][p.raw[j] >> 2]) { hit = true; break; } }
           if (!hit) return;
         }
-        (nameAll ? byName : byNotes).push(p);
+        if (miss) byNotes.push(p); else (lv === 0 ? byName : (lv === 1 ? bySound : bySkel)).push(p);
       });
       byName.sort(byPop); bySound.sort(byPop); bySkel.sort(byPop); byNotes.sort(byPop);
       byName = rankLevels(byName, bySound, bySkel, Q.cyr);
@@ -1410,7 +1589,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#brandsblock").hidden = Lx.mode !== "home";
     $("#resultsblock").hidden = Lx.mode === "home";
     $("#listhint").textContent = Lx.mode === "home" ? t("hintHome", { n: pl(P.length, "perfume") })
-      : (Lx.mode === "slot" ? t("slotHint") : (Lx.items.length ? (Lx.notes.length ? t("byNotes", { list: Lx.notes.join(", ") }) : "") : t("notFound")));
+      : (Lx.mode === "slot" ? t("slotHint") : (Lx.items.length ? (Lx.notes.length ? t("byNotes", { list: Lx.notes.join(", ") }) : "") : t(SEARCH_READY ? "notFound" : "searching")));
     $("#slotsim").hidden = Lx.mode !== "slot";
     if (Lx.mode === "home") {
       var others = brandStats().length - 5;
@@ -1492,13 +1671,14 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   $("#q").addEventListener("input", function (e) { state.query = e.target.value; state.limit = PAGE; state.focus = null; drawPicker(); });
   $("#to2").addEventListener("click", function () {
     if (curSlot() !== -1) return;
+    histFlush();
     state.mode = "known"; state.sel = state.slots.slice(); state.focus = null;
     state.sel.forEach(function (p) { track("choose/" + p.b + " — " + p.n); });
     go(2);
   });
   $("#slotsim").addEventListener("click", function () { var p = state.slots[state.focus]; if (p) openSimilar(p, this); });
-  $("#goNovice").addEventListener("click", function () { state.mode = "novice"; state.ans = {}; state.q = 0; go(5); });
-  $("#goGift").addEventListener("click", function () { state.mode = "gift"; state.ans = {}; state.q = 0; go(3); });
+  $("#goNovice").addEventListener("click", function () { histFlush(); state.mode = "novice"; state.ans = {}; state.q = 0; go(5); });
+  $("#goGift").addEventListener("click", function () { histFlush(); state.mode = "gift"; state.ans = {}; state.q = 0; go(3); });
 
   /* ======================= Новичок: любимые запахи ======================= */
   function drawSmells() {
@@ -1519,11 +1699,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     drawSmells();
     var again = $('[data-s="' + id + '"]'); if (again) again.focus();
   });
-  $("#back5").addEventListener("click", function () { state.mode = "known"; go(1); });
+  $("#back5").addEventListener("click", function () { navBack("1:::known", function () { state.mode = "known"; go(1); }); });
   $("#to3n").addEventListener("click", function () {
     if (state.smells.length < 2) return;
     state.smells.forEach(function (id) { track("smell/" + id); });
-    state.q = 0; go(3);
+    histFlush(); state.q = 0; go(3);
   });
 
   /* ======================= Шаг 2 ======================= */
@@ -1542,8 +1722,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var again = $("[data-" + (up !== null ? "up" : "down") + '="' + j + '"]:not(:disabled)') || $("[data-" + (up !== null ? "down" : "up") + '="' + j + '"]');
     if (again) again.focus();
   });
-  $("#back1").addEventListener("click", function () { state.slots = state.sel.slice(); state.cur = null; state.focus = null; go(1); });
-  $("#to3").addEventListener("click", function () { state.q = 0; go(3); });
+  $("#back1").addEventListener("click", function () { navBack("1:::known", function () { state.slots = state.sel.slice(); state.cur = null; state.focus = null; go(1); }); });
+  $("#to3").addEventListener("click", function () { histFlush(); state.q = 0; go(3); });
 
   /* ======================= Шаг 3 ======================= */
   // Вопросы зависят от способа подбора
@@ -1565,7 +1745,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     drawQuestion();
     setTimeout(function () {
       if (state.step !== 3) return;
-      if (state.q < qList().length - 1) { state.q++; drawQuestion(); window.scrollTo(0, 0); }
+      histFlush();   // ответ сохраняется в запись этого вопроса — «Назад» покажет его выбранным
+      if (state.q < qList().length - 1) { state.q++; drawQuestion(); window.scrollTo(0, 0); histPush(); }
       else {
         if (state.mode === "gift") track("gift/" + [state.ans.who, state.ans.character, state.ans.budget].join("/"));
         track("result/" + state.mode);
@@ -1574,10 +1755,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     }, 220);
   });
   $("#qback").addEventListener("click", function () {
-    if (state.q > 0) { state.q--; drawQuestion(); return; }
-    if (state.mode === "known") go(2);
-    else if (state.mode === "novice") go(5);
-    else { state.mode = "known"; go(1); }
+    var m = state.mode;
+    if (state.q > 0) { navBack("3:" + (state.q - 1) + "::" + m, function () { state.q--; drawQuestion(); window.scrollTo(0, 0); histPush(); }); return; }
+    navBack(m === "known" ? "2:::known" : (m === "novice" ? "5:::novice" : "1:::known"), function () {
+      if (m === "known") go(2);
+      else if (m === "novice") go(5);
+      else { state.mode = "known"; go(1); }
+    });
   });
 
   /* ======================= Подбор: сходство по конкретным нотам ======================= */
@@ -1694,8 +1878,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       if (r.label !== "hit" && r.p.s === "a") r.label = "year";
       r.why = explain(r.p, favs);
     });
-    // Хит всегда первым, остальные по сходству
-    out.sort(function (a, b) { return ((b.label === "hit") - (a.label === "hit")) || (b.p.score - a.p.score); });
+    // Порядок — по проценту сходства (решение владельца); пометка «Хит» остаётся на своём аромате, где бы он ни оказался
+    out.sort(function (a, b) { return (b.p.sim - a.p.sim) || (b.p.score - a.p.score); });
     return out;
   }
   // Объяснение: общие ноты с любимыми ароматами (индексы нот) и самый близкий из трёх
@@ -1788,6 +1972,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   // Начать с чистого листа: как при первом открытии сайта
   function resetAll() {
+    histFlush();   // экран, с которого уходим, остаётся в истории как был
     state.mode = "known"; state.smells = []; state.gender = "any";
     state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
     state.showBrands = false; state.bq = ""; state.blimit = 60;
@@ -1796,7 +1981,6 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
     ["#fb", "#sim", "#sh", "#pv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
     $("#pvpages").innerHTML = "";
-    try { if (location.search) history.replaceState(null, "", location.pathname); } catch (e) {}
     go(1);
   }
   $("#redo").addEventListener("click", resetAll);
@@ -1863,8 +2047,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#dpick").hidden = !!src; $("#dres").hidden = !src;
     if (!src) {
       var D = dupeItems();
-      $("#dhint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t("dupeNotFound"));
-      $("#dask").hidden = D.pop || D.items.length > 0;
+      $("#dhint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t(SEARCH_READY ? "dupeNotFound" : "searching"));
+      $("#dask").hidden = D.pop || D.items.length > 0 || !SEARCH_READY;
       $("#dres").hidden = true;
       $("#dlist").innerHTML = D.items.slice(0, state.dlimit).map(function (p) {
         return '<li><button type="button" class="row" data-d="' + p.i + '"><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) +
@@ -1901,6 +2085,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     }).join("");
   }
   $("#goDupe").addEventListener("click", function () {
+    histFlush();
     state.mode = "dupe"; state.dsrc = null; state.dq = ""; state.dlimit = DUPE_TOP_N; $("#dq").value = "";
     go(6); track("dupe-open");
   });
@@ -1908,18 +2093,21 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   $("#dmore").addEventListener("click", function () { state.dlimit += PAGE; drawDupe(); });
   $("#dlist").addEventListener("click", function (e) {
     var b = e.target.closest("[data-d]"); if (!b) return;
+    histFlush();
     state.dsrc = P[Number(b.getAttribute("data-d"))];
     track("dupe/" + state.dsrc.b + " — " + state.dsrc.n);
-    drawDupe(); window.scrollTo(0, 0);
+    drawDupe(); window.scrollTo(0, 0); histPush();
   });
-  $("#dother").addEventListener("click", function () { state.dsrc = null; drawDupe(); window.scrollTo(0, 0); $("#dq").focus(); });
+  $("#dother").addEventListener("click", function () {
+    navBack("6:::dupe", function () { state.dsrc = null; drawDupe(); window.scrollTo(0, 0); histPush(); $("#dq").focus(); });
+  });
   $("#dupes").addEventListener("click", function (e) {
     var o = e.target.closest("[data-dorder]"), d = e.target.closest("[data-d]"), a = e.target.closest("[data-ask]");
     if (o) orderClick(state.dlist[Number(o.getAttribute("data-dorder"))].p);
-    if (d) { state.dsrc = P[Number(d.getAttribute("data-d"))]; drawDupe(); window.scrollTo(0, 0); }
+    if (d) { histFlush(); state.dsrc = P[Number(d.getAttribute("data-d"))]; drawDupe(); window.scrollTo(0, 0); histPush(); }
     if (a) { $("#fbmsg").value = t("dupeAskText", { q: state.dsrc.b + " " + state.dsrc.n }); fbOpen(); fbUpdate(); }
   });
-  $("#back6").addEventListener("click", function () { state.mode = "known"; state.dsrc = null; go(1); });
+  $("#back6").addEventListener("click", function () { navBack("1:::known", function () { state.mode = "known"; state.dsrc = null; go(1); }); });
   $("#dask").addEventListener("click", function () { $("#fbmsg").value = t("dupeAskText", { q: state.dq.trim() }); fbOpen(); fbUpdate(); });
 
   /* ======================= Советы (бесплатно, без ИИ) ======================= */
@@ -2048,11 +2236,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#pvpages").innerHTML = urls.map(function (u, n) {
       return '<img src="' + u + '" alt="' + esc(t("pvPage", { n: n + 1 })) + '" width="1240" height="1754">';
     }).join("");
-    pv.hidden = false;
+    pv.hidden = false; histOverlay();
     pv.querySelector(".sheet").scrollTop = 0;
     $("#pvclose").focus();
   }
-  function closePreview() { pv.hidden = true; $("#pvpages").innerHTML = ""; $("#pdfbtn").focus(); }
+  function closePreview() { pv.hidden = true; $("#pvpages").innerHTML = ""; $("#pdfbtn").focus(); histOverlayClosed(); }
   $("#pvclose").addEventListener("click", closePreview);
   $("#pvok").addEventListener("click", closePreview);
   pv.addEventListener("click", function (e) { if (e.target === pv) closePreview(); });
@@ -2084,7 +2272,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       .slice(0, 80);
     track("similar/" + src.b + " — " + src.n);
     drawSimilar();
-    sim.hidden = false;
+    sim.hidden = false; histOverlay();
     sim.querySelector(".sheet").scrollTop = 0;
     $("#simclose").focus();
   }
@@ -2111,7 +2299,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         (p.price && TELEGRAM ? '<a class="btn sm" data-order="' + p.i + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a>" : "") + "</li>";
     }).join("") : '<li class="small">' + esc(t("simNone")) + "</li>";
   }
-  function closeSimilar() { sim.hidden = true; simSrc = null; if (simOpener && simOpener.focus) simOpener.focus(); }
+  function closeSimilar() { sim.hidden = true; simSrc = null; if (simOpener && simOpener.focus) simOpener.focus(); histOverlayClosed(); }
   $("#simtabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-f]"); if (!b) return; simFilter = b.getAttribute("data-f"); drawSimilar(); });
   $("#simlist").addEventListener("click", function (e) { var o = e.target.closest("[data-order]"); if (o) orderClick(P[Number(o.getAttribute("data-order"))]); });
   $("#simclose").addEventListener("click", closeSimilar);
@@ -2136,11 +2324,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#shtg").href = "https://t.me/share/url?url=" + encodeURIComponent(url || text) + (url ? "&text=" + encodeURIComponent(text) : "");
     $("#shwa").href = "https://wa.me/?text=" + encodeURIComponent(full);
     $("#shstatus").textContent = "";
-    sh.hidden = false;
+    sh.hidden = false; histOverlay();
     $("#shclose").focus();
     track("share");
   }
-  function closeShare() { sh.hidden = true; $("#sharebtn").focus(); }
+  function closeShare() { sh.hidden = true; $("#sharebtn").focus(); histOverlayClosed(); }
   $("#sharebtn").addEventListener("click", openShare);
   $("#shclose").addEventListener("click", closeShare);
   sh.addEventListener("click", function (e) { if (e.target === sh) closeShare(); });
@@ -2200,8 +2388,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       $("#fbcontact").textContent = t("fbNoContact");
     }
   }
-  function fbOpen() { lastFocus = document.activeElement; fb.hidden = false; $("#fbstatus").textContent = ""; fbUpdate(); $("#fbmsg").focus(); track("feedback"); }
-  function fbClose() { fb.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  function fbOpen() { lastFocus = document.activeElement; fb.hidden = false; histOverlay(); $("#fbstatus").textContent = ""; fbUpdate(); $("#fbmsg").focus(); track("feedback"); }
+  function fbClose() { fb.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); histOverlayClosed(); }
   $("#fbopen").addEventListener("click", fbOpen);
   $("#fbclose").addEventListener("click", fbClose);
   fb.addEventListener("click", function (e) { if (e.target === fb) fbClose(); });
@@ -2219,6 +2407,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   /* ======================= Язык ======================= */
   function applyLang() {
     root.lang = lang;
+    try { document.title = "Shoh Parfumer · " + t("brandSub"); } catch (e) {}   // заголовок вкладки на выбранном языке
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll("[data-tp]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-tp"))); });
     document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
@@ -2236,8 +2425,18 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     applyLang();
   });
 
-  if (restoreFromUrl()) track("opened-shared-link");
+  // Открытие страницы: после обновления — тот же экран из истории; по ссылке «Поделиться» — подборка; иначе главная
+  var fromHist = false;
+  try { if (HIST && history.state && history.state.sp) fromHist = applySnap(history.state.sp); } catch (e) { fromHist = false; }
+  if (!fromHist && restoreFromUrl()) track("opened-shared-link");
   applyLang();
+  histFlush();
+  // любое нажатие или ввод текста — сохраняем экран в его запись истории (с небольшой задержкой)
+  document.addEventListener("click", histSave);
+  document.addEventListener("input", histSave);
+  // ушли в другое приложение или закрывают вкладку — сохраняем сразу
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") histFlush(); });
+  window.addEventListener("pagehide", histFlush);
 })();
 </script>
 
