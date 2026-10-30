@@ -10,6 +10,9 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Claude artifact link), let the owner check it, and push only after he says «загружай».
 - Known dupes live in `data/dupes.txt`; apply with `python3 -I src/add_dupes.py data/db.json data/dupes.txt`
   (adds `du`/`xd` to the DB), then rebuild. The «Найти дюп» screen fills the rest by formula from dupe houses.
+- Owner's firm rule: never "fix" bad or missing data by switching a feature off or hiding results. Data gaps
+  (missing notes, borrowed notes, missing dupe brands, no 2025–26 releases) get filled from real sources
+  (official brand sites, shops, a licensed data API). Disabling the formula is not an acceptable solution.
 - All UI text exists in three languages (ru / tg / en): keep them in sync (I18N and I18N_X objects).
 - Design: dark-first, yellow buttons (#FFC61A) in both themes, theme follows the phone (not persisted).
 - Bottles are generic drawn SVGs (minimal style), never copies of brand bottles. No scraped photos.
