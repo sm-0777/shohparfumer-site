@@ -6,8 +6,9 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Edit `src/site.html` (template), never hand-edit `public/index.html`.
 - Rebuild: `python3 -I src/make_site.py src/site.html data/db.json public/index.html --standalone`.
 - Owner settings live at the top of the script in `src/site.html`: TELEGRAM, GOATCOUNTER, SITE_URL, STOCK.
-- Workflow (owner's rule): never push to `main` right away. Build a test version first (non-standalone build →
-  Claude artifact link), let the owner check it, and push only after he says «загружай».
+- Workflow: since 30.10.2026 the owner asks for finished changes to go live right away AND be shown in the chat
+  (non-standalone build → Claude artifact link, same URL each time). If he says «пока не загружай» / «не публикуй»,
+  build the test version only and push after he says «загружай».
 - Known dupes live in `data/dupes.txt`; apply with `python3 -I src/add_dupes.py data/db.json data/dupes.txt`
   (adds `du`/`xd` to the DB), then rebuild. The «Найти дюп» screen shows ONLY known dupes (up to 5) — the owner
   rejected formula-based «похож по нотам» there. Its search covers the whole base (perfumes with dupes first);
