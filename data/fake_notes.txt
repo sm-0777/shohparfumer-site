@@ -1,0 +1,87 @@
+# Ложные «ноты», которые сайт-источник (Parfumo) подмешивает в данные против копирования.
+# Это выдуманные слова и «вонючие» слова-приманки. Скрипт src/clean_notes.py удаляет их из базы.
+blimfark
+bregnotrix
+clorpt
+drenzlor
+drindle
+finglebop
+flabtus
+flibtix
+glimzorith
+glomtak
+gorptik
+grebzor
+grimtak
+moplonk
+nebulonix
+plonktar
+quarklox
+quintozar
+sneerlax
+snorplax
+trungle
+vexlim
+vorblex
+vorplaxa
+vorptal
+xylophazq
+zarbot
+zarquon
+zenthorium
+zorplox
+acridity
+bilge
+carcass
+carrion
+contamination
+dankness
+decay
+disgust
+filth
+foulness
+funk
+garbage
+grease
+grim
+grunge
+harshness
+infestation
+malodor
+mildew
+mold
+moldy wallpaper
+nastiness
+nausea
+noxiousness
+odor
+offense
+pollution
+pungidity
+putrescence
+putridity
+rancidness
+rankness
+repulse
+rot
+rotten egg
+rotten onion
+rotting flower
+scum
+sewage
+sewer
+skunk
+sludge
+smog
+sock
+sourmilk
+spoil
+spoilage
+spoiled meat
+spoiled spice
+stalebread
+staleness
+stench
+stink
+swamp
+gymwear
