@@ -5,5 +5,11 @@
   "compatibility_date": "2026-06-01",
   "assets": {
     "directory": "./public"
-  }
+  },
+  "workers_dev": true,
+  // Домен сайта: Cloudflare сам создаёт записи DNS и сертификат.
+  "routes": [
+    { "pattern": "shoh-parfumer.com", "custom_domain": true },
+    { "pattern": "www.shoh-parfumer.com", "custom_domain": true }
+  ]
 }
