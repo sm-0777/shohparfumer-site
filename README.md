@@ -52,6 +52,9 @@ python3 -I src/add_dupes.py data/db.json data/dupes.txt
 curl -L -o parfumo.csv https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-12-10/parfumo_data_clean.csv
 python3 -I src/build_db.py parfumo.csv data/db.json
 python3 -I src/postprocess.py data/db.json
+python3 -I src/clean_notes.py data/db.json data/fake_notes.txt     # убрать подменённые ноты
+python3 -I src/add_notes.py data/db.json data/notes_manual.jsonl    # проверенные ноты
+python3 -I src/add_perfumes.py data/db.json data/perfumes_extra.jsonl  # недостающие ароматы
 python3 -I src/add_dupes.py data/db.json data/dupes.txt
 ```
 
