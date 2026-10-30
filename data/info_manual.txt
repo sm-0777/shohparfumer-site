@@ -1,0 +1,6 @@
+# Ручные поправки года выпуска и концентрации для раздела «Сравнить» (src/add_info.py).
+# Формат: Бренд | Название (как на сайте) | год | концентрация (EDT, EDP, EXT, PAR, EDC, OIL; пусто — не менять)
+# Сюда — только проверенные данные, с источником в комментарии.
+Tom Ford | Oud Wood Eau de Parfum | 2007 | EDP              # kafkaesqueblog.com, обзор 2013: «launched Private Blend Oud Wood in 2007»
+Tom Ford | Tuscan Leather Eau de Parfum | 2007 | EDP        # scentverdict.com: «an Eau de Parfum launched in 2007»
+XerJoff | Erba Pura | 2019 | EDP                            # scentverdict.com: «an Eau de Parfum launched in 2019» (в Parfumo ошибочно 2013)

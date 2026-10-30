@@ -51,6 +51,10 @@ Telegram запоминает превью ссылки; чтобы он пок�
 - Ключи умного поиска готовятся в фоне маленькими порциями, популярные ароматы — первыми; пока они готовятся, поиск
   уже работает по написанию и сам обновляется, когда всё готово.
 - Пять ароматов в итоге — по проценту сходства; пометка «Хит» остаётся на своём аромате.
+- «Сравнить ароматы» (кнопка внизу главной, после «Найти дюп»): два парфюма рядом — сходство, известный дюп,
+  сезон, пол, цена, оценка, хит, год выпуска и концентрация (только если известны), характер, аккорды, ноты общие
+  и разные, по слоям. Стойкость и шлейф не показываются — данных нет. Год и концентрация — `src/add_info.py`
+  (из Parfumo; ручные поправки с источниками — `data/info_manual.txt`).
 
 ## Дюпы (раздел «Найти дюп»)
 
@@ -74,6 +78,7 @@ python3 -I src/clean_notes.py data/db.json data/fake_notes.txt     # убрат�
 python3 -I src/add_notes.py data/db.json data/notes_manual.jsonl    # проверенные ноты
 python3 -I src/add_perfumes.py data/db.json data/perfumes_extra.jsonl  # недостающие ароматы
 python3 -I src/add_dupes.py data/db.json data/dupes.txt
+python3 -I src/add_info.py data/db.json parfumo.csv data/info_manual.txt  # год выпуска и концентрация (для «Сравнить»)
 ```
 
 Источник данных: [Parfumo Fragrance Dataset (TidyTuesday)](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-12-10).

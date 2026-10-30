@@ -155,6 +155,31 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .dsrc .txt > span:last-child { color: var(--muted); font-size: 0.9375rem; }
 .dsrc .btn { flex: 0 0 auto; }
 .row .go { flex: none; color: var(--muted); font-size: 1.125rem; }
+/* ---------- Сравнить ---------- */
+.cslots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cmpbtn { margin-top: 0; }
+#ccount { white-space: nowrap; }
+.cmp-head { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cmp-col { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.cmp-col .bottle { width: 60px; }
+.cmp-col h3 { margin: 4px 0 0; font-family: var(--font-display); font-weight: 500; font-size: 0.9375rem; line-height: 1.25; overflow-wrap: break-word; max-width: 100%; }
+.cmp-col .by { color: var(--muted); font-size: 0.875rem; overflow-wrap: break-word; max-width: 100%; }
+.cmp-sim { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.cmp-sim b { font-family: var(--font-display); font-weight: 600; font-size: 1.75rem; color: var(--accent-text); line-height: 1.2; }
+.cmp-dupe { margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--soft); font-size: 0.9375rem; text-align: center; }
+.cmp-block { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.cmp-block h2 { font-size: 1.0625rem; }
+.cmp-row { display: flex; flex-direction: column; gap: 4px; }
+.cmp-row + .cmp-row { padding-top: 10px; border-top: 1px solid var(--line); }
+.cmp-lbl { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.cmp-vals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cmp-vals > * { min-width: 0; overflow-wrap: break-word; }
+.cmp-vals .dash { color: var(--muted); }
+.cmp-vals .track { margin-top: 6px; }
+.cmp-sub { font-size: 0.875rem; font-weight: 600; margin-top: 2px; }
+.chip.same { background: var(--accent); color: var(--accent-ink); }
+.cmp-acts { display: flex; flex-wrap: wrap; gap: 10px; }
+.cmp-acts .btn { flex: 1 1 140px; }
 .row .kd { color: var(--accent-text); }
 .allb { padding-top: 6px; }
 .bchips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -344,6 +369,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         <button type="button" class="btn ghost" id="bmore" data-t="moreBrandsBtn" hidden>Показать ещё бренды</button>
       </div>
       <button type="button" class="bcard more dupebtn" id="goDupe"><b data-t="dupeBtn">Найти дюп</b><span data-t="dupeBtnSub">Один парфюм → 5 недорогих аналогов</span></button>
+      <button type="button" class="bcard more dupebtn cmpbtn" id="goCompare"><b data-t="cmpBtn">Сравнить ароматы</b><span data-t="cmpBtnSub">Два парфюма → чем похожи и чем отличаются</span></button>
     </div>
 
     <div class="stack" id="resultsblock" style="gap:12px" hidden>
@@ -385,6 +411,25 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     </div>
     <div class="bar">
       <button class="btn ghost sm" id="back6" type="button" data-t="back">Назад</button>
+    </div>
+  </section>
+
+  <!-- Сравнить: два парфюма рядом — сходство, отличия, ноты -->
+  <section data-step="7" class="stack" aria-labelledby="h7" hidden>
+    <h1 id="h7" data-t="h7">Сравнить ароматы</h1>
+    <p class="lead" data-t="lead7">Выберите два парфюма — покажем, чем они похожи и чем отличаются.</p>
+    <div class="stack" id="cpick" style="gap:12px">
+      <div class="slots cslots" id="cslots" aria-live="polite"></div>
+      <div class="stickysearch"><input id="cq" class="search" type="search" data-tp="dupeSearchPh" placeholder="Название духов или бренд" autocomplete="off" data-ta="dupeSearchPh" aria-label="Название духов или бренд"></div>
+      <p class="small" id="chint"></p>
+      <ul class="list" id="clist"></ul>
+      <button type="button" class="btn ghost" id="cmore" data-t="showMore" hidden>Показать ещё</button>
+    </div>
+    <div class="stack" id="cres" style="gap:14px" hidden></div>
+    <div class="bar">
+      <button class="btn ghost sm" id="back7" type="button" data-t="back">Назад</button>
+      <span class="small" id="ccount"></span>
+      <button class="btn" id="cgo" type="button" data-t="cmpGo" disabled>Сравнить</button>
     </div>
   </section>
 
@@ -750,6 +795,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Новые тексты: подбор для новичка, подарок, пол, похожие, наличие, «поделиться»
   var I18N_X = {
     ru: {
+      cmpBtn: "Сравнить ароматы", cmpBtnSub: "Два парфюма → чем похожи и чем отличаются", h7: "Сравнить ароматы",
+      lead7: "Выберите два парфюма — покажем, чем они похожи и чем отличаются.", cmpLeft: "Слева", cmpRight: "Справа",
+      cmpCount: "{n} из 2", cmpGo: "Сравнить", cmpSimilar: "Похожи на {p}%", cmpSimNote: "По нотам, аккордам и общему характеру.",
+      cmpDupe: "Известный дюп: «{d}» создан по мотивам «{o}».", cmpSeason: "Сезон", cmpWho: "Для кого", cmpPrice: "Цена",
+      cmpRating: "Оценка покупателей", cmpRateVal: "{r} из 10", cmpHit: "Хит", cmpYes: "да", cmpNo: "нет", cmpYear: "Год выпуска",
+      cmpConc: "Концентрация", cmpTaste: "Характер", cmpAcc: "Аккорды", cmpNotes: "Ноты", cmpCommon: "Общие", cmpOnly: "Только в «{n}»",
+      cmpNone: "нет", cmpLayers: "По слоям: общие ноты выделены", layerTop: "Верхние", layerHeart: "Сердце", layerBase: "База",
+      cmpNoNotes: "Ноты «{n}» в базе пока не указаны — сравнить ноты нельзя.", cmpSwap: "Поменять местами", cmpOther: "Выбрать другие",
+      cmpShareText: "Сравнение на Shoh Parfumer: {a} и {b} — похожи на {p}%.", cmpM: "мужской", cmpF: "женский", cmpU: "унисекс",
+      concNames: ["", "Туалетная вода · EDT", "Парфюмерная вода · EDP", "Экстракт духов", "Духи · Parfum", "Одеколон · EDC", "Масляные духи"],
       searchPh: "Найти аромат, бренд или ноту", pathNovice: "Не знаю названий", pathGift: "Ищу в подарок",
       stepsNovice: ["Запахи", "Вопрос", "Итог"], stepsGift: ["Вопросы", "Итог"],
       h5: "Какие запахи вам нравятся?", lead5: "Выберите от 2 до 4. Названия духов знать не нужно.", count5: "Выбрано: {n} из 4",
@@ -791,6 +846,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     tg: {
+      cmpBtn: "Муқоисаи атрҳо", cmpBtnSub: "Ду атр → дар чӣ монанданд ва дар чӣ фарқ мекунанд", h7: "Муқоисаи атрҳо",
+      lead7: "Ду атрро интихоб кунед — нишон медиҳем, ки дар чӣ монанданд ва дар чӣ фарқ мекунанд.", cmpLeft: "Чап", cmpRight: "Рост",
+      cmpCount: "{n} аз 2", cmpGo: "Муқоиса", cmpSimilar: "{p}% монанд", cmpSimNote: "Аз рӯи нотаҳо, аккордҳо ва хусусияти умумӣ.",
+      cmpDupe: "Дюпи маълум: «{d}» аз рӯи «{o}» сохта шудааст.", cmpSeason: "Мавсим", cmpWho: "Барои кӣ", cmpPrice: "Нарх",
+      cmpRating: "Баҳои харидорон", cmpRateVal: "{r} аз 10", cmpHit: "Хит", cmpYes: "ҳа", cmpNo: "не", cmpYear: "Соли баромад",
+      cmpConc: "Консентратсия", cmpTaste: "Хусусият", cmpAcc: "Аккордҳо", cmpNotes: "Нотаҳо", cmpCommon: "Умумӣ", cmpOnly: "Танҳо дар «{n}»",
+      cmpNone: "нест", cmpLayers: "Аз рӯи қабатҳо: нотаҳои умумӣ ҷудо карда шудаанд", layerTop: "Боло", layerHeart: "Дил", layerBase: "Асос",
+      cmpNoNotes: "Нотаҳои «{n}» ҳоло дар пойгоҳ нестанд — нотаҳоро муқоиса кардан мумкин нест.", cmpSwap: "Ҷойҳоро иваз кардан", cmpOther: "Дигарҳоро интихоб кардан",
+      cmpShareText: "Муқоиса дар Shoh Parfumer: {a} ва {b} — {p}% монанд.", cmpM: "мардона", cmpF: "занона", cmpU: "унисекс",
+      concNames: ["", "Оби туалетӣ · EDT", "Оби атр · EDP", "Экстракти атр", "Атр · Parfum", "Одеколон · EDC", "Атри равғанӣ"],
       searchPh: "Ҷустуҷӯи атр, бренд ё нота", pathNovice: "Номҳоро намедонам", pathGift: "Барои тӯҳфа меҷӯям",
       stepsNovice: ["Бӯйҳо", "Савол", "Натиҷа"], stepsGift: ["Саволҳо", "Натиҷа"],
       h5: "Кадом бӯйҳо ба шумо писанданд?", lead5: "Аз 2 то 4-тоашро интихоб кунед. Номи атрҳоро донистан шарт нест.", count5: "Интихоб шуд: {n} аз 4",
@@ -832,6 +897,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     en: {
+      cmpBtn: "Compare fragrances", cmpBtnSub: "Two fragrances → what they share and how they differ", h7: "Compare fragrances",
+      lead7: "Pick two fragrances and we'll show what they share and how they differ.", cmpLeft: "Left", cmpRight: "Right",
+      cmpCount: "{n} of 2", cmpGo: "Compare", cmpSimilar: "{p}% alike", cmpSimNote: "Based on notes, accords and overall character.",
+      cmpDupe: "Known dupe: “{d}” is made in the style of “{o}”.", cmpSeason: "Season", cmpWho: "For whom", cmpPrice: "Price",
+      cmpRating: "Buyer rating", cmpRateVal: "{r} / 10", cmpHit: "Bestseller", cmpYes: "yes", cmpNo: "no", cmpYear: "Release year",
+      cmpConc: "Concentration", cmpTaste: "Character", cmpAcc: "Accords", cmpNotes: "Notes", cmpCommon: "Shared", cmpOnly: "Only in “{n}”",
+      cmpNone: "none", cmpLayers: "By layer: shared notes are highlighted", layerTop: "Top", layerHeart: "Heart", layerBase: "Base",
+      cmpNoNotes: "Notes for “{n}” aren't in our base yet, so notes can't be compared.", cmpSwap: "Swap", cmpOther: "Choose others",
+      cmpShareText: "Compared on Shoh Parfumer: {a} and {b} are {p}% alike.", cmpM: "men's", cmpF: "women's", cmpU: "unisex",
+      concNames: ["", "Eau de Toilette · EDT", "Eau de Parfum · EDP", "Extrait de Parfum", "Parfum", "Eau de Cologne · EDC", "Perfume oil"],
       searchPh: "Search a fragrance, brand or note", pathNovice: "I don't know any names", pathGift: "Looking for a gift",
       stepsNovice: ["Scents", "Question", "Results"], stepsGift: ["Questions", "Results"],
       h5: "Which scents do you like?", lead5: "Pick 2 to 4. You don't need to know any perfume names.", count5: "Selected: {n} of 4",
@@ -991,7 +1066,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       i: i, n: r[0], b: DB.b[r[1]], v: r[2].split("").map(Number),
       s: ["s", "c", "a", "a"][f % 4], hit: !!((f >> 2) & 1), pri: !!((f >> 3) & 1),
       pc: r[4], r: r[5] / 10, raw: r[6], acc: r[7] || "", score: 0, sim: 0,
-      gen: (f >> 5) & 3, tier: (DB.bt && DB.bt[r[1]]) || 0      // пол: 1 мужской, 2 женский, 0 для всех; категория бренда 1–4
+      gen: (f >> 5) & 3, tier: (DB.bt && DB.bt[r[1]]) || 0,     // пол: 1 мужской, 2 женский, 3 унисекс, 0 не указан; категория бренда 1–4
+      yr: r[8] || 0, conc: r[9] || 0                              // год выпуска и концентрация (0 — неизвестно), см. src/add_info.py
     };
   });
   // Постоянный код аромата (для ссылки «Поделиться») и цена из списка наличия
@@ -1285,27 +1361,44 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     return SEARCH_READY;
   }
   function prepSearch() { if (!SEARCH_READY) SEARCH_WAIT = true; }
+  // Заполнить список строк. При фоновом обновлении поиска: если показанные строки — начало нового списка,
+  // только дописываем новые строки в конец (строка под пальцем не меняется и не «прыгает»).
+  var ROWS_APPEND = false;
+  function setRows(ul, items, attr, rowFn) {
+    var old = ul.querySelectorAll(".row"), same = ROWS_APPEND && old.length > 0 && old.length <= items.length;
+    for (var i = 0; same && i < old.length; i++) if (old[i].getAttribute(attr) !== String(items[i].i)) same = false;
+    if (same) { if (items.length > old.length) ul.insertAdjacentHTML("beforeend", items.slice(old.length).map(rowFn).join("")); }
+    else ul.innerHTML = items.map(rowFn).join("");
+  }
   function prepLoop() {
     if (!prepSome(12)) { setTimeout(prepLoop, 0); return; }
     if (SEARCH_WAIT) {
       SEARCH_WAIT = false;
       // перерисовываем список, только если найденное изменилось (чтобы строка не «уехала» из-под пальца)
       var ids = function (sel, attr) { return Array.prototype.map.call(document.querySelectorAll(sel), function (b) { return b.getAttribute(attr); }).join(","); };
+      ROWS_APPEND = true;
+      var key = function (R, lim) { return R.items.slice(0, lim).map(function (p) { return String(p.i); }).join(","); };
       if (state.step === 1 && state.query.trim() && state.focus === null) {
-        var L1 = listItems().items.slice(0, state.limit).map(function (p) { return String(p.i); }).join(",");
-        if (!L1 || L1 !== ids("#list .row", "data-id")) drawPicker();
+        var R1 = listItems(), L1 = key(R1, state.limit);
+        if (!L1 || L1 !== ids("#list .row", "data-id")) drawPicker(R1);
       }
       if (state.step === 6 && !state.dsrc && state.dq.trim()) {
-        var L6 = dupeItems().items.slice(0, state.dlimit).map(function (p) { return String(p.i); }).join(",");
-        if (!L6 || L6 !== ids("#dlist .row", "data-d")) drawDupe();
+        var R6 = dupeItems(), L6 = key(R6, state.dlimit);
+        if (!L6 || L6 !== ids("#dlist .row", "data-d")) drawDupe(R6);
       }
+      if (state.step === 7 && !state.cshow && state.cq.trim()) {
+        var R7 = compareItems(), L7 = key(R7, state.climit);
+        if (!L7 || L7 !== ids("#clist .row", "data-c")) drawCompare(R7);
+      }
+      ROWS_APPEND = false;
     }
   }
   setTimeout(prepLoop, 200);   // начинаем после первой отрисовки страницы
 
   var state = { step: 1, mode: "known", sel: [], slots: [null, null, null], cur: null, focus: null, smells: [], gender: "any",
     ans: {}, q: 0, query: "", brand: null, limit: PAGE, picks: [], showBrands: false, bq: "", blimit: 60,
-    dq: "", dsrc: null, dlimit: PAGE, dlist: [] };
+    dq: "", dsrc: null, dlimit: PAGE, dlist: [],
+    cslots: [null, null], cq: "", climit: PAGE, cshow: false };
 
   function $(s) { return document.querySelector(s); }
   // Высота шапки — чтобы закреплённая строка поиска вставала сразу под ней
@@ -1356,10 +1449,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 
   /* ======================= Шаги ======================= */
   // Шаги зависят от способа подбора: знаю духи (1→2→3→4), новичок (5→3→4), подарок (3→4)
-  var MODE_STEPS = { known: [1, 2, 3, 4], novice: [5, 3, 4], gift: [3, 4], dupe: [6] };
+  var MODE_STEPS = { known: [1, 2, 3, 4], novice: [5, 3, 4], gift: [3, 4], dupe: [6], compare: [7] };
   function drawSteps() {
-    $("#steps").hidden = state.mode === "dupe";      // «Найти дюп» — один экран, шаги не нужны
-    if (state.mode === "dupe") return;
+    $("#steps").hidden = state.mode === "dupe" || state.mode === "compare";      // «Найти дюп» и «Сравнить» — один экран, шаги не нужны
+    if (state.mode === "dupe" || state.mode === "compare") return;
     var seq = MODE_STEPS[state.mode], cur = seq.indexOf(state.step);
     var names = state.mode === "known" ? L().steps : (state.mode === "novice" ? L().stepsNovice : L().stepsGift);
     $("#steps").innerHTML = names.map(function (n, i) {
@@ -1376,6 +1469,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (state.step === 3) drawQuestion();
     if (state.step === 4) drawResults();
     if (state.step === 6) drawDupe();
+    if (state.step === 7) drawCompare();
   }
   function go(n) { state.step = n; render(); window.scrollTo(0, 0); histPush(); }
 
@@ -1388,15 +1482,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function uidOf(p) { return p && p.uid ? p.uid : null; }
   function snap() {
     return { st: state.step, m: state.mode, sl: state.slots.map(uidOf), se: state.sel.map(uidOf), sm: state.smells.slice(), g: state.gender,
-      a: state.ans, q: state.q, qy: state.query, br: state.brand, sb: state.showBrands, bq: state.bq, dq: state.dq, ds: uidOf(state.dsrc) };
+      a: state.ans, q: state.q, qy: state.query, br: state.brand, sb: state.showBrands, bq: state.bq, dq: state.dq, ds: uidOf(state.dsrc),
+      cs: state.cslots.map(uidOf), cq: state.cq, ch: state.cshow };
   }
-  function modeOf(s) { return s.st === 1 || s.st === 2 ? "known" : (s.st === 5 ? "novice" : (s.st === 6 ? "dupe" : s.m)); }
-  // Ключ экрана: шаг, номер вопроса, результат дюпа, способ подбора
-  function keyOf(s) { return [s.st, s.st === 3 ? s.q : "", s.st === 6 && s.ds ? "r" : "", modeOf(s)].join(":"); }
+  function modeOf(s) { return s.st === 1 || s.st === 2 ? "known" : (s.st === 5 ? "novice" : (s.st === 6 ? "dupe" : (s.st === 7 ? "compare" : s.m))); }
+  // Ключ экрана: шаг, номер вопроса, результат дюпа или сравнения, способ подбора
+  function keyOf(s) { return [s.st, s.st === 3 ? s.q : "", (s.st === 6 && s.ds) || (s.st === 7 && s.ch) ? "r" : "", modeOf(s)].join(":"); }
   function applySnap(s) {
     if (!s || typeof s !== "object") return false;
     var byU = function (u) { return (u && BY_UID[u]) || null; };
-    var step = [1, 2, 3, 4, 5, 6].indexOf(s.st) !== -1 ? s.st : 1, mode = modeOf({ st: step, m: s.m });
+    var step = [1, 2, 3, 4, 5, 6, 7].indexOf(s.st) !== -1 ? s.st : 1, mode = modeOf({ st: step, m: s.m });
     if (!MODE_STEPS[mode]) mode = "known";
     var slots = (s.sl || []).slice(0, 3).map(byU); while (slots.length < 3) slots.push(null);
     var sel = (s.se || []).map(byU).filter(Boolean), smells = (s.sm || []).filter(function (id) { return SMELL_BY[id]; }).slice(0, 4);
@@ -1410,7 +1505,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.query = String(s.qy || ""); state.brand = s.br ? String(s.br) : null; state.showBrands = !!s.sb; state.bq = String(s.bq || "");
     state.cur = null; state.focus = null; state.limit = PAGE; state.blimit = 60; state.picks = []; state.picksFor = "";
     state.dq = String(s.dq || ""); state.dsrc = mode === "dupe" ? byU(s.ds) : null; state.dlimit = state.dq.trim() ? PAGE : DUPE_TOP_N;
-    $("#q").value = state.query; $("#bq").value = state.bq; $("#dq").value = state.dq;
+    var cs = (s.cs || []).slice(0, 2).map(byU); while (cs.length < 2) cs.push(null);
+    state.cslots = cs; state.cq = String(s.cq || ""); state.climit = PAGE; state.cshow = !!s.ch && !!cs[0] && !!cs[1];
+    $("#q").value = state.query; $("#bq").value = state.bq; $("#dq").value = state.dq; $("#cq").value = state.cq;
     return true;
   }
   // Сохранить текущий экран в его запись истории (сразу или чуть позже — при наборе текста)
@@ -1549,7 +1646,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     Object.keys(set).forEach(function (k) { k = Number(k); if (best === -1 || I.n[k] < I.n[best]) best = k; });
     return best;
   }
-  function drawPicker() {
+  function drawPicker(Lx0) {
     var cur = curSlot(), full = cur === -1;
     $("#slots").innerHTML = [0, 1, 2].map(function (i) {
       var p = state.slots[i];
@@ -1563,7 +1660,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       var now = i === cur;
       return '<div class="slot' + (now ? " now" : "") + '"' + (now ? ' aria-current="true"' : "") + "><span>" + esc(t("slot", { n: i + 1 })) + "</span></div>";
     }).join("");
-    var Lx = listItems();
+    var Lx = Lx0 || listItems();
     $("#brandsblock").hidden = Lx.mode !== "home";
     $("#resultsblock").hidden = Lx.mode === "home";
     $("#listhint").textContent = Lx.mode === "home" ? t("hintHome", { n: pl(P.length, "perfume") })
@@ -1579,11 +1676,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       if (state.showBrands) drawBrandList();
     } else {
       $("#rtitle").textContent = Lx.mode === "brand" ? state.brand : (Lx.mode === "slot" ? t("slotTitle") : t("found", { n: Lx.items.length }));
-      $("#list").innerHTML = Lx.items.slice(0, state.limit).map(function (p) {
+      setRows($("#list"), Lx.items.slice(0, state.limit), "data-id", function (p) {
         var on = state.slots.indexOf(p) !== -1;
         return '<li><button type="button" class="row" data-id="' + p.i + '" aria-pressed="' + on + '"' + (full && !on ? " disabled" : "") +
           '><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></span><span class="tick" aria-hidden="true">✓</span></button></li>';
-      }).join("");
+      });
       $("#more").hidden = Lx.items.length <= state.limit;
     }
     $("#count").textContent = t("selected", { n: filledCount() });
@@ -1955,7 +2052,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
     state.showBrands = false; state.bq = ""; state.blimit = 60;
     state.dq = ""; state.dsrc = null; state.dlimit = DUPE_TOP_N; state.dlist = [];
-    $("#q").value = ""; $("#bq").value = ""; $("#dq").value = "";
+    state.cslots = [null, null]; state.cq = ""; state.climit = PAGE; state.cshow = false;
+    $("#q").value = ""; $("#bq").value = ""; $("#dq").value = ""; $("#cq").value = "";
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
     ["#fb", "#sim", "#sh", "#pv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
     $("#pvpages").innerHTML = "";
@@ -2020,19 +2118,19 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     exact.sort(function (a, b) { return (has(a) - has(b)) || (pos.get(a) - pos.get(b)); });
     return { pop: false, items: exact.concat(fuzzyFind(P, exact, Q, ok)) };
   }
-  function drawDupe() {
+  function drawDupe(D0) {
     var src = state.dsrc;
     $("#dpick").hidden = !!src; $("#dres").hidden = !src;
     if (!src) {
-      var D = dupeItems();
+      var D = D0 || dupeItems();
       $("#dhint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t(SEARCH_READY ? "dupeNotFound" : "searching"));
       $("#dask").hidden = D.pop || D.items.length > 0 || !SEARCH_READY;
       $("#dres").hidden = true;
-      $("#dlist").innerHTML = D.items.slice(0, state.dlimit).map(function (p) {
+      setRows($("#dlist"), D.items.slice(0, state.dlimit), "data-d", function (p) {
         return '<li><button type="button" class="row" data-d="' + p.i + '"><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) +
           (DUPES[p.i] ? ' · <span class="kd">' + esc(t("dupeCount", { n: Math.min(5, DUPES[p.i].length) })) + "</span>" : ' · ' + esc(t("dupeNoneShort"))) +
           '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
-      }).join("");
+      });
       $("#dmore").hidden = D.items.length <= state.dlimit;
       return;
     }
@@ -2087,6 +2185,153 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   $("#back6").addEventListener("click", function () { navBack("1:::known", function () { state.mode = "known"; state.dsrc = null; go(1); }); });
   $("#dask").addEventListener("click", function () { $("#fbmsg").value = t("dupeAskText", { q: state.dq.trim() }); fbOpen(); fbUpdate(); });
+
+  /* ======================= Сравнить: два парфюма рядом ======================= */
+  // Слева и справа по аромату → сходство, известный дюп, сезон, пол, цена, оценка, хит, год, концентрация (что известно),
+  // характер, аккорды и ноты: общие и только у каждого, по слоям. Стойкость и шлейф не показываем — данных нет (решение владельца).
+  var COMPARE_POP = null;
+  function compareItems() {
+    var q = expandQuery(norm(state.cq.trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
+    if (!q) {
+      if (!COMPARE_POP) COMPARE_POP = P.filter(function (p) { return !p.np; }).sort(byPop).slice(0, 300);
+      return { pop: true, items: COMPARE_POP };
+    }
+    prepSearch();
+    var Q = qParse(state.cq), ok = function (p) { return !p.np; }, lvl = [[], [], []];
+    P.forEach(function (p) { if (!ok(p)) return; var lv = nameLevel(p, p.hay, Q); if (lv >= 0) lvl[lv].push(p); });
+    var exact = rankLevels(lvl[0].sort(byPop), lvl[1].sort(byPop), lvl[2].sort(byPop), Q.cyr);
+    return { pop: false, items: exact.concat(fuzzyFind(P, exact, Q, ok)) };
+  }
+  // Сходство двух ароматов: среднее «A похож на B» и «B похож на A» — от перестановки не меняется
+  function pairSim(a, b) { return Math.max(0, Math.min(1, (similarity(profileOf([a]), b) + similarity(profileOf([b]), a)) / 2)); }
+  function dupeRel(a, b) {
+    if ((DUPES[a.i] || []).indexOf(b.i) !== -1) return { o: a, d: b };
+    if ((DUPES[b.i] || []).indexOf(a.i) !== -1) return { o: b, d: a };
+    return null;
+  }
+  function chipList(ids, same) {
+    return ids.length ? ids.map(function (f) { return '<span class="chip' + (same && same[f] ? " same" : "") + '">' + esc(noteName(f)) + "</span>"; }).join("")
+      : '<span class="small">' + esc(t("cmpNone")) + "</span>";
+  }
+  function cmpRow(label, a, b) {
+    if (!a && !b) return "";            // нет данных ни у одного — строку не показываем
+    var v = function (x) { return x ? "<span>" + x + "</span>" : '<span class="dash">—</span>'; };
+    return '<div class="cmp-row"><span class="cmp-lbl">' + esc(label) + '</span><div class="cmp-vals">' + v(a) + v(b) + "</div></div>";
+  }
+  function drawCompare(D0) {
+    var cs = state.cslots, full = cs[0] && cs[1];
+    if (!full) state.cshow = false;
+    $("#cpick").hidden = state.cshow; $("#cres").hidden = !state.cshow;
+    $("#cgo").hidden = state.cshow; $("#ccount").hidden = state.cshow;
+    if (!state.cshow) {
+      var cur = cs[0] ? (cs[1] ? -1 : 1) : 0;
+      $("#cslots").innerHTML = [0, 1].map(function (i) {
+        var p = cs[i];
+        if (p) return '<div class="slot full focus"><button type="button" class="slotbtn" data-cx="' + i + '" aria-label="' + esc(t("removeSlot", { n: p.n })) + '"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></button>' +
+          '<button type="button" class="slotx" data-cx="' + i + '" aria-label="' + esc(t("removeSlot", { n: p.n })) + '">×</button></div>';
+        var now = i === cur;
+        return '<div class="slot' + (now ? " now" : "") + '"' + (now ? ' aria-current="true"' : "") + "><span>" + esc(t(i ? "cmpRight" : "cmpLeft")) + "</span></div>";
+      }).join("");
+      var D = D0 || compareItems();
+      $("#chint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t(SEARCH_READY ? "notFound" : "searching"));
+      setRows($("#clist"), D.items.slice(0, state.climit), "data-c", function (p) {
+        var on = cs.indexOf(p) !== -1;
+        return '<li><button type="button" class="row" data-c="' + p.i + '" aria-pressed="' + on + '"' + (full && !on ? " disabled" : "") +
+          '><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></span><span class="tick" aria-hidden="true">✓</span></button></li>';
+      });
+      $("#cmore").hidden = D.items.length <= state.climit;
+      $("#ccount").textContent = t("cmpCount", { n: (cs[0] ? 1 : 0) + (cs[1] ? 1 : 0) });
+      $("#cgo").disabled = !full;
+      return;
+    }
+    var A = cs[0], Bp = cs[1], pct = Math.round(100 * pairSim(A, Bp)), rel = dupeRel(A, Bp), names = L().concNames, tiers = L().tiers;
+    var who = function (p) { return p.gen === 1 ? t("cmpM") : (p.gen === 2 ? t("cmpF") : (p.gen === 3 ? t("cmpU") : "")); };
+    var price = function (p) { return (p.tier ? esc(tierStr(p) + " · " + tiers[p.tier]) : "") + (p.price ? (p.tier ? "<br>" : "") + '<span class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</span>" : ""); };
+    var head = function (p) { return '<div class="cmp-col">' + bottleSvg(p) + "<h3>" + esc(p.n) + '</h3><div class="by">' + esc(p.b) + "</div></div>"; };
+    var html = '<div class="cmp-head">' + head(A) + head(Bp) + "</div>" +
+      '<div class="cmp-sim"><b>' + esc(t("cmpSimilar", { p: pct })) + '</b><span class="small">' + esc(t("cmpSimNote")) + "</span></div>" +
+      (rel ? '<p class="cmp-dupe">' + esc(t("cmpDupe", { d: rel.d.n, o: rel.o.n })) + "</p>" : "");
+    // Основное
+    html += '<div class="cmp-block">' +
+      cmpRow(t("cmpSeason"), esc(t(SEASON_KEY[A.s])), esc(t(SEASON_KEY[Bp.s]))) +
+      cmpRow(t("cmpWho"), esc(who(A)), esc(who(Bp))) +
+      cmpRow(t("cmpPrice"), price(A), price(Bp)) +
+      cmpRow(t("cmpRating"), A.r > 0 ? esc(t("cmpRateVal", { r: A.r.toFixed(1) })) : "", Bp.r > 0 ? esc(t("cmpRateVal", { r: Bp.r.toFixed(1) })) : "") +
+      cmpRow(t("cmpHit"), esc(t(A.hit ? "cmpYes" : "cmpNo")), esc(t(Bp.hit ? "cmpYes" : "cmpNo"))) +
+      cmpRow(t("cmpYear"), A.yr ? String(A.yr) : "", Bp.yr ? String(Bp.yr) : "") +
+      cmpRow(t("cmpConc"), A.conc ? esc(names[A.conc]) : "", Bp.conc ? esc(names[Bp.conc]) : "") + "</div>";
+    // Характер: вкусы, которые есть хотя бы у одного, по убыванию
+    var axs = AX.map(function (a, k) { return { k: k, m: Math.max(A.v[k], Bp.v[k]) }; }).filter(function (x) { return x.m > 0; })
+      .sort(function (x, y) { return y.m - x.m; }).slice(0, 6);
+    var bar = function (v) { return '<div><div class="track"><div class="fill" style="width:' + Math.round(100 * v / 3) + '%"></div></div></div>'; };
+    if (axs.length) html += '<div class="cmp-block"><h2>' + esc(t("cmpTaste")) + "</h2>" + axs.map(function (x) {
+      return '<div class="cmp-row"><span class="cmp-lbl">' + esc(L().ax[x.k]) + '</span><div class="cmp-vals">' + bar(A.v[x.k]) + bar(Bp.v[x.k]) + "</div></div>";
+    }).join("") + "</div>";
+    // Аккорды
+    var aa = A.acc.split(""), ba = Bp.acc.split(""), accHtml = function (l) {
+      return l.length ? l.map(function (c) { return '<span class="chip">' + esc(accName(c)) + "</span>"; }).join("") : '<span class="small">' + esc(t("cmpNone")) + "</span>"; };
+    if (aa.length || ba.length) html += '<div class="cmp-block"><h2>' + esc(t("cmpAcc")) + "</h2>" +
+      '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpCommon")) + '</span><div class="chips" style="margin-top:0">' + accHtml(aa.filter(function (c) { return ba.indexOf(c) !== -1; })) + "</div></div>" +
+      '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpOnly", { n: A.n })) + '</span><div class="chips" style="margin-top:0">' + accHtml(aa.filter(function (c) { return ba.indexOf(c) === -1; })) + "</div></div>" +
+      '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpOnly", { n: Bp.n })) + '</span><div class="chips" style="margin-top:0">' + accHtml(ba.filter(function (c) { return aa.indexOf(c) === -1; })) + "</div></div></div>";
+    // Ноты: общие и только у каждого; ниже — по слоям рядом, общие выделены
+    html += '<div class="cmp-block"><h2>' + esc(t("cmpNotes")) + "</h2>";
+    var miss = [A, Bp].filter(function (p) { return !p.raw.length; });
+    if (miss.length) {
+      html += miss.map(function (p) { return '<p class="small">' + esc(t("cmpNoNotes", { n: p.n })) + "</p>"; }).join("");
+    } else {
+      var la = {}, lb = {}, order = function (p) { return p.raw.slice().sort(function (x, y) { return (x & 3) - (y & 3); }).map(function (c) { return c >> 2; }); };
+      A.raw.forEach(function (c) { la[c >> 2] = c & 3; }); Bp.raw.forEach(function (c) { lb[c >> 2] = c & 3; });
+      var oa = order(A), ob = order(Bp), same = {};
+      oa.forEach(function (f) { if (lb[f]) same[f] = 1; });
+      html += '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpCommon")) + '</span><div class="chips" style="margin-top:0">' + chipList(oa.filter(function (f) { return same[f]; }), same) + "</div></div>" +
+        '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpOnly", { n: A.n })) + '</span><div class="chips" style="margin-top:0">' + chipList(oa.filter(function (f) { return !same[f]; })) + "</div></div>" +
+        '<div class="cmp-row"><span class="cmp-lbl">' + esc(t("cmpOnly", { n: Bp.n })) + '</span><div class="chips" style="margin-top:0">' + chipList(ob.filter(function (f) { return !la[f]; })) + "</div></div>";
+      html += '<p class="cmp-sub">' + esc(t("cmpLayers")) + "</p>" + [1, 2, 3].map(function (layer) {
+        var la1 = oa.filter(function (f) { return la[f] === layer; }), lb1 = ob.filter(function (f) { return lb[f] === layer; });
+        if (!la1.length && !lb1.length) return "";
+        return '<div class="cmp-row"><span class="cmp-lbl">' + esc(t(["", "layerTop", "layerHeart", "layerBase"][layer])) + '</span><div class="cmp-vals">' +
+          '<div class="chips" style="margin-top:0">' + chipList(la1, same) + '</div><div class="chips" style="margin-top:0">' + chipList(lb1, same) + "</div></div></div>";
+      }).join("");
+    }
+    html += "</div>" +
+      '<div class="cmp-acts"><button type="button" class="btn ghost" id="cswap">' + esc(t("cmpSwap")) + '</button><button type="button" class="btn ghost" id="cother">' + esc(t("cmpOther")) + "</button>" +
+      '<button type="button" class="btn" id="cshare">' + esc(t("shareBtn")) + "</button></div>";
+    $("#cres").innerHTML = html;
+  }
+  $("#goCompare").addEventListener("click", function () {
+    histFlush();
+    state.mode = "compare"; state.cslots = [null, null]; state.cq = ""; state.climit = PAGE; state.cshow = false; $("#cq").value = "";
+    go(7); track("compare-open");
+  });
+  $("#cq").addEventListener("input", function (e) { state.cq = e.target.value; state.climit = PAGE; drawCompare(); });
+  $("#cmore").addEventListener("click", function () { state.climit += PAGE; drawCompare(); });
+  $("#cslots").addEventListener("click", function (e) {
+    var x = e.target.closest("[data-cx]"); if (!x) return;
+    state.cslots[Number(x.getAttribute("data-cx"))] = null; drawCompare();
+  });
+  $("#clist").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-c]"); if (!b || b.disabled) return;
+    var p = P[Number(b.getAttribute("data-c"))], i = state.cslots.indexOf(p);
+    if (i !== -1) state.cslots[i] = null;
+    else { var free = state.cslots[0] ? (state.cslots[1] ? -1 : 1) : 0; if (free === -1) return; state.cslots[free] = p; }
+    drawCompare();
+  });
+  $("#cgo").addEventListener("click", function () {
+    if (!state.cslots[0] || !state.cslots[1]) return;
+    histFlush();
+    state.cshow = true; drawCompare(); window.scrollTo(0, 0); histPush();
+    track("compare/" + state.cslots[0].b + " — " + state.cslots[0].n + " vs " + state.cslots[1].b + " — " + state.cslots[1].n);
+  });
+  $("#cres").addEventListener("click", function (e) {
+    if (e.target.closest("#cswap")) { state.cslots = [state.cslots[1], state.cslots[0]]; drawCompare(); return; }
+    if (e.target.closest("#cother")) {
+      navBack("7:::compare", function () { state.cshow = false; drawCompare(); window.scrollTo(0, 0); histPush(); });
+      return;
+    }
+    if (e.target.closest("#cshare")) openShare();
+  });
+  $("#back7").addEventListener("click", function () { navBack("1:::known", function () { state.mode = "known"; state.cshow = false; go(1); }); });
 
   /* ======================= Советы (бесплатно, без ИИ) ======================= */
   // Тексты собираются из той же формулы: главные вкусы, главные ноты, к какому любимому аромату ближе подборка
@@ -2290,15 +2535,19 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var base = SITE_URL || (!inClaude && /^https?:$/.test(location.protocol) ? location.origin + location.pathname : "");
     if (!base) return "";
     var a = state.ans, r;
+    if (state.mode === "compare") return base + "?c=" + encodeURIComponent(state.cslots.map(uidOf).join("-")) + "&l=" + lang;
     if (state.mode === "known") r = ["k", a.season || "", a.mood || "", state.sel.map(function (p) { return p.uid; }).join("-")].join(".");
     else if (state.mode === "novice") r = ["n", a.season || "", state.smells.join("-")].join(".");
     else r = ["g", a.who || "", a.character || "", a.season || "", a.budget || ""].join(".");
     return base + "?r=" + encodeURIComponent(r) + (state.gender !== "any" ? "&g=" + state.gender : "") + "&l=" + lang;
   }
-  function shareMessage() { return t("shareText", { list: state.picks.map(function (r) { return r.p.n + " (" + r.p.b + ")"; }).join(", ") }); }
+  function shareMessage() {
+    if (state.mode === "compare") { var A = state.cslots[0], Bp = state.cslots[1]; return t("cmpShareText", { a: A.n + " (" + A.b + ")", b: Bp.n + " (" + Bp.b + ")", p: Math.round(100 * pairSim(A, Bp)) }); }
+    return t("shareText", { list: state.picks.map(function (r) { return r.p.n + " (" + r.p.b + ")"; }).join(", ") }); }
   function openShare() {
     var text = shareMessage(), url = shareUrl(), full = text + (url ? "\n" + url : "");
     $("#shtext").textContent = full;
+    $("#shtitle").textContent = t(state.mode === "compare" ? "shareBtn" : "shareTitle");
     $("#shtg").href = "https://t.me/share/url?url=" + encodeURIComponent(url || text) + (url ? "&text=" + encodeURIComponent(text) : "");
     $("#shwa").href = "https://wa.me/?text=" + encodeURIComponent(full);
     $("#shstatus").textContent = "";
@@ -2323,6 +2572,15 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function restoreFromUrl() {
     if (inClaude) return false;
     var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
+    var c = q.get("c");
+    if (c) {
+      // ссылка на сравнение: ?c=код1-код2
+      var two = c.split("-").map(function (u) { return BY_UID[u]; }).filter(Boolean);
+      if (two.length !== 2 || two[0] === two[1]) return false;
+      state.mode = "compare"; state.cslots = two; state.cshow = true; state.step = 7;
+      var lc = q.get("l"); if (LANGS.indexOf(lc) !== -1) lang = lc;
+      return true;
+    }
     var r = q.get("r"); if (!r) return false;
     var parts = r.split("."), ok = function (v, list) { return list.indexOf(v) !== -1 ? v : undefined; };
     var SEAS = ["summer", "cool", "any"];
@@ -2407,6 +2665,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   var fromHist = false;
   try { if (HIST && history.state && history.state.sp) fromHist = applySnap(history.state.sp); } catch (e) { fromHist = false; }
   if (!fromHist && restoreFromUrl()) track("opened-shared-link");
+  // человек начал печатать, пока страница ещё загружалась (слабый телефон) — подхватываем набранное
+  if (!fromHist) [["#q", "query", 1], ["#dq", "dq", 6], ["#cq", "cq", 7]].forEach(function (x) {
+    var v = $(x[0]).value; if (v && !state[x[1]] && state.step === x[2]) state[x[1]] = v;
+  });
   applyLang();
   histFlush();
   // любое нажатие или ввод текста — сохраняем экран в его запись истории (с небольшой задержкой)

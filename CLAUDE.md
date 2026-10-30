@@ -31,6 +31,9 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Keep the first screen free of long synchronous work (weak Android phones: test with CPU throttling ×4–×6).
 - Link preview: og tags are added by make_site.py (--standalone); image `public/og.png` from `src/og.html`.
   Unknown paths → `public/404.html` (redirects home) via `not_found_handling` in wrangler.jsonc.
+- «Сравнить ароматы» = step 7 (mode "compare"): entry button only at the bottom of home after «Найти дюп» (owner).
+  Rows with no data on both sides are hidden; no longevity/sillage rows until a real data source exists (owner).
+  Year/concentration come from src/add_info.py (Parfumo; poisoned rows' years dropped; verified fixes in data/info_manual.txt).
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,
