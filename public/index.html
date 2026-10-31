@@ -165,6 +165,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .bcard.more { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .bcard.more span { color: var(--accent-ink); opacity: .75; }
 .bcard.more:hover { border-color: var(--fg); }
+/* «Найти дюп» и «Сравнить» — обычные карточки (жёлтая только «Посмотреть другие бренды», решение владельца) */
 .dupebtn { width: 100%; min-height: 84px; margin-top: 10px; }
 /* Строка поиска брендов и дюпов остаётся видна при прокрутке (под шапкой сайта) */
 .stickysearch { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 64px)); z-index: 6; background: var(--bg); padding-block: 8px; margin-block: -8px; }
@@ -421,8 +422,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         <div class="bchips" id="bchips"></div>
         <button type="button" class="btn ghost" id="bmore" data-t="moreBrandsBtn" hidden>Показать ещё бренды</button>
       </div>
-      <button type="button" class="bcard more dupebtn" id="goDupe"><b data-t="dupeBtn">Найти дюп</b><span data-t="dupeBtnSub">Один парфюм → 5 недорогих аналогов</span></button>
-      <button type="button" class="bcard more dupebtn cmpbtn" id="goCompare"><b data-t="cmpBtn">Сравнить ароматы</b><span data-t="cmpBtnSub">Два парфюма → чем похожи и чем отличаются</span></button>
+      <button type="button" class="bcard dupebtn" id="goDupe"><b data-t="dupeBtn">Найти дюп</b><span data-t="dupeBtnSub">Один парфюм → 5 недорогих аналогов</span></button>
+      <button type="button" class="bcard dupebtn cmpbtn" id="goCompare"><b data-t="cmpBtn">Сравнить ароматы</b><span data-t="cmpBtnSub">Два парфюма → чем похожи и чем отличаются</span></button>
     </div>
 
     <div class="stack" id="resultsblock" style="gap:12px" hidden>
