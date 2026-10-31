@@ -34,6 +34,9 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - «Сравнить ароматы» = step 7 (mode "compare"): entry button only at the bottom of home after «Найти дюп» (owner).
   Rows with no data on both sides are hidden; longevity/sillage only «по отзывам» (≥3 approved reviews), never invented.
   Year/concentration come from src/add_info.py (Parfumo; poisoned rows' years dropped; verified fixes in data/info_manual.txt).
+  «Характер» bars show % (of the perfume's strongest trait, 5% steps) small inside the bar (owner): exact values in
+  public/taste.json from src/make_taste.py (run LAST after any DB rebuild; tag `th` must match), fetched only when
+  «Сравнить» opens; inlined in the artifact build. Coarse 0–3 digits stay for matching. No file/mismatch → bars without %.
 - Reviews (owner: every review is moderated in Telegram before it shows; bonus only via purchase codes):
   worker/index.js + D1 `shoh-parfumer-reviews` (id d1e16ec0-…, tables in migrations/0001_reviews.sql, created via the
   Cloudflare connector). Site: rvBtn/rvLoad/openReviews in src/site.html, `#rv` sheet, `?otziv=CODE` link.

@@ -15,6 +15,16 @@ db = open(args[1], encoding="utf-8").read()
 assert tpl.count("__DB__") == 1, "в шаблоне должна быть ровно одна метка __DB__"
 assert "</script" not in db.lower(), "в базе не должно быть </script"
 out = tpl.replace("__DB__", db)
+# Точный «Характер» (public/taste.json из src/make_taste.py). На хостинге сайт скачивает его сам, только когда открыто
+# сравнение; в странице-артефакте Claude загрузить его не откуда — вставляем прямо в страницу.
+assert out.count("__TASTE__") == 1, "в шаблоне должна быть ровно одна метка __TASTE__"
+taste = ""
+if not standalone:
+    try:
+        taste = open("public/taste.json", encoding="utf-8").read()
+    except OSError:
+        print("нет public/taste.json — полоски «Характер» будут по грубым данным")
+out = out.replace("__TASTE__", taste)
 
 if standalone:
     # Полноценный HTML-документ: всё до <header> уходит в <head>, остальное в <body>

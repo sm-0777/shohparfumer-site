@@ -208,6 +208,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .cmp-vals > * { min-width: 0; overflow-wrap: break-word; }
 .cmp-vals .dash { color: var(--muted); }
 .cmp-vals .track { margin-top: 6px; }
+/* «Характер» в сравнении: проценты внутри полоски — мелко и бледно, чтобы не отвлекали */
+#cmptaste:empty { display: none; }
+.cmp-vals .track.tt { height: 16px; border-radius: 8px; display: flex; align-items: center; }
+.track.tt .fill { flex: none; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+.tv { font-size: 0.65625rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.01em; }
+.tv.in { color: var(--accent-ink); opacity: 0.62; padding-right: 6px; }
+.tv.out { color: var(--muted); opacity: 0.85; padding-left: 5px; }
 .cmp-sub { font-size: 0.875rem; font-weight: 600; margin-top: 2px; }
 .chip.same { background: var(--accent); color: var(--accent-ink); }
 .cmp-acts { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -628,6 +635,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 </div>
 
 <script type="application/json" id="db">__DB__</script>
+<script type="application/json" id="taste">__TASTE__</script>
 <script>
 (function () {
   "use strict";
@@ -2321,7 +2329,42 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var v = function (x) { return x ? "<span>" + x + "</span>" : '<span class="dash">—</span>'; };
     return '<div class="cmp-row"><span class="cmp-lbl">' + esc(label) + '</span><div class="cmp-vals">' + v(a) + v(b) + "</div></div>";
   }
+  /* ---------- «Характер» в процентах ---------- */
+  // В базе вкус хранится грубо (0–3) — для подбора этого хватает. Точные проценты (от самой сильной черты аромата,
+  // шаг 5%) лежат в public/taste.json (src/make_taste.py) и скачиваются, только когда открыто «Сравнить».
+  // Пока файл не пришёл (или не подходит к базе) — полоски по грубым данным и без цифр, чтобы не выдумывать точность.
+  var TASTE = null, tasteSt = 0, tasteNext = 0, TASTE_CH = "0123456789abcdefghijk";   // 0 — нет, 1 — грузится, 2 — готово, 3 — не подходит
+  function tasteUse(d) { if (d && d.h === DB.th && d.t && d.t.length === P.length) { TASTE = d.t; tasteSt = 2; } else tasteSt = 3; }
+  function tasteLoad() {
+    if (tasteSt || Date.now() < tasteNext) return;
+    var el = document.getElementById("taste"), txt = el ? el.textContent.trim() : "";
+    if (txt.charAt(0) === "{") { try { tasteUse(JSON.parse(txt)); } catch (e) { tasteSt = 3; } el.textContent = ""; return; }   // страница-артефакт: данные внутри
+    if (inClaude || !DB.th || !window.fetch) { tasteSt = 3; return; }
+    tasteSt = 1;
+    fetch("/taste.json?h=" + DB.th).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(tasteUse, function () { tasteSt = 0; tasteNext = Date.now() + 15000; })   // нет сети — попробуем ещё раз позже
+      .then(tastePaint);
+  }
+  function tastePct(p, k) { var s = TASTE && TASTE[p.i], c = s ? TASTE_CH.indexOf(s.charAt(k)) : -1; return c < 0 ? null : c * 5; }
+  function tasteHtml(A, Bp) {
+    var val = function (p, k) { var x = tastePct(p, k); return x === null ? { w: Math.round(100 * p.v[k] / 3), n: false } : { w: x, n: true }; };
+    var rows = AX.map(function (a, k) { var x = val(A, k), y = val(Bp, k); return { k: k, a: x, b: y, m: Math.max(x.w, y.w) }; })
+      .filter(function (r) { return r.m > 0; }).sort(function (x, y) { return (y.m - x.m) || (x.k - y.k); }).slice(0, 6);
+    if (!rows.length) return "";
+    var bar = function (x) {
+      var w = Math.max(0, Math.min(100, x.w)), inside = w >= 35, lab = x.n ? '<span class="tv ' + (inside ? "in" : "out") + '">' + w + "%</span>" : "";
+      return '<div><div class="track tt"><div class="fill" style="width:' + w + '%">' + (inside ? lab : "") + "</div>" + (inside ? "" : lab) + "</div></div>";
+    };
+    return '<div class="cmp-block"><h2>' + esc(t("cmpTaste")) + "</h2>" + rows.map(function (r) {
+      return '<div class="cmp-row"><span class="cmp-lbl">' + esc(L().ax[r.k]) + '</span><div class="cmp-vals">' + bar(r.a) + bar(r.b) + "</div></div>";
+    }).join("") + "</div>";
+  }
+  function tastePaint() {
+    var box = $("#cmptaste"), cs = state.cslots;
+    if (box && state.mode === "compare" && state.cshow && cs[0] && cs[1]) box.innerHTML = tasteHtml(cs[0], cs[1]);
+  }
   function drawCompare(D0) {
+    tasteLoad();                        // заранее, пока выбирают ароматы
     var cs = state.cslots, full = cs[0] && cs[1];
     if (!full) state.cshow = false;
     $("#cpick").hidden = state.cshow; $("#cres").hidden = !state.cshow;
@@ -2363,13 +2406,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       cmpRow(t("cmpHit"), esc(t(A.hit ? "cmpYes" : "cmpNo")), esc(t(Bp.hit ? "cmpYes" : "cmpNo"))) +
       cmpRow(t("cmpYear"), A.yr ? String(A.yr) : "", Bp.yr ? String(Bp.yr) : "") +
       cmpRow(t("cmpConc"), A.conc ? esc(names[A.conc]) : "", Bp.conc ? esc(names[Bp.conc]) : "") + '<div id="cmprv"></div></div>';
-    // Характер: вкусы, которые есть хотя бы у одного, по убыванию
-    var axs = AX.map(function (a, k) { return { k: k, m: Math.max(A.v[k], Bp.v[k]) }; }).filter(function (x) { return x.m > 0; })
-      .sort(function (x, y) { return y.m - x.m; }).slice(0, 6);
-    var bar = function (v) { return '<div><div class="track"><div class="fill" style="width:' + Math.round(100 * v / 3) + '%"></div></div></div>'; };
-    if (axs.length) html += '<div class="cmp-block"><h2>' + esc(t("cmpTaste")) + "</h2>" + axs.map(function (x) {
-      return '<div class="cmp-row"><span class="cmp-lbl">' + esc(L().ax[x.k]) + '</span><div class="cmp-vals">' + bar(A.v[x.k]) + bar(Bp.v[x.k]) + "</div></div>";
-    }).join("") + "</div>";
+    // Характер: вкусы, которые есть хотя бы у одного, по убыванию (до 6), с процентами в полосках
+    html += '<div id="cmptaste">' + tasteHtml(A, Bp) + "</div>";
     // Аккорды
     var aa = A.acc.split(""), ba = Bp.acc.split(""), accHtml = function (l) {
       return l.length ? l.map(function (c) { return '<span class="chip">' + esc(accName(c)) + "</span>"; }).join("") : '<span class="small">' + esc(t("cmpNone")) + "</span>"; };

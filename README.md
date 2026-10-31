@@ -98,6 +98,10 @@ python3 -I src/add_notes.py data/db.json data/notes_manual.jsonl    # прове
 python3 -I src/add_perfumes.py data/db.json data/perfumes_extra.jsonl  # недостающие ароматы
 python3 -I src/add_dupes.py data/db.json data/dupes.txt
 python3 -I src/add_info.py data/db.json parfumo.csv data/info_manual.txt  # год выпуска и концентрация (для «Сравнить»)
+python3 -I src/make_taste.py data/db.json parfumo.csv public/taste.json  # «Характер» в процентах (для «Сравнить»), всегда последним
 ```
+
+`public/taste.json` сайт скачивает только при открытии «Сравнить» (главная не тяжелеет). Если базу пересобрали, а этот
+шаг забыли, сайт заметит несовпадение метки `th` и покажет полоски по грубым данным (0 / 33 / 67 / 100%).
 
 Источник данных: [Parfumo Fragrance Dataset (TidyTuesday)](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-12-10).
