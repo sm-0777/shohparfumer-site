@@ -1,12 +1,25 @@
-// Cloudflare публикует папку public (там готовый сайт index.html).
+// Cloudflare публикует папку public (готовый сайт index.html) и запускает worker/index.js для адресов /api/* (отзывы).
 // Сборка не нужна: index.html уже собран. Имя должно совпадать с проектом в Cloudflare.
 {
   "name": "shoh-parfumer",
+  "main": "worker/index.js",
   "compatibility_date": "2026-06-01",
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
+    // Только /api/* обрабатывает код отзывов; всё остальное — файлы сайта
+    "run_worker_first": ["/api/*"],
     // Неверный адрес (например /abc) — страница public/404.html, она сразу открывает главную
     "not_found_handling": "404-page"
+  },
+  // База отзывов (таблицы — migrations/0001_reviews.sql)
+  "d1_databases": [
+    { "binding": "DB", "database_name": "shoh-parfumer-reviews", "database_id": "d1e16ec0-9e52-454c-b4f6-c20e45220b05" }
+  ],
+  // Не секреты. Секрет TG_TOKEN (токен бота) добавляется в Cloudflare: Settings → Variables and Secrets.
+  "vars": {
+    "OWNER_TG": "sm_0777",
+    "SITE": "https://shoh-parfumer.com"
   },
   "workers_dev": true,
   // Домен сайта: Cloudflare сам создаёт записи DNS и сертификат.

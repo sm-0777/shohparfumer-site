@@ -32,8 +32,13 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Link preview: og tags are added by make_site.py (--standalone); image `public/og.png` from `src/og.html`.
   Unknown paths → `public/404.html` (redirects home) via `not_found_handling` in wrangler.jsonc.
 - «Сравнить ароматы» = step 7 (mode "compare"): entry button only at the bottom of home after «Найти дюп» (owner).
-  Rows with no data on both sides are hidden; no longevity/sillage rows until a real data source exists (owner).
+  Rows with no data on both sides are hidden; longevity/sillage only «по отзывам» (≥3 approved reviews), never invented.
   Year/concentration come from src/add_info.py (Parfumo; poisoned rows' years dropped; verified fixes in data/info_manual.txt).
+- Reviews (owner: every review is moderated in Telegram before it shows; bonus only via purchase codes):
+  worker/index.js + D1 `shoh-parfumer-reviews` (id d1e16ec0-…, tables in migrations/0001_reviews.sql, created via the
+  Cloudflare connector). Site: rvBtn/rvLoad/openReviews in src/site.html, `#rv` sheet, `?otziv=CODE` link.
+  Secret TG_TOKEN is added by the owner in the Cloudflare dashboard — never ask for it in chat. Don't put test reviews
+  into the production DB (if you must check live, delete the row right after).
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,

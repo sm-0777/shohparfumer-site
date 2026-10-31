@@ -155,6 +155,37 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .dsrc .txt > span:last-child { color: var(--muted); font-size: 0.9375rem; }
 .dsrc .btn { flex: 0 0 auto; }
 .row .go { flex: none; color: var(--muted); font-size: 1.125rem; }
+/* ---------- Отзывы ---------- */
+.rvbtn { white-space: nowrap; }
+.cmp-col .rvbtn { margin-top: 6px; min-height: 40px; padding: 6px 12px; font-size: 0.875rem; max-width: 100%; white-space: normal; }
+.rvhead { display: flex; flex-direction: column; gap: 2px; }
+.rvhead b { font-family: var(--font-display); font-weight: 500; font-size: 1.0625rem; overflow-wrap: break-word; }
+.rvhead span { color: var(--muted); font-size: 0.875rem; }
+.rvsum { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.rvavg { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.rvavg b { font-family: var(--font-display); font-weight: 600; font-size: 1.75rem; color: var(--accent-text); line-height: 1; }
+.rvstars { color: var(--accent-text); letter-spacing: 2px; }
+.rvbars { display: flex; flex-direction: column; gap: 6px; }
+.rvbars > span { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.rvbar { display: grid; grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) 1.75rem; gap: 8px; align-items: center; font-size: 0.875rem; }
+.rvbar .n { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rvlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.rvitem { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); }
+.rvtop { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.rvmeta { font-size: 0.8125rem; color: var(--muted); }
+.rvtext { white-space: pre-wrap; overflow-wrap: break-word; }
+.rvver { color: var(--ok); font-weight: 600; }
+.rvq { display: flex; flex-direction: column; gap: 8px; }
+.rvq > span { font-weight: 600; font-size: 0.9375rem; }
+.rvq > span i { font-style: normal; color: var(--accent-text); }
+.rvstarsel { display: flex; gap: 4px; flex-wrap: wrap; }
+.rvstarsel button { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-size: 22px; line-height: 1; color: var(--muted); }
+.rvstarsel button.on { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.rvbonus { border: 2px dashed var(--accent); border-radius: 14px; padding: 14px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.rvbonus b { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--accent-text); user-select: all; }
+.rvnote { margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--soft); font-size: 0.9375rem; }
+#cmprv .cmp-row { padding-top: 10px; border-top: 1px solid var(--line); }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 /* ---------- Сравнить ---------- */
 .cslots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cmpbtn { margin-top: 0; }
@@ -582,6 +613,19 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   </div>
 </div>
 
+<!-- Отзывы об аромате: сводка, список, форма -->
+<div class="overlay" id="rv" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rvtitle">
+    <div class="top">
+      <h2 id="rvtitle" data-t="rvTitle">Отзывы</h2>
+      <button type="button" class="tool" id="rvclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="stack" id="rvbody" style="gap:14px" aria-live="polite"></div>
+  </div>
+</div>
+
 <script type="application/json" id="db">__DB__</script>
 <script>
 (function () {
@@ -595,6 +639,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Пример: "Creed|Aventus": 2500,
   var STOCK = {
   };
+  // Бонус за отзыв с кодом покупки — как написать на сайте (три языка), например «скидка 5% на следующую покупку».
+  // Пусто — на сайте написано просто «бонус».
+  var REVIEW_BONUS = { ru: "", tg: "", en: "" };
 
   /* ======================= Переводы ======================= */
   var LANGS = ["ru", "tg", "en"];
@@ -795,6 +842,23 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Новые тексты: подбор для новичка, подарок, пол, похожие, наличие, «поделиться»
   var I18N_X = {
     ru: {
+      rvBtn: "Отзывы", rvTitle: "Отзывы", rvNone: "Отзывов пока нет. Будьте первым!", rvLoading: "Загружаем отзывы…",
+      rvError: "Не удалось загрузить отзывы. Проверьте интернет и попробуйте ещё раз.", rvRetry: "Ещё раз", rvWrite: "Оставить отзыв",
+      rvStars: "Оценка", rvLon: "Стойкость", rvSil: "Шлейф", rvSea: "Когда носите", rvWho: "Для кого", rvAgain: "Купили бы снова?",
+      rvLonOpts: ["до 2 ч", "2–5 ч", "5–8 ч", "весь день"], rvSilOpts: ["слабый", "средний", "сильный"], rvSeaOpts: ["лето", "осень и зима", "круглый год"],
+      rvWhoOpts: ["мужчина", "женщина", "оба"], rvAgainOpts: ["да", "нет"], rvAgainYes: "купили бы снова", rvAgainNo: "не купили бы снова",
+      rvAgainPct: "Купили бы снова: {p}%", rvOftenSea: "Чаще носят: {v}", rvOftenWho: "Для кого: {v}",
+      rvText: "Расскажите, как аромат раскрывается и кому подойдёт (необязательно)", rvCode: "Код покупки (если есть)",
+      rvCodeHint: "Код с чека или из сообщения магазина. С ним отзыв отмечается «Проверенная покупка», а вы получаете бонус{b}.",
+      rvRequired: "Отметьте оценку, стойкость и шлейф.", rvSend: "Отправить отзыв", rvSending: "Отправляем…",
+      rvThanks: "Спасибо! Отзыв появится на сайте после проверки.", rvBonusYour: "Ваш бонус-код",
+      rvBonusHow: "Сохраните его (сделайте скриншот). Когда отзыв проверят, покажите код в магазине или пришлите в Telegram — получите бонус{b}.",
+      rvMyBonus: "Ваш бонус-код за отзыв: {c}", rvSent: "Ваш отзыв отправлен — он появится после проверки.", rvDone: "Готово",
+      rvVerified: "Проверенная покупка", rvBuyer: "Покупатель", rvPick: "Какой аромат вы купили?", rvChange: "Другой аромат",
+      rvErrDup: "Вы уже оставили отзыв об этом аромате.", rvErrLimit: "Слишком много отзывов с этого устройства за сутки. Попробуйте завтра.",
+      rvErrCode: "Код покупки не найден. Проверьте его или очистите поле.", rvErrCodeUsed: "Этот код покупки уже использован.",
+      rvErrBusy: "Сейчас много отзывов на проверке. Попробуйте чуть позже.", rvErrNet: "Не удалось отправить. Проверьте интернет и попробуйте ещё раз.",
+      cmpLonRv: "Стойкость (по отзывам)", cmpSilRv: "Шлейф (по отзывам)", review: ["отзыв", "отзыва", "отзывов"],
       cmpBtn: "Сравнить ароматы", cmpBtnSub: "Два парфюма → чем похожи и чем отличаются", h7: "Сравнить ароматы",
       lead7: "Выберите два парфюма — покажем, чем они похожи и чем отличаются.", cmpLeft: "Слева", cmpRight: "Справа",
       cmpCount: "{n} из 2", cmpGo: "Сравнить", cmpSimilar: "Похожи на {p}%", cmpSimNote: "По нотам, аккордам и общему характеру.",
@@ -846,6 +910,23 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     tg: {
+      rvBtn: "Фикрҳо", rvTitle: "Фикрҳо", rvNone: "Ҳоло фикр нест. Аввалин шуда нависед!", rvLoading: "Фикрҳо бор мешаванд…",
+      rvError: "Фикрҳо бор нашуданд. Интернетро санҷед ва боз кӯшиш кунед.", rvRetry: "Боз кӯшиш", rvWrite: "Фикр навиштан",
+      rvStars: "Баҳо", rvLon: "Устуворӣ", rvSil: "Шлейф", rvSea: "Кай истифода мебаред", rvWho: "Барои кӣ", rvAgain: "Боз мехаридед?",
+      rvLonOpts: ["то 2 соат", "2–5 соат", "5–8 соат", "тамоми рӯз"], rvSilOpts: ["заиф", "миёна", "қавӣ"], rvSeaOpts: ["тобистон", "тирамоҳ ва зимистон", "тамоми сол"],
+      rvWhoOpts: ["мард", "зан", "ҳарду"], rvAgainOpts: ["ҳа", "не"], rvAgainYes: "боз мехариданд", rvAgainNo: "боз намехариданд",
+      rvAgainPct: "Боз мехариданд: {p}%", rvOftenSea: "Бештар истифода мебаранд: {v}", rvOftenWho: "Барои кӣ: {v}",
+      rvText: "Нақл кунед, ки атр чӣ гуна кушода мешавад ва ба кӣ мувофиқ аст (ихтиёрӣ)", rvCode: "Рамзи харид (агар бошад)",
+      rvCodeHint: "Рамз аз чек ё паёми мағоза. Бо он фикр «Хариди тасдиқшуда» мешавад ва шумо бонус мегиред{b}.",
+      rvRequired: "Баҳо, устуворӣ ва шлейфро қайд кунед.", rvSend: "Фиристодани фикр", rvSending: "Фиристода мешавад…",
+      rvThanks: "Ташаккур! Фикр пас аз санҷиш дар сайт пайдо мешавад.", rvBonusYour: "Рамзи бонуси шумо",
+      rvBonusHow: "Онро нигоҳ доред (скриншот гиред). Вақте фикр санҷида шуд, рамзро дар мағоза нишон диҳед ё дар Telegram фиристед — бонус мегиред{b}.",
+      rvMyBonus: "Рамзи бонуси шумо барои фикр: {c}", rvSent: "Фикри шумо фиристода шуд — пас аз санҷиш пайдо мешавад.", rvDone: "Тайёр",
+      rvVerified: "Хариди тасдиқшуда", rvBuyer: "Харидор", rvPick: "Кадом атрро харидед?", rvChange: "Атри дигар",
+      rvErrDup: "Шумо аллакай дар бораи ин атр фикр навиштаед.", rvErrLimit: "Аз ин дастгоҳ дар як шабонарӯз фикр зиёд шуд. Фардо кӯшиш кунед.",
+      rvErrCode: "Рамзи харид ёфт нашуд. Онро санҷед ё майдонро холӣ кунед.", rvErrCodeUsed: "Ин рамзи харид аллакай истифода шудааст.",
+      rvErrBusy: "Ҳоло фикрҳои зиёд дар санҷишанд. Каме дертар кӯшиш кунед.", rvErrNet: "Фиристода нашуд. Интернетро санҷед ва боз кӯшиш кунед.",
+      cmpLonRv: "Устуворӣ (аз рӯи фикрҳо)", cmpSilRv: "Шлейф (аз рӯи фикрҳо)", review: ["фикр"],
       cmpBtn: "Муқоисаи атрҳо", cmpBtnSub: "Ду атр → дар чӣ монанданд ва дар чӣ фарқ мекунанд", h7: "Муқоисаи атрҳо",
       lead7: "Ду атрро интихоб кунед — нишон медиҳем, ки дар чӣ монанданд ва дар чӣ фарқ мекунанд.", cmpLeft: "Чап", cmpRight: "Рост",
       cmpCount: "{n} аз 2", cmpGo: "Муқоиса", cmpSimilar: "{p}% монанд", cmpSimNote: "Аз рӯи нотаҳо, аккордҳо ва хусусияти умумӣ.",
@@ -897,6 +978,23 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     en: {
+      rvBtn: "Reviews", rvTitle: "Reviews", rvNone: "No reviews yet. Be the first!", rvLoading: "Loading reviews…",
+      rvError: "Couldn't load reviews. Check your connection and try again.", rvRetry: "Try again", rvWrite: "Write a review",
+      rvStars: "Rating", rvLon: "Longevity", rvSil: "Sillage", rvSea: "When you wear it", rvWho: "For whom", rvAgain: "Would you buy it again?",
+      rvLonOpts: ["under 2 h", "2–5 h", "5–8 h", "all day"], rvSilOpts: ["soft", "moderate", "strong"], rvSeaOpts: ["summer", "autumn & winter", "all year"],
+      rvWhoOpts: ["men", "women", "both"], rvAgainOpts: ["yes", "no"], rvAgainYes: "would buy again", rvAgainNo: "wouldn't buy again",
+      rvAgainPct: "Would buy again: {p}%", rvOftenSea: "Mostly worn: {v}", rvOftenWho: "For whom: {v}",
+      rvText: "How does it develop and who would it suit? (optional)", rvCode: "Purchase code (if you have one)",
+      rvCodeHint: "From your receipt or the shop's message. It marks your review as a “Verified purchase” and gives you a bonus{b}.",
+      rvRequired: "Please choose a rating, longevity and sillage.", rvSend: "Send review", rvSending: "Sending…",
+      rvThanks: "Thank you! Your review will appear after it's checked.", rvBonusYour: "Your bonus code",
+      rvBonusHow: "Save it (take a screenshot). Once your review is checked, show the code in the shop or send it on Telegram to get your bonus{b}.",
+      rvMyBonus: "Your bonus code for the review: {c}", rvSent: "Your review has been sent — it will appear after it's checked.", rvDone: "Done",
+      rvVerified: "Verified purchase", rvBuyer: "Customer", rvPick: "Which fragrance did you buy?", rvChange: "Another fragrance",
+      rvErrDup: "You've already reviewed this fragrance.", rvErrLimit: "Too many reviews from this device today. Please try tomorrow.",
+      rvErrCode: "Purchase code not found. Check it or clear the field.", rvErrCodeUsed: "This purchase code has already been used.",
+      rvErrBusy: "Lots of reviews are waiting to be checked. Please try a bit later.", rvErrNet: "Couldn't send. Check your connection and try again.",
+      cmpLonRv: "Longevity (from reviews)", cmpSilRv: "Sillage (from reviews)", review: ["review", "reviews"],
       cmpBtn: "Compare fragrances", cmpBtnSub: "Two fragrances → what they share and how they differ", h7: "Compare fragrances",
       lead7: "Pick two fragrances and we'll show what they share and how they differ.", cmpLeft: "Left", cmpRight: "Right",
       cmpCount: "{n} of 2", cmpGo: "Compare", cmpSimilar: "{p}% alike", cmpSimNote: "Based on notes, accords and overall character.",
@@ -1547,6 +1645,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // окно закрыли крестиком — убираем его запись из истории
   function histOverlayClosed() { if (!HIST || histClosing) return; try { if (history.state && history.state.ov) history.back(); } catch (e) {} }
   function closeOverlays() {
+    if (!$("#rv").hidden) closeReviews();
     if (!$("#pv").hidden) closePreview();
     if (!$("#sh").hidden) closeShare();
     if (!$("#sim").hidden) closeSimilar();
@@ -1555,7 +1654,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   window.addEventListener("popstate", function (e) {
     if (!HIST) return;
     var st = e.state || {};
-    if (["#fb", "#sim", "#sh", "#pv"].some(function (q) { return !$(q).hidden; })) {
+    if (["#fb", "#sim", "#sh", "#pv", "#rv"].some(function (q) { return !$(q).hidden; })) {
       histClosing = true;
       try { closeOverlays(); } finally { histClosing = false; }
     }
@@ -2021,13 +2120,14 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#picks").innerHTML = state.picks.map(function (r) {
       var ct = cardText(r), pct = ct.pct, why = ct.why, closest = ct.closest, p = r.p;
       var stock = p.price ? '<p class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</p>" : "";
-      var acts = '<div class="cardacts"><button type="button" class="btn ghost sm" data-sim="' + p.i + '">' + esc(t("simBtn")) + "</button>" +
+      var acts = '<div class="cardacts"><button type="button" class="btn ghost sm" data-sim="' + p.i + '">' + esc(t("simBtn")) + "</button>" + rvBtn(p) +
         (p.price && TELEGRAM ? '<a class="btn sm" data-order="' + p.i + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a>" : "") + "</div>";
       return '<li class="card"><div class="head"><span class="badge' + (r.label === "hit" ? " hit" : "") + '">' + esc(t(LABEL_KEY[r.label])) + "</span>" +
         '<span class="match" title="' + esc(t("matchTitle")) + '">' + pct + "%</span></div>" +
         '<div class="body">' + bottleSvg(p) + "<div><h3>" + esc(p.n) + '</h3><div class="by">' + byLine(p) + '</div><div class="chips">' + chipsHtml(p) + "</div></div></div>" +
         '<p class="why">' + esc(why) + '</p><p class="meta">' + esc(closest + t("season", { s: t(SEASON_KEY[p.s]) })) + "</p>" + stock + acts + "</li>";
     }).join("");
+    rvLoad();
   }
   // Кнопки на карточках: «Похожие» и «Заказать»
   $("#picks").addEventListener("click", function (e) {
@@ -2055,7 +2155,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.cslots = [null, null]; state.cq = ""; state.climit = PAGE; state.cshow = false;
     $("#q").value = ""; $("#bq").value = ""; $("#dq").value = ""; $("#cq").value = "";
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
-    ["#fb", "#sim", "#sh", "#pv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    ["#fb", "#sim", "#sh", "#pv", "#rv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
     $("#pvpages").innerHTML = "";
     go(1);
   }
@@ -2156,9 +2256,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         '<div class="body">' + bottleSvg(p) + "<div><h3>" + esc(p.n) + '</h3><div class="by">' + byLine(p) + "</div>" +
         '<p class="meta" style="margin:8px 0 0">' + esc(t(p.extra ? "dupeNotesOrig" : "dupeNotesCommon")) + '</p><div class="chips" style="margin-top:4px">' + commonChips(src, p) + "</div></div></div>" +
         (p.price ? '<p class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</p>" : "") +
-        (p.price && TELEGRAM ? '<div class="cardacts"><a class="btn sm" data-dorder="' + k + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a></div>" : "") +
+        '<div class="cardacts">' + rvBtn(p) + (p.price && TELEGRAM ? '<a class="btn sm" data-dorder="' + k + '" href="' + esc(orderHref(p)) + '" target="_blank" rel="noopener">' + esc(t("orderBtn")) + "</a>" : "") + "</div>" +
         "</li>";
     }).join("");
+    rvLoad();
   }
   $("#goDupe").addEventListener("click", function () {
     histFlush();
@@ -2190,14 +2291,15 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Слева и справа по аромату → сходство, известный дюп, сезон, пол, цена, оценка, хит, год, концентрация (что известно),
   // характер, аккорды и ноты: общие и только у каждого, по слоям. Стойкость и шлейф не показываем — данных нет (решение владельца).
   var COMPARE_POP = null;
-  function compareItems() {
-    var q = expandQuery(norm(state.cq.trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
+  function compareItems() { return searchPerfumes(state.cq); }
+  function searchPerfumes(qs) {
+    var q = expandQuery(norm(String(qs || "").trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
     if (!q) {
       if (!COMPARE_POP) COMPARE_POP = P.filter(function (p) { return !p.np; }).sort(byPop).slice(0, 300);
       return { pop: true, items: COMPARE_POP };
     }
     prepSearch();
-    var Q = qParse(state.cq), ok = function (p) { return !p.np; }, lvl = [[], [], []];
+    var Q = qParse(qs), ok = function (p) { return !p.np; }, lvl = [[], [], []];
     P.forEach(function (p) { if (!ok(p)) return; var lv = nameLevel(p, p.hay, Q); if (lv >= 0) lvl[lv].push(p); });
     var exact = rankLevels(lvl[0].sort(byPop), lvl[1].sort(byPop), lvl[2].sort(byPop), Q.cyr);
     return { pop: false, items: exact.concat(fuzzyFind(P, exact, Q, ok)) };
@@ -2247,7 +2349,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var A = cs[0], Bp = cs[1], pct = Math.round(100 * pairSim(A, Bp)), rel = dupeRel(A, Bp), names = L().concNames, tiers = L().tiers;
     var who = function (p) { return p.gen === 1 ? t("cmpM") : (p.gen === 2 ? t("cmpF") : (p.gen === 3 ? t("cmpU") : "")); };
     var price = function (p) { return (p.tier ? esc(tierStr(p) + " · " + tiers[p.tier]) : "") + (p.price ? (p.tier ? "<br>" : "") + '<span class="stock">' + esc(t("inStock", { p: money(p.price) })) + "</span>" : ""); };
-    var head = function (p) { return '<div class="cmp-col">' + bottleSvg(p) + "<h3>" + esc(p.n) + '</h3><div class="by">' + esc(p.b) + "</div></div>"; };
+    var head = function (p) { return '<div class="cmp-col">' + bottleSvg(p) + "<h3>" + esc(p.n) + '</h3><div class="by">' + esc(p.b) + "</div>" + rvBtn(p) + "</div>"; };
     var html = '<div class="cmp-head">' + head(A) + head(Bp) + "</div>" +
       '<div class="cmp-sim"><b>' + esc(t("cmpSimilar", { p: pct })) + '</b><span class="small">' + esc(t("cmpSimNote")) + "</span></div>" +
       (rel ? '<p class="cmp-dupe">' + esc(t("cmpDupe", { d: rel.d.n, o: rel.o.n })) + "</p>" : "");
@@ -2259,7 +2361,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       cmpRow(t("cmpRating"), A.r > 0 ? esc(t("cmpRateVal", { r: A.r.toFixed(1) })) : "", Bp.r > 0 ? esc(t("cmpRateVal", { r: Bp.r.toFixed(1) })) : "") +
       cmpRow(t("cmpHit"), esc(t(A.hit ? "cmpYes" : "cmpNo")), esc(t(Bp.hit ? "cmpYes" : "cmpNo"))) +
       cmpRow(t("cmpYear"), A.yr ? String(A.yr) : "", Bp.yr ? String(Bp.yr) : "") +
-      cmpRow(t("cmpConc"), A.conc ? esc(names[A.conc]) : "", Bp.conc ? esc(names[Bp.conc]) : "") + "</div>";
+      cmpRow(t("cmpConc"), A.conc ? esc(names[A.conc]) : "", Bp.conc ? esc(names[Bp.conc]) : "") + '<div id="cmprv"></div></div>';
     // Характер: вкусы, которые есть хотя бы у одного, по убыванию
     var axs = AX.map(function (a, k) { return { k: k, m: Math.max(A.v[k], Bp.v[k]) }; }).filter(function (x) { return x.m > 0; })
       .sort(function (x, y) { return y.m - x.m; }).slice(0, 6);
@@ -2298,6 +2400,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       '<div class="cmp-acts"><button type="button" class="btn ghost" id="cswap">' + esc(t("cmpSwap")) + '</button><button type="button" class="btn ghost" id="cother">' + esc(t("cmpOther")) + "</button>" +
       '<button type="button" class="btn" id="cshare">' + esc(t("shareBtn")) + "</button></div>";
     $("#cres").innerHTML = html;
+    rvLoad();
   }
   $("#goCompare").addEventListener("click", function () {
     histFlush();
@@ -2529,6 +2632,216 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   sim.addEventListener("click", function (e) { if (e.target === sim) closeSimilar(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sim.hidden) closeSimilar(); });
 
+  /* ======================= Отзывы покупателей ======================= */
+  // Хранятся на сервере (worker/index.js, база D1). Новый отзыв виден на сайте только после одобрения владельцем
+  // в Telegram. Код покупки (бот, команда /kod) → «Проверенная покупка» и бонус-код.
+  var RV_API = inClaude ? "https://shoh-parfumer.com/api/" : "/api/";
+  var RV_SUM = {}, RV_WAIT = {}, RV_REG = {}, DEV_ID = null;
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function devId() {
+    if (DEV_ID) return DEV_ID;
+    DEV_ID = lsGet("sp-dev", null);
+    if (!/^[a-z0-9]{8,40}$/.test(DEV_ID || "")) { DEV_ID = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); lsSet("sp-dev", DEV_ID); }
+    return DEV_ID;
+  }
+  function bonusText() { var b = (REVIEW_BONUS && REVIEW_BONUS[lang]) || (REVIEW_BONUS && REVIEW_BONUS.ru) || ""; return b ? " — " + b : ""; }
+  function rvKey(p) { var u = p.uid || hash(p.b + "|" + p.n).toString(36); RV_REG[u] = { b: p.b, n: p.n, uid: u }; return u; }
+  function rvLabel(u) { var x = RV_SUM[u]; return x && x.n ? "★ " + x.avg.toFixed(1) + " · " + pl(x.n, "review") : t("rvBtn"); }
+  function rvBtn(p) { var u = rvKey(p); return '<button type="button" class="btn ghost sm rvbtn" data-rv="' + u + '">' + esc(rvLabel(u)) + "</button>"; }
+  // Число отзывов и оценка для всех показанных ароматов — одним запросом
+  function rvLoad() {
+    var need = [];
+    document.querySelectorAll("[data-rv]").forEach(function (b) { var u = b.getAttribute("data-rv"); if (!(u in RV_SUM) && !RV_WAIT[u] && need.indexOf(u) === -1) need.push(u); });
+    if (!need.length) { rvPaint(); return; }
+    need.forEach(function (u) { RV_WAIT[u] = 1; });
+    fetch(RV_API + "reviews/summary?uids=" + need.join(",")).then(function (r) { return r.json(); }).then(function (d) {
+      need.forEach(function (u) { RV_SUM[u] = (d && d[u]) || null; delete RV_WAIT[u]; });
+      rvPaint();
+    }).catch(function () { need.forEach(function (u) { delete RV_WAIT[u]; }); });
+  }
+  function rvPaint() {
+    document.querySelectorAll("[data-rv]").forEach(function (b) { b.textContent = rvLabel(b.getAttribute("data-rv")); });
+    if (state.step === 7 && state.cshow) cmpReviewRows();
+  }
+  // «Сравнить»: стойкость и шлейф по отзывам — только если отзывов хотя бы 3
+  function cmpReviewRows() {
+    var box = $("#cmprv"); if (!box) return;
+    var A = state.cslots[0], Bp = state.cslots[1]; if (!A || !Bp) return;
+    var top = function (p, key, opts) {
+      var x = RV_SUM[rvKey(p)]; if (!x || x.n < 3) return "";
+      var c = x[key], best = 0; for (var i = 1; i < c.length; i++) if (c[i] > c[best]) best = i;
+      return c[best] ? esc(L()[opts][best] + " · " + pl(x.n, "review")) : "";
+    };
+    box.innerHTML = cmpRow(t("cmpLonRv"), top(A, "lon", "rvLonOpts"), top(Bp, "lon", "rvLonOpts")) +
+      cmpRow(t("cmpSilRv"), top(A, "sil", "rvSilOpts"), top(Bp, "sil", "rvSilOpts"));
+  }
+
+  var rv = $("#rv"), rvCur = null, rvView = "list", rvData = null, rvForm = {}, rvCode = "", rvResult = null, rvOpener = null, rvBusy = false, rvQ = "";
+  function openReviews(p, opener) {
+    rvCur = { b: p.b, n: p.n, uid: rvKey(p) }; rvOpener = opener || null; rvView = "list"; rvData = null; rvForm = {};
+    rv.hidden = false; histOverlay(); rvDraw(); rvFetch();
+    track("reviews/" + p.b + " — " + p.n);
+  }
+  // Ссылка с кодом покупки (?otziv=КОД): сразу выбор купленного аромата и форма
+  function openReviewByCode(code) {
+    rvCur = null; rvCode = code; rvView = "pick"; rvQ = ""; rvForm = {}; rvOpener = null;
+    rv.hidden = false; histOverlay(); rvDraw();
+    track("review-code-link");
+  }
+  function closeReviews() { rv.hidden = true; rvCur = null; if (rvOpener && rvOpener.focus) rvOpener.focus(); histOverlayClosed(); }
+  function rvFetch() {
+    var u = rvCur.uid;
+    fetch(RV_API + "reviews?uid=" + u).then(function (r) { return r.json(); }).then(function (d) {
+      if (!rvCur || rvCur.uid !== u) return;
+      rvData = d && !d.error ? d : { error: 1 };
+      if (!rvData.error) RV_SUM[u] = d.n ? { n: d.n, avg: d.avg, lon: d.lon, sil: d.sil } : null;
+      if (rvView === "list") rvDraw();
+      rvPaint();
+    }).catch(function () { if (rvCur && rvCur.uid === u) { rvData = { error: 1 }; if (rvView === "list") rvDraw(); } });
+  }
+  function starStr(n) { return new Array(n + 1).join("★") + new Array(6 - n).join("☆"); }
+  function rvHead() { return '<div class="rvhead"><b>' + esc(rvCur.n) + "</b><span>" + esc(rvCur.b) + "</span></div>"; }
+  function optRow(key, opts, n) {
+    var max = Math.max.apply(null, n) || 1;
+    return opts.map(function (o, i) {
+      return '<div class="rvbar"><span>' + esc(o) + '</span><div class="track"><div class="fill" style="width:' + Math.round(100 * n[i] / max) + '%"></div></div><span class="n">' + n[i] + "</span></div>";
+    }).join("");
+  }
+  function mostOf(c, opts) { var best = -1; c.forEach(function (v, i) { if (v && (best < 0 || v > c[best])) best = i; }); return best < 0 ? "" : opts[best]; }
+  function rvListHtml() {
+    var mine = lsGet("sp-bonus", {})[rvCur.uid], sent = lsGet("sp-rev", []).indexOf(rvCur.uid) !== -1, h = rvHead();
+    if (mine) h += '<p class="rvnote">' + esc(t("rvMyBonus", { c: mine })) + "</p>";
+    if (!rvData) h += '<p class="small">' + esc(t("rvLoading")) + "</p>";
+    else if (rvData.error) h += '<p class="small">' + esc(t("rvError")) + '</p><button type="button" class="btn ghost" id="rvretry">' + esc(t("rvRetry")) + "</button>";
+    else if (!rvData.n) h += '<p class="small">' + esc(t("rvNone")) + "</p>";
+    else {
+      var d = rvData, X = L(), ag = d.again[0] + d.again[1], sea = mostOf(d.sea, X.rvSeaOpts), who = mostOf(d.who, X.rvWhoOpts);
+      h += '<div class="rvsum"><div class="rvavg"><b>' + d.avg.toFixed(1) + '</b><span class="rvstars" aria-hidden="true">' + starStr(Math.round(d.avg)) + "</span><span class=\"small\">" + esc(pl(d.n, "review")) + "</span></div>" +
+        '<div class="rvbars"><span>' + esc(t("rvLon")) + "</span>" + optRow("lon", X.rvLonOpts, d.lon) + "<span>" + esc(t("rvSil")) + "</span>" + optRow("sil", X.rvSilOpts, d.sil) + "</div>" +
+        (ag ? '<p class="small">' + esc(t("rvAgainPct", { p: Math.round(100 * d.again[0] / ag) })) + "</p>" : "") +
+        (sea ? '<p class="small">' + esc(t("rvOftenSea", { v: sea })) + "</p>" : "") + (who ? '<p class="small">' + esc(t("rvOftenWho", { v: who })) + "</p>" : "") + "</div>";
+      h += '<ul class="rvlist">' + d.items.map(function (r) {
+        var meta = [t("rvLon") + ": " + X.rvLonOpts[r.lon - 1], t("rvSil") + ": " + X.rvSilOpts[r.sil - 1]];
+        if (r.sea) meta.push(X.rvSeaOpts[r.sea - 1]);
+        if (r.who) meta.push(X.rvWhoOpts[r.who - 1]);
+        if (r.again === 1 || r.again === 0) meta.push(t(r.again ? "rvAgainYes" : "rvAgainNo"));
+        return '<li class="rvitem"><div class="rvtop"><span class="rvstars" aria-label="' + r.s + '/5">' + starStr(r.s) + '</span><span class="small">' + esc(r.date) + "</span></div>" +
+          '<div class="rvmeta">' + esc(meta.join(" · ")) + "</div>" + (r.text ? '<p class="rvtext">' + esc(r.text) + "</p>" : "") +
+          '<div class="small">— ' + esc(r.author || t("rvBuyer")) + (r.ver ? ' · <span class="rvver">✓ ' + esc(t("rvVerified")) + "</span>" : "") + "</div></li>";
+      }).join("") + "</ul>";
+    }
+    h += sent ? '<p class="rvnote">' + esc(t("rvSent")) + "</p>" : '<button type="button" class="btn" id="rvwrite">' + esc(t("rvWrite")) + "</button>";
+    return h;
+  }
+  function segHtml(field, opts) {
+    return '<div class="seg" role="group">' + opts.map(function (o, i) {
+      return '<button type="button" data-rf="' + field + '" data-v="' + (i + 1) + '" aria-pressed="' + (rvForm[field] === i + 1) + '">' + esc(o) + "</button>";
+    }).join("") + "</div>";
+  }
+  function rvFormHtml() {
+    var X = L(), req = ' <i aria-hidden="true">*</i>';
+    return rvHead() + (rvCode ? '<button type="button" class="pathlink" id="rvchange">' + esc(t("rvChange")) + " →</button>" : "") +
+      '<div class="rvq"><span>' + esc(t("rvStars")) + req + '</span><div class="rvstarsel" role="group">' + [1, 2, 3, 4, 5].map(function (n) {
+        return '<button type="button" data-rf="stars" data-v="' + n + '" aria-label="' + n + '/5" aria-pressed="' + (rvForm.stars === n) + '" class="' + (rvForm.stars >= n ? "on" : "") + '">★</button>';
+      }).join("") + "</div></div>" +
+      '<div class="rvq"><span>' + esc(t("rvLon")) + req + "</span>" + segHtml("lon", X.rvLonOpts) + "</div>" +
+      '<div class="rvq"><span>' + esc(t("rvSil")) + req + "</span>" + segHtml("sil", X.rvSilOpts) + "</div>" +
+      '<div class="rvq"><span>' + esc(t("rvSea")) + "</span>" + segHtml("sea", X.rvSeaOpts) + "</div>" +
+      '<div class="rvq"><span>' + esc(t("rvWho")) + "</span>" + segHtml("who", X.rvWhoOpts) + "</div>" +
+      '<div class="rvq"><span>' + esc(t("rvAgain")) + "</span>" + segHtml("again", X.rvAgainOpts) + "</div>" +
+      '<textarea id="rvtext" class="search" maxlength="1000" placeholder="' + esc(t("rvText")) + '" aria-label="' + esc(t("rvText")) + '"></textarea>' +
+      '<input id="rvname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("fbName")) + '" aria-label="' + esc(t("fbName")) + '">' +
+      '<div class="rvq"><input id="rvcode" class="search" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" placeholder="' + esc(t("rvCode")) + '" aria-label="' + esc(t("rvCode")) + '" value="' + esc(rvCode) + '">' +
+      '<span class="small" style="font-weight:400">' + esc(t("rvCodeHint", { b: bonusText() })) + "</span></div>" +
+      '<input id="rvweb" class="vh" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+      '<p class="status" id="rvstatus" role="status"></p><button type="button" class="btn" id="rvsend">' + esc(t("rvSend")) + "</button>";
+  }
+  function rvThanksHtml() {
+    var r = rvResult || {};
+    return rvHead() + '<p class="rvnote">' + esc(t("rvThanks")) + "</p>" +
+      (r.bonus ? '<div class="rvbonus"><span class="small">' + esc(t("rvBonusYour")) + "</span><b>" + esc(r.bonus) + '</b><button type="button" class="btn ghost sm" id="rvcopy">' + esc(t("shareCopy")) + "</button>" +
+        '<span class="small">' + esc(t("rvBonusHow", { b: bonusText() })) + "</span></div>" : "") +
+      '<p class="status" id="rvstatus" role="status"></p><button type="button" class="btn" id="rvdone">' + esc(t("rvDone")) + "</button>";
+  }
+  function rvPickRows() {
+    var D = searchPerfumes(rvQ);
+    $("#rvlist").innerHTML = D.items.slice(0, 30).map(function (p) {
+      return '<li><button type="button" class="row" data-rp="' + p.i + '"><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
+    }).join("");
+    $("#rvhint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t(SEARCH_READY ? "notFound" : "searching"));
+  }
+  function rvDraw() {
+    $("#rvtitle").textContent = t(rvView === "form" ? "rvWrite" : (rvView === "pick" ? "rvPick" : "rvTitle"));
+    var body = $("#rvbody");
+    if (rvView === "pick") {
+      body.innerHTML = '<input id="rvq" class="search" type="search" autocomplete="off" placeholder="' + esc(t("dupeSearchPh")) + '" aria-label="' + esc(t("dupeSearchPh")) + '" value="' + esc(rvQ) + '">' +
+        '<p class="small" id="rvhint"></p><ul class="list" id="rvlist"></ul>';
+      rvPickRows();
+    } else body.innerHTML = rvView === "form" ? rvFormHtml() : (rvView === "thanks" ? rvThanksHtml() : rvListHtml());
+    rv.querySelector(".sheet").scrollTop = 0;
+  }
+  function rvSubmit() {
+    if (rvBusy) return;
+    var st = $("#rvstatus"), btn = $("#rvsend");
+    if (!rvForm.stars || !rvForm.lon || !rvForm.sil) { st.textContent = t("rvRequired"); return; }
+    var body = { brand: rvCur.b, name: rvCur.n, stars: rvForm.stars, lon: rvForm.lon, sil: rvForm.sil, sea: rvForm.sea || null, who: rvForm.who || null,
+      again: rvForm.again === 1 ? 1 : (rvForm.again === 2 ? 0 : null), text: $("#rvtext").value, author: $("#rvname").value,
+      code: $("#rvcode").value, website: $("#rvweb").value, lang: lang, dev: devId() };
+    rvBusy = true; btn.disabled = true; st.textContent = t("rvSending");
+    var ERR = { dup: "rvErrDup", limit: "rvErrLimit", code: "rvErrCode", code_used: "rvErrCodeUsed", busy: "rvErrBusy" };
+    fetch(RV_API + "reviews", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return j; }, function () { return {}; }); })
+      .then(function (j) {
+        rvBusy = false;
+        if (j && j.ok) {
+          var sent = lsGet("sp-rev", []); if (sent.indexOf(rvCur.uid) === -1) { sent.push(rvCur.uid); lsSet("sp-rev", sent.slice(-200)); }
+          if (j.bonus) { var mine = lsGet("sp-bonus", {}); mine[rvCur.uid] = j.bonus; lsSet("sp-bonus", mine); }
+          rvResult = j; rvView = "thanks"; rvCode = "";
+          try { if (/[?&]otziv=/.test(location.search)) history.replaceState(history.state, "", location.pathname); } catch (e) {}
+          track("review-sent" + (j.verified ? "/code" : ""));
+          rvDraw();
+          return;
+        }
+        btn.disabled = false; st.textContent = t(ERR[j && j.error] || "rvErrNet");
+        if (j && (j.error === "code" || j.error === "code_used")) $("#rvcode").focus();
+      })
+      .catch(function () { rvBusy = false; btn.disabled = false; st.textContent = t("rvErrNet"); });
+  }
+  // Кнопки «Отзывы» на карточках итога, дюпов и в «Сравнить»
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rv]"); if (!b) return;
+    var x = RV_REG[b.getAttribute("data-rv")]; if (x) openReviews(x, b);
+  });
+  $("#rvbody").addEventListener("click", function (e) {
+    var f = e.target.closest("[data-rf]"), id = e.target.closest("button") ? e.target.closest("button").id : "", pk = e.target.closest("[data-rp]");
+    if (f) {
+      var field = f.getAttribute("data-rf"), v = Number(f.getAttribute("data-v"));
+      rvForm[field] = rvForm[field] === v && field !== "stars" ? 0 : v;           // повторное нажатие снимает выбор (кроме оценки)
+      f.parentNode.querySelectorAll("[data-rf]").forEach(function (o) {
+        var ov = Number(o.getAttribute("data-v"));
+        o.setAttribute("aria-pressed", String(rvForm[field] === ov));
+        if (field === "stars") o.classList.toggle("on", rvForm.stars >= ov);
+      });
+      $("#rvstatus").textContent = "";
+      return;
+    }
+    if (pk) { var p = P[Number(pk.getAttribute("data-rp"))]; rvCur = { b: p.b, n: p.n, uid: rvKey(p) }; rvView = "form"; rvDraw(); return; }
+    if (id === "rvwrite") { rvView = "form"; rvDraw(); track("review-form"); }
+    else if (id === "rvsend") rvSubmit();
+    else if (id === "rvretry") { rvData = null; rvDraw(); rvFetch(); }
+    else if (id === "rvchange") { rvView = "pick"; rvDraw(); }
+    else if (id === "rvdone") closeReviews();
+    else if (id === "rvcopy") {
+      var c = rvResult && rvResult.bonus;
+      try { navigator.clipboard.writeText(c).then(function () { $("#rvstatus").textContent = t("shareCopied"); }, function () {}); } catch (err) {}
+    }
+  });
+  $("#rvbody").addEventListener("input", function (e) { if (e.target.id === "rvq") { rvQ = e.target.value; rvPickRows(); } });
+  $("#rvclose").addEventListener("click", closeReviews);
+  rv.addEventListener("click", function (e) { if (e.target === rv) closeReviews(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !rv.hidden) closeReviews(); });
+
   /* ======================= Поделиться ======================= */
   var sh = $("#sh");
   function shareUrl() {
@@ -2671,6 +2984,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   applyLang();
   histFlush();
+  // Ссылка из бота магазина с кодом покупки: shoh-parfumer.com/?otziv=КОД
+  try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) openReviewByCode(oc); } } catch (e) {}
   // любое нажатие или ввод текста — сохраняем экран в его запись истории (с небольшой задержкой)
   document.addEventListener("click", histSave);
   document.addEventListener("input", histSave);
