@@ -1,0 +1,6 @@
+# Shoh Parfumer — поисковикам можно всё, кроме служебного адреса Telegram-бота
+User-agent: *
+Allow: /
+Disallow: /api/tg/
+
+Sitemap: https://shoh-parfumer.com/sitemap.xml

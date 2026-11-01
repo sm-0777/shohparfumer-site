@@ -105,3 +105,10 @@ python3 -I src/make_taste.py data/db.json parfumo.csv public/taste.json  # «Х�
 шаг забыли, сайт заметит несовпадение метки `th` и покажет полоски по грубым данным (0 / 33 / 67 / 100%).
 
 Источник данных: [Parfumo Fragrance Dataset (TidyTuesday)](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-12-10).
+
+## Поисковики (Google, Яндекс, Bing)
+
+`make_site.py --standalone` сам пишет страницы трёх языков (`/`, `/tg/`, `/en/`), `sitemap.xml` и `robots.txt`.
+Коды подтверждения прав — в `VERIFY` в начале `src/make_site.py` (метатег) и файлами `public/yandex_КОД.html`,
+`public/googleКОД.html` (их отдаёт Worker без перенаправления). Раз в 3 часа Worker сообщает Яндексу и Bing об обновлении
+сайта (IndexNow). Значки сайта: `python3 -I src/make_icons.py public`.

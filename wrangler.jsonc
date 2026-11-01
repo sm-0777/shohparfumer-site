@@ -7,8 +7,8 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    // Только /api/* обрабатывает код отзывов; всё остальное — файлы сайта
-    "run_worker_first": ["/api/*"],
+    // /api/* — код отзывов; файлы подтверждения Google и Яндекса Worker отдаёт сам (без перенаправления); остальное — файлы сайта
+    "run_worker_first": ["/api/*", "/yandex_*", "/google*"],
     // Неверный адрес (например /abc) — страница public/404.html, она сразу открывает главную
     "not_found_handling": "404-page"
   },
@@ -19,8 +19,12 @@
   // Не секреты. Секрет TG_TOKEN (токен бота) добавляется в Cloudflare: Settings → Variables and Secrets.
   "vars": {
     "OWNER_TG": "sm_0777",
-    "SITE": "https://shoh-parfumer.com"
+    "SITE": "https://shoh-parfumer.com",
+    // Ключ IndexNow (не секрет, лежит открыто в public/<ключ>.txt): так Яндекс и Bing узнают об обновлениях сайта
+    "INDEXNOW_KEY": "7760fe1240ba089a3e362ca26d76cb83"
   },
+  // Раз в 3 часа Worker смотрит дату в sitemap.xml и, если сайт обновился, сообщает Яндексу и Bing (IndexNow)
+  "triggers": { "crons": ["17 */3 * * *"] },
   "workers_dev": true,
   // Домен сайта: Cloudflare сам создаёт записи DNS и сертификат.
   "routes": [

@@ -854,6 +854,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Новые тексты: подбор для новичка, подарок, пол, похожие, наличие, «поделиться»
   var I18N_X = {
     ru: {
+      // Заголовок вкладки и описание для поисковиков (make_site.py берёт их отсюда для заголовка и описания страниц)
+      pageTitle: "Shoh Parfumer — подбор парфюма, дюпы и сравнение ароматов · Душанбе",
+      metaDesc: "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.",
       rvBtn: "Отзывы", rvTitle: "Отзывы", rvNone: "Отзывов пока нет. Будьте первым!", rvLoading: "Загружаем отзывы…",
       rvError: "Не удалось загрузить отзывы. Проверьте интернет и попробуйте ещё раз.", rvRetry: "Ещё раз", rvWrite: "Оставить отзыв",
       rvStars: "Оценка", rvLon: "Стойкость", rvSil: "Шлейф", rvSea: "Когда носите", rvWho: "Для кого", rvAgain: "Купили бы снова?",
@@ -922,6 +925,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     tg: {
+      pageTitle: "Shoh Parfumer — интихоби атр, дюпҳо ва муқоисаи атрҳо · Душанбе",
+      metaDesc: "Интихоби атр аз рӯи се атри дӯстдоштаи шумо, дюпҳои маълуми атрҳои машҳур ва муқоисаи ду атр. Зиёда аз 17 000 атр, нотаҳо ва фикрҳои харидорон. Мағозаи Shoh Parfumer, Душанбе.",
       rvBtn: "Фикрҳо", rvTitle: "Фикрҳо", rvNone: "Ҳоло фикр нест. Аввалин шуда нависед!", rvLoading: "Фикрҳо бор мешаванд…",
       rvError: "Фикрҳо бор нашуданд. Интернетро санҷед ва боз кӯшиш кунед.", rvRetry: "Боз кӯшиш", rvWrite: "Фикр навиштан",
       rvStars: "Баҳо", rvLon: "Устуворӣ", rvSil: "Шлейф", rvSea: "Кай истифода мебаред", rvWho: "Барои кӣ", rvAgain: "Боз мехаридед?",
@@ -990,6 +995,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }
     },
     en: {
+      pageTitle: "Shoh Parfumer — perfume finder, dupes and fragrance comparison · Dushanbe",
+      metaDesc: "Find new perfumes from three fragrances you love, known dupes of popular perfumes and side-by-side comparisons. 17,000+ fragrances, notes and customer reviews. Shoh Parfumer shop, Dushanbe.",
       rvBtn: "Reviews", rvTitle: "Reviews", rvNone: "No reviews yet. Be the first!", rvLoading: "Loading reviews…",
       rvError: "Couldn't load reviews. Check your connection and try again.", rvRetry: "Try again", rvWrite: "Write a review",
       rvStars: "Rating", rvLon: "Longevity", rvSil: "Sillage", rvSea: "When you wear it", rvWho: "For whom", rvAgain: "Would you buy it again?",
@@ -1114,6 +1121,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 
   var lang = "ru";
   try { var sl = localStorage.getItem("sp-lang"); if (LANGS.indexOf(sl) !== -1) lang = sl; } catch (e) {}
+  // Адрес языка (для поисковиков у каждого языка своя страница): / — русский, /tg/ — тоҷикӣ, /en/ — English.
+  // Пришли по адресу /tg/ или /en/ (например, из Google) — показываем этот язык, даже если раньше выбирали другой.
+  var PATH_LANG = (location.pathname.match(/^\/(tg|en)(\/|$)/) || [])[1];
+  if (PATH_LANG) lang = PATH_LANG;
   function L() { return I18N[lang]; }
   function t(key, vars) {
     var s = I18N[lang][key];
@@ -1671,6 +1682,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       try { closeOverlays(); } finally { histClosing = false; }
     }
     clearTimeout(histTimer); histTimer = 0;
+    langSync();                                            // запись могла остаться с адресом другого языка
     if (st.sp && keyOf(st.sp) === keyOf(snap())) return;   // тот же экран (закрылось окно) — ничего не перерисовываем
     if (!applySnap(st.sp)) applySnap({ st: 1 });
     render(); window.scrollTo(0, 0);
@@ -3010,7 +3022,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   /* ======================= Язык ======================= */
   function applyLang() {
     root.lang = lang;
-    try { document.title = "Shoh Parfumer · " + t("brandSub"); } catch (e) {}   // заголовок вкладки на выбранном языке
+    try {                                    // заголовок вкладки и описание на выбранном языке, адрес — страница этого языка
+      document.title = t("pageTitle");
+      var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", t("metaDesc"));
+    } catch (e) {}
+    langSync();
     document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
     document.querySelectorAll("[data-tp]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-tp"))); });
     document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
@@ -3020,6 +3036,12 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (!fb.hidden) fbUpdate();
     if (!sim.hidden) drawSimilar();
     if (!sh.hidden) openShare();
+  }
+  // Адрес в строке браузера = страница выбранного языка (/, /tg/, /en/), без перезагрузки
+  function langSync() {
+    if (!HIST || !/^\/((tg|en)\/?)?(index\.html)?$/.test(location.pathname)) return;
+    var want = "/" + (lang === "ru" ? "" : lang + "/");
+    if (location.pathname !== want) try { history.replaceState(history.state, "", want + location.search + location.hash); } catch (e) {}
   }
   document.querySelector(".langs").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-lang]"); if (!b) return;

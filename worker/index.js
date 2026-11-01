@@ -6,6 +6,7 @@
 //   POST /api/reviews                  новый отзыв → на проверку владельцу в Telegram
 //   POST /api/tg/<секрет>              Telegram-бот: «Опубликовать / Удалить», /kod, проверка бонус-кода
 //   GET  /api/health                   проверка: подключён ли бот (без секретов)
+//   по расписанию (раз в 3 часа)        сайт обновился (новая дата в sitemap.xml) → сообщить Яндексу и Bing (IndexNow)
 //
 // Секрет TG_TOKEN (токен бота от @BotFather) владелец добавляет сам в Cloudflare: Workers → shoh-parfumer →
 // Settings → Variables and Secrets. Адрес бота (webhook) Worker настраивает сам. Чат владельца запоминается,
@@ -24,6 +25,7 @@ let webhookChecked = false;
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (/^\/(yandex_[0-9a-f]+|google[0-9a-f]+)\.html$/.test(url.pathname)) return verifyFile(env, url);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors() });
     try {
@@ -40,7 +42,39 @@ export default {
       return json({ error: "server" }, 500);
     }
   },
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(indexNow(env).catch((e) => console.error("indexnow", e && e.stack || e)));
+  },
 };
+
+/* ---------------- Файлы подтверждения Google Search Console и Яндекс Вебмастера ---------------- */
+// Лежат в public/ (yandex_КОД.html, googleКОД.html). Cloudflare отдаёт .html с перенаправлением на адрес без .html,
+// а проверка поисковика ждёт ответ 200 ровно по этому адресу — поэтому отдаём файл здесь.
+async function verifyFile(env, url) {
+  const r = await env.ASSETS.fetch(new Request(url.origin + url.pathname.replace(/\.html$/, "")));
+  if (!r.ok) return r;                    // такого файла нет — обычная страница 404
+  return new Response(await r.text(), { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" } });
+}
+
+/* ---------------- IndexNow: сообщить поисковикам об обновлении ---------------- */
+// Яндекс, Bing и другие поисковики с IndexNow узнают об изменениях сразу, а не при следующем обходе.
+// Google IndexNow не использует — он находит обновления сам по sitemap.xml.
+async function indexNow(env) {
+  if (!env.INDEXNOW_KEY || !env.SITE) return;
+  const r = await env.ASSETS.fetch(new Request(env.SITE + "/sitemap.xml"));
+  if (!r.ok) return;
+  const xml = await r.text();
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const mark = (xml.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1] || "";
+  if (!urls.length || !mark || (await getSetting(env, "indexnow")) === mark) return;
+  const res = await fetch(env.INDEXNOW_API || "https://api.indexnow.org/indexnow", {
+    method: "POST",
+    headers: { "content-type": "application/json; charset=utf-8" },
+    body: JSON.stringify({ host: new URL(env.SITE).host, key: env.INDEXNOW_KEY, keyLocation: env.SITE + "/" + env.INDEXNOW_KEY + ".txt", urlList: urls }),
+  });
+  console.log("indexnow", mark, res.status);
+  if (res.status === 200 || res.status === 202) await setSetting(env, "indexnow", mark);
+}
 
 /* ---------------- общее ---------------- */
 function cors() {

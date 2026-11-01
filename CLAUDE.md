@@ -30,6 +30,13 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Search keys are prepared in the background (prepLoop); until ready, search matches by spelling and refreshes itself.
   Keep the first screen free of long synchronous work (weak Android phones: test with CPU throttling ×4–×6).
 - Link preview: og tags are added by make_site.py (--standalone); image `public/og.png` from `src/og.html`.
+- Search engines (owner, 01.11.2026): make_site.py --standalone also writes public/tg/index.html, public/en/index.html
+  (same page, static texts pre-translated from I18N via node; title/description = I18N pageTitle/metaDesc), canonical +
+  hreflang, JSON-LD Store (Dushanbe; add address/hours/phone ONLY when the owner sends them), sitemap.xml (lastmod
+  changes only when pages change), robots.txt. The page language follows the path (/, /tg/, /en/) and langSync() keeps
+  the address in step with the language. Verification codes: VERIFY in make_site.py + public/yandex_*.html /
+  google*.html (worker/index.js serves them with 200, no redirect). IndexNow: worker cron every 3 h pings Yandex/Bing
+  when sitemap lastmod changes (key file public/7760fe….txt). Icons: src/make_icons.py.
   Unknown paths → `public/404.html` (redirects home) via `not_found_handling` in wrangler.jsonc.
 - «Сравнить ароматы» = step 7 (mode "compare"): entry button only at the bottom of home after «Найти дюп» (owner).
   Rows with no data on both sides are hidden; longevity/sillage only «по отзывам» (≥3 approved reviews), never invented.
