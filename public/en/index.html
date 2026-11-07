@@ -559,7 +559,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   <!-- Ароматы Shoh Parfumer: свои дюпы -->
   <section data-step="8" class="stack" aria-labelledby="h8" hidden>
     <h1 id="h8" data-t="h8">Shoh Parfumer fragrances</h1>
-    <p class="lead" data-t="lead8">Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day, or pick it up yourself.</p>
+    <p class="lead" data-t="lead8">Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day.</p>
     <ul class="list" id="ownlist"></ul>
     <ul class="oinfo" id="oinfo8"></ul>
     <div class="bar">
@@ -831,6 +831,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
               en: "Fresh and warm at once: bergamot, ginger and grapefruit, then pineapple with cardamom and cinnamon over labdanum, vetiver and patchouli." } }
   ];
   var WHATSAPP = "";            // номер WhatsApp для заказов: код страны и номер, только цифры, например "992900000000"
+  var PICKUP_ON = false;        // самовывоз: false — пока только доставка (решение владельца 07.11.2026), true — можно выбрать самовывоз
   var PICKUP = { ru: "", tg: "", en: "" };   // адрес самовывоза на трёх языках (пусто — «адрес сообщим при звонке»)
 
   /* ======================= Переводы ======================= */
@@ -1037,7 +1038,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       metaDesc: "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.",
       // Ароматы Shoh Parfumer и заказ
       ownBtn: "Ароматы Shoh Parfumer", ownBtnSub: "Наши дюпы известных ароматов · доставка по Душанбе за 1 день",
-      h8: "Ароматы Shoh Parfumer", lead8: "Наши дюпы известных ароматов. Закажите на сайте — доставим по Душанбе за 1 день, или заберите сами.",
+      h8: "Ароматы Shoh Parfumer", lead8: "Наши дюпы известных ароматов. Закажите на сайте — доставим по Душанбе за 1 день.",
       ownDupeOf: "дюп {n}", ownFrom: "от {p}", ownPriceAsk: "цену уточняйте", ownOut: "Нет в наличии", ownIn: "В наличии",
       ownNotesKey: "Главные ноты", ownNotesSame: "Ноты — как у оригинала.", ownVol: "Объём и цена", ownMore: "Подробнее", ownAll: "Все ароматы",
       ownOur: "Наш аромат", ownHas: "есть наш дюп", ownHasLine: "Есть наш дюп: {n}",
@@ -1121,7 +1122,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       pageTitle: "Shoh Parfumer — интихоби атр, дюпҳо ва муқоисаи атрҳо · Душанбе",
       metaDesc: "Интихоби атр аз рӯи се атри дӯстдоштаи шумо, дюпҳои маълуми атрҳои машҳур ва муқоисаи ду атр. Зиёда аз 17 000 атр, нотаҳо ва фикрҳои харидорон. Мағозаи Shoh Parfumer, Душанбе.",
       ownBtn: "Атрҳои Shoh Parfumer", ownBtnSub: "Дюпҳои мо аз атрҳои машҳур · расонидан дар Душанбе дар 1 рӯз",
-      h8: "Атрҳои Shoh Parfumer", lead8: "Дюпҳои мо аз атрҳои машҳур. Дар сайт фармоиш диҳед — дар Душанбе дар 1 рӯз мерасонем, ё худатон гиред.",
+      h8: "Атрҳои Shoh Parfumer", lead8: "Дюпҳои мо аз атрҳои машҳур. Дар сайт фармоиш диҳед — дар Душанбе дар 1 рӯз мерасонем.",
       ownDupeOf: "дюпи {n}", ownFrom: "аз {p}", ownPriceAsk: "нархро пурсед", ownOut: "Дар мавҷудият нест", ownIn: "Дар мавҷудият",
       ownNotesKey: "Нотаҳои асосӣ", ownNotesSame: "Нотаҳо — мисли нотаҳои асл.", ownVol: "Ҳаҷм ва нарх", ownMore: "Муфассал", ownAll: "Ҳамаи атрҳо",
       ownOur: "Атри мо", ownHas: "дюпи мо ҳаст", ownHasLine: "Дюпи мо ҳаст: {n}",
@@ -1205,7 +1206,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       pageTitle: "Shoh Parfumer — perfume finder, dupes and fragrance comparison · Dushanbe",
       metaDesc: "Find new perfumes from three fragrances you love, known dupes of popular perfumes and side-by-side comparisons. 17,000+ fragrances, notes and customer reviews. Shoh Parfumer shop, Dushanbe.",
       ownBtn: "Shoh Parfumer fragrances", ownBtnSub: "Our dupes of famous fragrances · delivery in Dushanbe in 1 day",
-      h8: "Shoh Parfumer fragrances", lead8: "Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day, or pick it up yourself.",
+      h8: "Shoh Parfumer fragrances", lead8: "Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day.",
       ownDupeOf: "dupe of {n}", ownFrom: "from {p}", ownPriceAsk: "ask for the price", ownOut: "Out of stock", ownIn: "In stock",
       ownNotesKey: "Key notes", ownNotesSame: "Notes are the same as the original.", ownVol: "Size and price", ownMore: "Details", ownAll: "All fragrances",
       ownOur: "Our fragrance", ownHas: "our dupe available", ownHasLine: "Our dupe: {n}",
@@ -2582,7 +2583,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }
   function ownInfo() {
     var a = PICKUP[lang] || PICKUP.ru;
-    return "<li>" + esc(t("ownDelivery")) + "</li><li>" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</li><li>" + esc(t("ownPay")) + "</li>";
+    return "<li>" + esc(t("ownDelivery")) + "</li>" + (PICKUP_ON ? "<li>" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</li>" : "") + "<li>" + esc(t("ownPay")) + "</li>";
   }
   // Список ароматов
   function drawOwnList() {
@@ -2643,7 +2644,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   var ord = $("#ord"), ordCur = null, ordF = {}, ordView = "form", ordRes = null, ordBusy = false, ordOpener = null;
   function openOrder(o, opener) {
     ordCur = o; ordOpener = opener || null; ordView = "form"; ordRes = null;
-    ordF = { vol: o.vol.length === 1 ? 0 : -1, qty: 1, get: 0, pay: 0 };
+    ordF = { vol: o.vol.length === 1 ? 0 : -1, qty: 1, get: PICKUP_ON ? 0 : 1, pay: 0 };   // без самовывоза — сразу доставка
     ord.hidden = false; histOverlay(); ordDraw();
     track("order-open/" + o.id);
   }
@@ -2664,9 +2665,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       '<div class="rvq"><span>' + esc(t("ordQty")) + '</span><div class="qty"><button type="button" data-oq="-1" aria-label="' + esc(t("ordLess")) + '">−</button><b id="ordqty">' + ordF.qty +
       '</b><button type="button" data-oq="1" aria-label="' + esc(t("ordMoreQ")) + '">+</button></div></div>' +
       '<div id="ordtot">' + ordTotal() + "</div>" +
-      '<div class="rvq"><span>' + esc(t("ordGet")) + req + "</span>" + ordSeg("get", X.ordGetOpts) + "</div>" +
-      '<input id="ordaddr" class="search" type="text" maxlength="200" autocomplete="street-address" placeholder="' + esc(t("ordAddr")) + '" aria-label="' + esc(t("ordAddr")) + '"' + (ordF.get === 1 ? "" : " hidden") + ">" +
-      '<p class="small" id="ordpick" style="margin:0"' + (ordF.get === 2 ? "" : " hidden") + ">" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</p>" +
+      (PICKUP_ON ? '<div class="rvq"><span>' + esc(t("ordGet")) + req + "</span>" + ordSeg("get", X.ordGetOpts) + "</div>"
+        : '<div class="rvq"><span>' + esc(t("ordAddr")) + req + '</span><span class="small" style="font-weight:400">' + esc(t("ownDelivery")) + "</span></div>") +
+      '<input id="ordaddr" class="search" type="text" maxlength="200" autocomplete="street-address" placeholder="' + esc(t("ordAddr")) + (PICKUP_ON ? "" : " *") + '" aria-label="' + esc(t("ordAddr")) + '"' + (ordF.get === 1 ? "" : " hidden") + ">" +
+      (PICKUP_ON ? '<p class="small" id="ordpick" style="margin:0"' + (ordF.get === 2 ? "" : " hidden") + ">" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</p>" : "") +
       '<div class="rvq"><span>' + esc(t("ordPay")) + "</span>" + ordSeg("pay", X.ordPayOpts) + "</div>" +
       '<input id="ordname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("ordName")) + ' *" aria-label="' + esc(t("ordName")) + '">' +
       '<input id="ordphone" class="search" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="' + esc(t("ordPhone")) + ' * (+992 …)" aria-label="' + esc(t("ordPhone")) + '">' +
@@ -2721,7 +2723,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       var field = f.getAttribute("data-of"), v = Number(f.getAttribute("data-v")) + (field === "vol" ? 0 : 1);
       ordF[field] = field === "pay" && ordF.pay === v ? 0 : v;                    // оплату можно снять повторным нажатием
       f.parentNode.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(Number(x.getAttribute("data-v")) + (field === "vol" ? 0 : 1) === ordF[field])); });
-      if (field === "get") { $("#ordaddr").hidden = ordF.get !== 1; $("#ordpick").hidden = ordF.get !== 2; if (ordF.get === 1) $("#ordaddr").focus(); }
+      if (field === "get") { $("#ordaddr").hidden = ordF.get !== 1; if ($("#ordpick")) $("#ordpick").hidden = ordF.get !== 2; if (ordF.get === 1) $("#ordaddr").focus(); }
       if (field === "vol") {
         $("#ordtot").innerHTML = ordTotal();
         var oc = $("#ordbody .ocontact"); if (oc) oc.outerHTML = ownContacts(ordCur, ordCur.vol[ordF.vol]);
