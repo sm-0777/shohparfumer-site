@@ -190,6 +190,53 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 /* ---------- Сравнить ---------- */
 .cslots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cmpbtn { margin-top: 0; }
+/* Ароматы Shoh Parfumer */
+.owncard { flex-direction: row; align-items: center; gap: 12px; min-height: 76px; border-color: var(--accent); }
+.owncard .t { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.owncard .t b { color: var(--fg); }
+.owncard .t span { color: var(--muted); }
+.owncard b { font-size: 1.0625rem; }
+.owncard .go { flex: none; color: var(--accent-text); font-size: 1.25rem; }
+.orow { align-items: center; padding: 10px 12px; }
+.othumb { width: 56px; height: 64px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 10px; background: var(--soft); }
+.othumb img { width: 100%; height: 100%; object-fit: cover; }
+.othumb .bottle { width: 40px; }
+.orow .txt .op { color: var(--fg); font-weight: 600; }
+.ostock { color: var(--ok); }
+.ostock.out { color: var(--muted); }
+.ogal { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.ogal::-webkit-scrollbar { display: none; }
+.ogal > * { flex: 0 0 100%; scroll-snap-align: center; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+.ogal.many > * { flex-basis: 86%; }
+.ogal img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.ogal .ph { height: 210px; }
+.ogal .ph .bottle { width: 112px; }
+.ohead { display: flex; flex-direction: column; gap: 4px; }
+.ohead .by { color: var(--muted); font-size: 0.9375rem; overflow-wrap: break-word; }
+.ohead .oprice { font-weight: 600; font-size: 1.0625rem; }
+.odesc { margin: 0; font-size: 1rem; line-height: 1.5; }
+.onotes { display: flex; flex-direction: column; gap: 10px; }
+.onotes h2, .ovols h2 { font-size: 1.0625rem; }
+.onl > .small { display: block; }
+.onl .chips { margin-top: 4px; }
+.ovols { display: flex; flex-direction: column; gap: 8px; }
+.ovols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ovols li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.ovols li b { white-space: nowrap; }
+.ovols li .ask { color: var(--muted); font-weight: 400; white-space: normal; text-align: right; }
+.oinfo { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; border-radius: 14px; background: var(--soft); font-size: 0.9375rem; }
+.oinfo:empty { display: none; }
+.ocontact { display: flex; flex-wrap: wrap; gap: 8px; }
+.ocontact .btn { flex: 1 1 8rem; }
+.ownhint { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--accent); background: transparent; font-size: 0.9375rem; }
+.ownhint .txt { flex: 1; min-width: 0; overflow-wrap: break-word; }
+.ownhint .go { flex: none; color: var(--accent-text); }
+.card.own { border-color: var(--accent); }
+.card.own .odesc { font-size: 0.9375rem; }
+.qty { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 2px; align-self: flex-start; }
+.qty button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; font-size: 1.25rem; }
+.qty b { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+.ordtotal { margin: 0; font-weight: 600; }
 #ccount { white-space: nowrap; }
 .cmp-head { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .cmp-col { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
@@ -393,6 +440,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       <button type="button" class="pathlink" id="goNovice"><span data-t="pathNovice">Не знаю названий</span> <span aria-hidden="true">→</span></button>
       <button type="button" class="pathlink" id="goGift"><span data-t="pathGift">Ищу в подарок</span> <span aria-hidden="true">→</span></button>
     </div>
+    <button type="button" class="bcard owncard" id="goOwn"><span class="t"><b data-t="ownBtn">Ароматы Shoh Parfumer</b><span data-t="ownBtnSub">Наши дюпы известных ароматов · доставка по Душанбе за 1 день</span></span><span class="go" aria-hidden="true">→</span></button>
     <div class="slots" id="slots" aria-live="polite"></div>
     <input id="q" class="search" type="search" data-tp="searchPh" placeholder="Найти аромат или бренд" autocomplete="off" data-ta="searchPh" aria-label="Найти аромат или бренд">
     <p class="small" id="listhint"></p>
@@ -472,6 +520,26 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       <button class="btn ghost sm" id="back7" type="button" data-t="back">Назад</button>
       <span class="small" id="ccount"></span>
       <button class="btn" id="cgo" type="button" data-t="cmpGo" disabled>Сравнить</button>
+    </div>
+  </section>
+
+  <!-- Ароматы Shoh Parfumer: свои дюпы -->
+  <section data-step="8" class="stack" aria-labelledby="h8" hidden>
+    <h1 id="h8" data-t="h8">Ароматы Shoh Parfumer</h1>
+    <p class="lead" data-t="lead8">Наши дюпы известных ароматов. Закажите на сайте — доставим по Душанбе за 1 день, или заберите сами.</p>
+    <ul class="list" id="ownlist"></ul>
+    <ul class="oinfo" id="oinfo8"></ul>
+    <div class="bar">
+      <button class="btn ghost sm" id="back8" type="button" data-t="back">Назад</button>
+    </div>
+  </section>
+
+  <!-- Один аромат Shoh Parfumer: фото, ноты, цены, заказ -->
+  <section data-step="9" class="stack" aria-labelledby="h9" hidden>
+    <div class="stack" id="owndet" style="gap:16px"></div>
+    <div class="bar">
+      <button class="btn ghost sm" id="back9" type="button" data-t="ownAll">Все ароматы</button>
+      <button class="btn" id="ordgo9" type="button" data-t="orderBtn">Заказать</button>
     </div>
   </section>
 
@@ -625,6 +693,17 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 </div>
 
 <!-- Отзывы об аромате: сводка, список, форма -->
+<div class="overlay" id="ord" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ordtitle">
+    <div class="top">
+      <h2 id="ordtitle" data-t="ordTitle">Заказ</h2>
+      <button type="button" class="tool" id="ordclose" data-ta="close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="stack" id="ordbody" style="gap:14px" aria-live="polite"></div>
+  </div>
+</div>
 <div class="overlay" id="rv" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rvtitle">
     <div class="top">
@@ -654,6 +733,52 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Бонус за отзыв с кодом покупки — как написать на сайте (три языка), например «скидка 5% на следующую покупку».
   // Пусто — на сайте написано просто «бонус».
   var REVIEW_BONUS = { ru: "", tg: "", en: "" };
+
+  // ===== Ароматы Shoh Parfumer (свои дюпы) =====
+  // id     — адрес страницы аромата (латиницей, без пробелов). Не меняйте после запуска: на него ведут ссылки.
+  // name   — название вашего аромата. Пусто — пока показываем название оригинала.
+  // of     — оригинал: "Бренд|Название" так же, как на сайте (тогда аромат виден и в «Найти дюп», и в подборе).
+  // vol    — объёмы и цены: [мл, цена в сомони]. Цена 0 — «цену уточняйте».
+  // stock  — true: в наличии, false: нет в наличии.
+  // photos — фото (файлы в public/aromaty/), первое — главное. Пусто — рисованный флакон.
+  // notes  — ноты оригинала по слоям (по-русски, как в базе сайта). Своя нота, которой нет в базе: "русский|тоҷикӣ|english".
+  // src    — откуда ноты (официальный сайт бренда или магазин), desc — описание на трёх языках.
+  var OWN = [
+    { id: "absolu-aventus", name: "", of: "Creed|Absolu Aventus", vol: [[30, 0], [50, 0], [100, 0]], stock: true, photos: [],
+      notes: { top: ["бергамот", "имбирь", "грейпфрут"], mid: ["кардамон", "корица", "ананас"], base: ["лабданум", "ветивер", "пачули"] },
+      src: "creedfragrances.co.uk",
+      desc: { ru: "Свежий и тёплый одновременно: бергамот, имбирь и грейпфрут, затем ананас с кардамоном и корицей, а в основе — лабданум, ветивер и пачули.",
+              tg: "Ҳам тоза, ҳам гарм: бергамот, занҷабил ва грейпфрут, сипас ананас бо ҳел ва дорчин, дар асос — лабданум, ветивер ва пачулӣ.",
+              en: "Fresh and warm at once: bergamot, ginger and grapefruit, then pineapple with cardamom and cinnamon over labdanum, vetiver and patchouli." } },
+    { id: "limmensite", name: "", of: "Louis Vuitton|L'Immensité", vol: [[30, 0], [50, 0], [100, 0]], stock: true, photos: [],
+      notes: { key: ["имбирь", "грейпфрут", "ветивер"] },
+      src: "louisvuitton.com",
+      desc: { ru: "Свежий пряно-цитрусовый аромат: имбирь и грейпфрут на древесной основе из ветивера.",
+              tg: "Атри тозаи ситрусӣ бо адвиёт: занҷабил ва грейпфрут дар заминаи чӯбии ветивер.",
+              en: "A fresh spicy citrus: ginger and grapefruit over a woody vetiver base." } },
+    { id: "tygar", name: "", of: "Bvlgari|Le Gemme - Tygar", vol: [[30, 0], [50, 0], [100, 0]], stock: true, photos: [],
+      notes: { key: ["грейпфрут", "серая амбра"] },
+      src: "bulgari.com",
+      desc: { ru: "Яркий и сочный: грейпфрут и серая амбра — свежесть цитруса на глубокой амбровой основе.",
+              tg: "Дурахшон ва серобу: грейпфрут ва анбари хокистарӣ — тозагии ситрус дар заминаи амиқи анбарӣ.",
+              en: "Bright and juicy: grapefruit and ambergris — citrus freshness over a deep ambery base." } },
+    { id: "blonde-amber", name: "", of: "Clive Christian|Blonde Amber", vol: [[30, 0], [50, 0], [100, 0]], stock: true, photos: [],
+      notes: { top: ["горький апельсин", "имбирь", "кардамон", "розовый перец", "ладан", "ром", "бергамот", "грейпфрут"],
+               mid: ["белый табак|тамокуи сафед|white tobacco", "сухофрукты", "тубероза", "сандал", "жасмин", "ирис", "шафран", "османтус"],
+               base: ["тонка", "лабданум", "мирра", "пачули", "мускус", "ветивер", "кедр", "ваниль"] },
+      src: "bloomingdales.ae",
+      desc: { ru: "Тёплая амбра с дымным оттенком: специи и ром, белый табак и цветы, а в основе — тонка, лабданум, мирра и ваниль.",
+              tg: "Анбари гарм бо тобиши дуддор: адвиёт ва ром, тамокуи сафед ва гулҳо, дар асос — тонка, лабданум, мур ва ваниль.",
+              en: "Warm amber with a smoky edge: spices and rum, white tobacco and florals over tonka, labdanum, myrrh and vanilla." } },
+    { id: "megamare", name: "", of: "Orto Parisi|Megamare", vol: [[30, 0], [50, 0], [100, 0]], stock: true, photos: [],
+      notes: { top: ["бергамот", "лимон"], mid: ["калон|калон|calone", "бессмертник", "гедион", "водоросли|алафҳои баҳрӣ|seaweed"], base: ["амброксан", "кедр", "мускус"] },
+      src: "noseparis.com",
+      desc: { ru: "Морской древесный аромат с солёной силой: бергамот и лимон, морской калон и водоросли, а в основе — амброксан, кедр и мускус.",
+              tg: "Атри баҳрию чӯбӣ бо қуввати шӯр: бергамот ва лиму, калон ва алафҳои баҳрӣ, дар асос — амброксан, кедр ва мушк.",
+              en: "A marine woody scent with saline force: bergamot and lemon, calone and seaweed over ambroxan, cedar and musk." } }
+  ];
+  var WHATSAPP = "";            // номер WhatsApp для заказов: код страны и номер, только цифры, например "992900000000"
+  var PICKUP = { ru: "", tg: "", en: "" };   // адрес самовывоза на трёх языках (пусто — «адрес сообщим при звонке»)
 
   /* ======================= Переводы ======================= */
   var LANGS = ["ru", "tg", "en"];
@@ -857,6 +982,21 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       // Заголовок вкладки и описание для поисковиков (make_site.py берёт их отсюда для заголовка и описания страниц)
       pageTitle: "Shoh Parfumer — подбор парфюма, дюпы и сравнение ароматов · Душанбе",
       metaDesc: "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.",
+      // Ароматы Shoh Parfumer и заказ
+      ownBtn: "Ароматы Shoh Parfumer", ownBtnSub: "Наши дюпы известных ароматов · доставка по Душанбе за 1 день",
+      h8: "Ароматы Shoh Parfumer", lead8: "Наши дюпы известных ароматов. Закажите на сайте — доставим по Душанбе за 1 день, или заберите сами.",
+      ownDupeOf: "дюп {n}", ownFrom: "от {p}", ownPriceAsk: "цену уточняйте", ownOut: "Нет в наличии", ownIn: "В наличии",
+      ownNotesKey: "Главные ноты", ownNotesSame: "Ноты — как у оригинала.", ownVol: "Объём и цена", ownMore: "Подробнее", ownAll: "Все ароматы",
+      ownOur: "Наш аромат", ownHas: "есть наш дюп", ownHasLine: "Есть наш дюп: {n}",
+      ownDelivery: "Доставка по Душанбе — за 1 день", ownPickup: "Самовывоз: {a}", ownPickupSoon: "Самовывоз — адрес сообщим при звонке",
+      ownPay: "Оплата наличными или переводом на карту", ownAskText: "Здравствуйте! Хочу заказать {n}{v}.", ownTg: "Telegram", ownWa: "WhatsApp", ownNotes: "Ноты", ownMl: "{n} мл",
+      ordTitle: "Заказ", ordVol: "Объём", ordQty: "Количество", ordLess: "Меньше", ordMoreQ: "Больше", ordGet: "Как получить", ordGetOpts: ["Доставка по Душанбе", "Самовывоз"],
+      ordAddr: "Адрес доставки", ordPay: "Оплата", ordPayOpts: ["Наличными", "Переводом на карту"], ordName: "Ваше имя", ordPhone: "Телефон",
+      ordComment: "Комментарий (необязательно)", ordTotal: "Итого: {p}", ordConfirm: "Цену и доставку подтвердим по телефону.",
+      ordSend: "Отправить заявку", ordSending: "Отправляем…", ordReq: "Заполните: {list}.", ordPhoneBad: "Проверьте номер телефона.",
+      ordThanks: "Заявка №{n} принята! Мы позвоним вам, чтобы подтвердить заказ.", ordThanksTest: "Это тестовая версия — заявка никуда не отправлена.",
+      ordOr: "Или напишите нам:", ordErrNet: "Не удалось отправить. Проверьте интернет и попробуйте ещё раз.",
+      ordErrLimit: "Сегодня с этого устройства уже много заявок. Напишите нам в Telegram или WhatsApp.", ordDone: "Готово",
       rvBtn: "Отзывы", rvTitle: "Отзывы", rvNone: "Отзывов пока нет. Будьте первым!", rvLoading: "Загружаем отзывы…",
       rvError: "Не удалось загрузить отзывы. Проверьте интернет и попробуйте ещё раз.", rvRetry: "Ещё раз", rvWrite: "Оставить отзыв",
       rvStars: "Оценка", rvLon: "Стойкость", rvSil: "Шлейф", rvSea: "Когда носите", rvWho: "Для кого", rvAgain: "Купили бы снова?",
@@ -927,6 +1067,20 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     tg: {
       pageTitle: "Shoh Parfumer — интихоби атр, дюпҳо ва муқоисаи атрҳо · Душанбе",
       metaDesc: "Интихоби атр аз рӯи се атри дӯстдоштаи шумо, дюпҳои маълуми атрҳои машҳур ва муқоисаи ду атр. Зиёда аз 17 000 атр, нотаҳо ва фикрҳои харидорон. Мағозаи Shoh Parfumer, Душанбе.",
+      ownBtn: "Атрҳои Shoh Parfumer", ownBtnSub: "Дюпҳои мо аз атрҳои машҳур · расонидан дар Душанбе дар 1 рӯз",
+      h8: "Атрҳои Shoh Parfumer", lead8: "Дюпҳои мо аз атрҳои машҳур. Дар сайт фармоиш диҳед — дар Душанбе дар 1 рӯз мерасонем, ё худатон гиред.",
+      ownDupeOf: "дюпи {n}", ownFrom: "аз {p}", ownPriceAsk: "нархро пурсед", ownOut: "Дар мавҷудият нест", ownIn: "Дар мавҷудият",
+      ownNotesKey: "Нотаҳои асосӣ", ownNotesSame: "Нотаҳо — мисли нотаҳои асл.", ownVol: "Ҳаҷм ва нарх", ownMore: "Муфассал", ownAll: "Ҳамаи атрҳо",
+      ownOur: "Атри мо", ownHas: "дюпи мо ҳаст", ownHasLine: "Дюпи мо ҳаст: {n}",
+      ownDelivery: "Расонидан дар Душанбе — дар 1 рӯз", ownPickup: "Худатон гирифтан: {a}", ownPickupSoon: "Худатон гирифтан — суроғаро ҳангоми занг мегӯем",
+      ownPay: "Пардохт: нақд ё интиқол ба корт", ownAskText: "Салом! Мехоҳам {n}{v} фармоиш диҳам.", ownTg: "Telegram", ownWa: "WhatsApp", ownNotes: "Нотаҳо", ownMl: "{n} мл",
+      ordTitle: "Фармоиш", ordVol: "Ҳаҷм", ordQty: "Миқдор", ordLess: "Камтар", ordMoreQ: "Бештар", ordGet: "Чӣ тавр гирифтан", ordGetOpts: ["Расонидан дар Душанбе", "Худатон гирифтан"],
+      ordAddr: "Суроғаи расонидан", ordPay: "Пардохт", ordPayOpts: ["Нақд", "Интиқол ба корт"], ordName: "Номи шумо", ordPhone: "Телефон",
+      ordComment: "Шарҳ (ҳатмӣ нест)", ordTotal: "Ҳамагӣ: {p}", ordConfirm: "Нарх ва расониданро бо телефон тасдиқ мекунем.",
+      ordSend: "Фиристодани дархост", ordSending: "Фиристода истодаем…", ordReq: "Пур кунед: {list}.", ordPhoneBad: "Рақами телефонро санҷед.",
+      ordThanks: "Дархости №{n} қабул шуд! Барои тасдиқи фармоиш ба шумо занг мезанем.", ordThanksTest: "Ин версияи санҷишӣ аст — дархост ба ҳеҷ ҷо фиристода нашуд.",
+      ordOr: "Ё ба мо нависед:", ordErrNet: "Фиристода нашуд. Интернетро санҷед ва боз кӯшиш кунед.",
+      ordErrLimit: "Имрӯз аз ин дастгоҳ дархостҳо бисёр шуданд. Ба мо дар Telegram ё WhatsApp нависед.", ordDone: "Тайёр",
       rvBtn: "Фикрҳо", rvTitle: "Фикрҳо", rvNone: "Ҳоло фикр нест. Аввалин шуда нависед!", rvLoading: "Фикрҳо бор мешаванд…",
       rvError: "Фикрҳо бор нашуданд. Интернетро санҷед ва боз кӯшиш кунед.", rvRetry: "Боз кӯшиш", rvWrite: "Фикр навиштан",
       rvStars: "Баҳо", rvLon: "Устуворӣ", rvSil: "Шлейф", rvSea: "Кай истифода мебаред", rvWho: "Барои кӣ", rvAgain: "Боз мехаридед?",
@@ -997,6 +1151,20 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     en: {
       pageTitle: "Shoh Parfumer — perfume finder, dupes and fragrance comparison · Dushanbe",
       metaDesc: "Find new perfumes from three fragrances you love, known dupes of popular perfumes and side-by-side comparisons. 17,000+ fragrances, notes and customer reviews. Shoh Parfumer shop, Dushanbe.",
+      ownBtn: "Shoh Parfumer fragrances", ownBtnSub: "Our dupes of famous fragrances · delivery in Dushanbe in 1 day",
+      h8: "Shoh Parfumer fragrances", lead8: "Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day, or pick it up yourself.",
+      ownDupeOf: "dupe of {n}", ownFrom: "from {p}", ownPriceAsk: "ask for the price", ownOut: "Out of stock", ownIn: "In stock",
+      ownNotesKey: "Key notes", ownNotesSame: "Notes are the same as the original.", ownVol: "Size and price", ownMore: "Details", ownAll: "All fragrances",
+      ownOur: "Our fragrance", ownHas: "our dupe available", ownHasLine: "Our dupe: {n}",
+      ownDelivery: "Delivery in Dushanbe — in 1 day", ownPickup: "Pick-up: {a}", ownPickupSoon: "Pick-up — we'll tell you the address when we call",
+      ownPay: "Pay in cash or by card transfer", ownAskText: "Hello! I'd like to order {n}{v}.", ownTg: "Telegram", ownWa: "WhatsApp", ownNotes: "Notes", ownMl: "{n} ml",
+      ordTitle: "Order", ordVol: "Size", ordQty: "Quantity", ordLess: "Fewer", ordMoreQ: "More", ordGet: "How to get it", ordGetOpts: ["Delivery in Dushanbe", "Pick-up"],
+      ordAddr: "Delivery address", ordPay: "Payment", ordPayOpts: ["Cash", "Card transfer"], ordName: "Your name", ordPhone: "Phone",
+      ordComment: "Comment (optional)", ordTotal: "Total: {p}", ordConfirm: "We'll confirm the price and delivery by phone.",
+      ordSend: "Send order", ordSending: "Sending…", ordReq: "Please fill in: {list}.", ordPhoneBad: "Please check the phone number.",
+      ordThanks: "Order №{n} received! We'll call you to confirm it.", ordThanksTest: "This is a test version — the order was not sent anywhere.",
+      ordOr: "Or message us:", ordErrNet: "Couldn't send. Check your connection and try again.",
+      ordErrLimit: "Too many orders from this device today. Please message us on Telegram or WhatsApp.", ordDone: "Done",
       rvBtn: "Reviews", rvTitle: "Reviews", rvNone: "No reviews yet. Be the first!", rvLoading: "Loading reviews…",
       rvError: "Couldn't load reviews. Check your connection and try again.", rvRetry: "Try again", rvWrite: "Write a review",
       rvStars: "Rating", rvLon: "Longevity", rvSil: "Sillage", rvSea: "When you wear it", rvWho: "For whom", rvAgain: "Would you buy it again?",
@@ -1519,7 +1687,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   var state = { step: 1, mode: "known", sel: [], slots: [null, null, null], cur: null, focus: null, smells: [], gender: "any",
     ans: {}, q: 0, query: "", brand: null, limit: PAGE, picks: [], showBrands: false, bq: "", blimit: 60,
     dq: "", dsrc: null, dlimit: PAGE, dlist: [],
-    cslots: [null, null], cq: "", climit: PAGE, cshow: false };
+    cslots: [null, null], cq: "", climit: PAGE, cshow: false, own: null };
 
   function $(s) { return document.querySelector(s); }
   // Высота шапки — чтобы закреплённая строка поиска вставала сразу под ней
@@ -1570,10 +1738,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 
   /* ======================= Шаги ======================= */
   // Шаги зависят от способа подбора: знаю духи (1→2→3→4), новичок (5→3→4), подарок (3→4)
-  var MODE_STEPS = { known: [1, 2, 3, 4], novice: [5, 3, 4], gift: [3, 4], dupe: [6], compare: [7] };
+  var MODE_STEPS = { known: [1, 2, 3, 4], novice: [5, 3, 4], gift: [3, 4], dupe: [6], compare: [7], own: [8, 9] };
   function drawSteps() {
-    $("#steps").hidden = state.mode === "dupe" || state.mode === "compare";      // «Найти дюп» и «Сравнить» — один экран, шаги не нужны
-    if (state.mode === "dupe" || state.mode === "compare") return;
+    var one = state.mode === "dupe" || state.mode === "compare" || state.mode === "own";   // «Найти дюп», «Сравнить», «Ароматы Shoh Parfumer» — без шагов
+    $("#steps").hidden = one;
+    if (one) return;
     var seq = MODE_STEPS[state.mode], cur = seq.indexOf(state.step);
     var names = state.mode === "known" ? L().steps : (state.mode === "novice" ? L().stepsNovice : L().stepsGift);
     $("#steps").innerHTML = names.map(function (n, i) {
@@ -1591,6 +1760,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (state.step === 4) drawResults();
     if (state.step === 6) drawDupe();
     if (state.step === 7) drawCompare();
+    if (state.step === 8) drawOwnList();
+    if (state.step === 9) drawOwnDetail();
   }
   function go(n) { state.step = n; render(); window.scrollTo(0, 0); histPush(); }
 
@@ -1604,21 +1775,23 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function snap() {
     return { st: state.step, m: state.mode, sl: state.slots.map(uidOf), se: state.sel.map(uidOf), sm: state.smells.slice(), g: state.gender,
       a: state.ans, q: state.q, qy: state.query, br: state.brand, sb: state.showBrands, bq: state.bq, dq: state.dq, ds: uidOf(state.dsrc),
-      cs: state.cslots.map(uidOf), cq: state.cq, ch: state.cshow };
+      cs: state.cslots.map(uidOf), cq: state.cq, ch: state.cshow, ow: state.own ? state.own.id : null };
   }
-  function modeOf(s) { return s.st === 1 || s.st === 2 ? "known" : (s.st === 5 ? "novice" : (s.st === 6 ? "dupe" : (s.st === 7 ? "compare" : s.m))); }
+  function modeOf(s) { return s.st === 1 || s.st === 2 ? "known" : (s.st === 5 ? "novice" : (s.st === 6 ? "dupe" : (s.st === 7 ? "compare" : (s.st === 8 || s.st === 9 ? "own" : s.m)))); }
   // Ключ экрана: шаг, номер вопроса, результат дюпа или сравнения, способ подбора
-  function keyOf(s) { return [s.st, s.st === 3 ? s.q : "", (s.st === 6 && s.ds) || (s.st === 7 && s.ch) ? "r" : "", modeOf(s)].join(":"); }
+  function keyOf(s) { return [s.st, s.st === 3 ? s.q : (s.st === 9 ? s.ow : ""), (s.st === 6 && s.ds) || (s.st === 7 && s.ch) ? "r" : "", modeOf(s)].join(":"); }
   function applySnap(s) {
     if (!s || typeof s !== "object") return false;
     var byU = function (u) { return (u && BY_UID[u]) || null; };
-    var step = [1, 2, 3, 4, 5, 6, 7].indexOf(s.st) !== -1 ? s.st : 1, mode = modeOf({ st: step, m: s.m });
+    var step = [1, 2, 3, 4, 5, 6, 7, 8, 9].indexOf(s.st) !== -1 ? s.st : 1, mode = modeOf({ st: step, m: s.m });
     if (!MODE_STEPS[mode]) mode = "known";
     var slots = (s.sl || []).slice(0, 3).map(byU); while (slots.length < 3) slots.push(null);
     var sel = (s.se || []).map(byU).filter(Boolean), smells = (s.sm || []).filter(function (id) { return SMELL_BY[id]; }).slice(0, 4);
     // без выбранных ароматов / запахов дальние шаги не открываем
     if (mode === "known" && step >= 2 && step <= 4 && sel.length !== 3) step = 1;
     if (mode === "novice" && (step === 3 || step === 4) && smells.length < 2) step = 5;
+    var own = (s.ow && OWN_BY_ID[s.ow]) || null;
+    if (step === 9 && !own) step = 8;
     state.step = step; state.mode = mode; state.slots = slots; state.sel = sel; state.smells = smells;
     state.gender = s.g === "m" || s.g === "f" ? s.g : "any";
     state.ans = s.a && typeof s.a === "object" ? s.a : {};
@@ -1628,6 +1801,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.dq = String(s.dq || ""); state.dsrc = mode === "dupe" ? byU(s.ds) : null; state.dlimit = state.dq.trim() ? PAGE : DUPE_TOP_N;
     var cs = (s.cs || []).slice(0, 2).map(byU); while (cs.length < 2) cs.push(null);
     state.cslots = cs; state.cq = String(s.cq || ""); state.climit = PAGE; state.cshow = !!s.ch && !!cs[0] && !!cs[1];
+    state.own = step === 9 ? own : null;
     $("#q").value = state.query; $("#bq").value = state.bq; $("#dq").value = state.dq; $("#cq").value = state.cq;
     return true;
   }
@@ -1669,6 +1843,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function histOverlayClosed() { if (!HIST || histClosing) return; try { if (history.state && history.state.ov) history.back(); } catch (e) {} }
   function closeOverlays() {
     if (!$("#rv").hidden) closeReviews();
+    if (!$("#ord").hidden) closeOrder();
     if (!$("#pv").hidden) closePreview();
     if (!$("#sh").hidden) closeShare();
     if (!$("#sim").hidden) closeSimilar();
@@ -1677,7 +1852,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   window.addEventListener("popstate", function (e) {
     if (!HIST) return;
     var st = e.state || {};
-    if (["#fb", "#sim", "#sh", "#pv", "#rv"].some(function (q) { return !$(q).hidden; })) {
+    if (["#fb", "#sim", "#sh", "#pv", "#rv", "#ord"].some(function (q) { return !$(q).hidden; })) {
       histClosing = true;
       try { closeOverlays(); } finally { histClosing = false; }
     }
@@ -2149,7 +2324,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       return '<li class="card"><div class="head"><span class="badge' + (r.label === "hit" ? " hit" : "") + '">' + esc(t(LABEL_KEY[r.label])) + "</span>" +
         '<span class="match" title="' + esc(t("matchTitle")) + '">' + pct + "%</span></div>" +
         '<div class="body">' + bottleSvg(p) + "<div><h3>" + esc(p.n) + '</h3><div class="by">' + byLine(p) + '</div><div class="chips">' + chipsHtml(p) + "</div></div></div>" +
-        '<p class="why">' + esc(why) + '</p><p class="meta">' + esc(closest + t("season", { s: t(SEASON_KEY[p.s]) })) + "</p>" + stock + acts + "</li>";
+        '<p class="why">' + esc(why) + '</p><p class="meta">' + esc(closest + t("season", { s: t(SEASON_KEY[p.s]) })) + "</p>" + stock + ownHintHtml(p) + acts + "</li>";
     }).join("");
     rvLoad();
   }
@@ -2176,10 +2351,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     state.sel = []; state.slots = [null, null, null]; state.cur = null; state.focus = null; state.ans = {}; state.q = 0; state.query = ""; state.brand = null; state.limit = PAGE; state.picks = []; state.picksFor = "";
     state.showBrands = false; state.bq = ""; state.blimit = 60;
     state.dq = ""; state.dsrc = null; state.dlimit = DUPE_TOP_N; state.dlist = [];
-    state.cslots = [null, null]; state.cq = ""; state.climit = PAGE; state.cshow = false;
+    state.cslots = [null, null]; state.cq = ""; state.climit = PAGE; state.cshow = false; state.own = null;
     $("#q").value = ""; $("#bq").value = ""; $("#dq").value = ""; $("#cq").value = "";
     document.querySelectorAll(".tip").forEach(function (d) { d.open = false; });
-    ["#fb", "#sim", "#sh", "#pv", "#rv"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    ["#fb", "#sim", "#sh", "#pv", "#rv", "#ord"].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
     $("#pvpages").innerHTML = "";
     go(1);
   }
@@ -2231,12 +2406,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }
   function dupeItems() {
     var q = expandQuery(norm(state.dq.trim())), byPop = function (a, b) { return (b.pc - a.pc) || a.n.localeCompare(b.n); };
-    if (!q) return { pop: true, items: DUPE_TOP.concat(Object.keys(DUPES).map(function (i) { return P[i]; })
-      .filter(function (p) { return DUPE_TOP.indexOf(p) === -1; }).sort(byPop)) };
+    var ours = OWN.map(function (o) { return o.orig; }).filter(Boolean);
+    if (!q) return { pop: true, items: ours.concat(DUPE_TOP.filter(function (p) { return ours.indexOf(p) === -1; }), Object.keys(DUPES).map(function (i) { return P[i]; })
+      .filter(function (p) { return DUPE_TOP.indexOf(p) === -1 && ours.indexOf(p) === -1; }).sort(byPop)) };
     prepSearch();
     // ищем по всей базе; духи с известными дюпами — первыми
     var Q = qParse(state.dq), ok = function (p) { return !p.np; };
-    var lvl = [[], [], []], has = function (p) { return DUPES[p.i] ? 0 : 1; };
+    var lvl = [[], [], []], has = function (p) { return OWN_BY_ORIG[p.i] ? -1 : (DUPES[p.i] ? 0 : 1); };
     P.forEach(function (p) { if (!ok(p)) return; var lv = nameLevel(p, p.hay, Q); if (lv >= 0) lvl[lv].push(p); });
     var exact = rankLevels(lvl[0].sort(byPop), lvl[1].sort(byPop), lvl[2].sort(byPop), Q.cyr), pos = new Map(exact.map(function (p, i) { return [p, i]; }));
     exact.sort(function (a, b) { return (has(a) - has(b)) || (pos.get(a) - pos.get(b)); });
@@ -2252,7 +2428,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       $("#dres").hidden = true;
       setRows($("#dlist"), D.items.slice(0, state.dlimit), "data-d", function (p) {
         return '<li><button type="button" class="row" data-d="' + p.i + '"><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) +
-          (DUPES[p.i] ? ' · <span class="kd">' + esc(t("dupeCount", { n: Math.min(5, DUPES[p.i].length) })) + "</span>" : ' · ' + esc(t("dupeNoneShort"))) +
+          (OWN_BY_ORIG[p.i] ? ' · <span class="kd">' + esc(t("ownHas")) + "</span>" : "") +
+          (DUPES[p.i] ? ' · <span class="kd">' + esc(t("dupeCount", { n: Math.min(5, DUPES[p.i].length) })) + "</span>" : (OWN_BY_ORIG[p.i] ? "" : ' · ' + esc(t("dupeNoneShort")))) +
           '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
       });
       $("#dmore").hidden = D.items.length <= state.dlimit;
@@ -2261,6 +2438,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#dsrcname").textContent = src.n;
     $("#dsrcby").innerHTML = byLine(src);
     state.dlist = findDupes(src);
+    var ownCard = OWN_BY_ORIG[src.i] ? ownCardHtml(OWN_BY_ORIG[src.i]) : "";     // наш дюп — всегда первым
+    if (!state.dlist.length && ownCard) { $("#dupes").innerHTML = ownCard; return; }
     if (!state.dlist.length) {
       // Известных дюпов нет: подсказываем аромат той же линейки, у которого они есть (Absolu Aventus → Aventus), и «Написать нам»
       var ln = lineKey(src), rel = Object.keys(DUPES).map(function (i) { return P[i]; }).filter(function (p) {
@@ -2274,7 +2453,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       }).join("") + '<li><button type="button" class="btn" data-ask="1" style="width:100%">' + esc(t("dupeAsk")) + "</button></li>";
       return;
     }
-    $("#dupes").innerHTML = state.dlist.map(function (x, k) {
+    $("#dupes").innerHTML = ownCard + state.dlist.map(function (x, k) {
       var p = x.p;
       return '<li class="card"><div class="head"><span class="badge hit">' + esc(t("dupeKnown")) + "</span></div>" +
         '<div class="body">' + bottleSvg(p) + "<div><h3>" + esc(p.n) + '</h3><div class="by">' + byLine(p) + "</div>" +
@@ -2310,6 +2489,197 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   $("#back6").addEventListener("click", function () { navBack("1:::known", function () { state.mode = "known"; state.dsrc = null; go(1); }); });
   $("#dask").addEventListener("click", function () { $("#fbmsg").value = t("dupeAskText", { q: state.dq.trim() }); fbOpen(); fbUpdate(); });
+
+  /* ======================= Ароматы Shoh Parfumer (свои дюпы) и заказ ======================= */
+  // Список OWN — в настройках вверху. Аромат связан с оригиналом из базы (of): тогда он виден в «Найти дюп» и в подборе.
+  var OWN_BY_ID = {}, OWN_BY_ORIG = {}, OWN_BRAND = "Shoh Parfumer";
+  OWN.forEach(function (o) {
+    var x = String(o.of || "").split("|");
+    o.ob = x[0] || ""; o.on = x[1] || ""; o.orig = BY_KEY[o.of] || null;
+    o.vol = (o.vol || []).filter(function (v) { return v && v[0] > 0; }); o.photos = o.photos || []; o.notes = o.notes || {};
+    OWN_BY_ID[o.id] = o;
+    if (o.orig) OWN_BY_ORIG[o.orig.i] = o;
+  });
+  function ownTitle(o) { return o.name || o.on; }
+  function ownOf(o) { return t("ownDupeOf", { n: o.ob + " " + o.on }); }
+  function ownRv(o) { return { b: OWN_BRAND, n: ownTitle(o) }; }       // отзывы о вашем аромате: «Shoh Parfumer | название»
+  function ownPrice(o) {
+    var ps = o.vol.map(function (v) { return v[1]; }).filter(function (x) { return x > 0; });
+    if (!ps.length) return t("ownPriceAsk");
+    var m = money(Math.min.apply(null, ps));
+    return o.vol.length > 1 ? t("ownFrom", { p: m }) : m;
+  }
+  function ownStock(o) { return '<span class="ostock' + (o.stock ? "" : " out") + '">' + esc(t(o.stock ? "ownIn" : "ownOut")) + "</span>"; }
+  function ownNote(s) {
+    var x = s.split("|");
+    if (x.length === 3) return x[LANGS.indexOf(lang)] || x[0];
+    var i = DB.n.indexOf(s); return i >= 0 ? noteName(i) : s;
+  }
+  function ownBottle(o) { return bottleSvg(o.orig || { v: [0, 0, 0, 0, 0, 0, 0, 3, 0, 0], n: ownTitle(o), b: OWN_BRAND }); }
+  function ownThumb(o) { return '<span class="othumb">' + (o.photos[0] ? '<img src="' + esc(o.photos[0]) + '" alt="" loading="lazy">' : ownBottle(o)) + "</span>"; }
+  function ownMl(v) { return t("ownMl", { n: v[0] }); }
+  function ownAsk(o, v) { return t("ownAskText", { n: OWN_BRAND + " " + ownTitle(o) + " (" + ownOf(o) + ")", v: v ? ", " + ownMl(v) : "" }); }
+  function tgHref(text) { return "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(text); }
+  function waHref(text) { return "https://wa.me/" + WHATSAPP.replace(/\D/g, "") + "?text=" + encodeURIComponent(text); }
+  function ownContacts(o, v) {
+    var h = "";
+    if (TELEGRAM) h += '<a class="btn ghost sm" href="' + esc(tgHref(ownAsk(o, v))) + '" target="_blank" rel="noopener" data-octa="tg">' + esc(t("ownTg")) + "</a>";
+    if (WHATSAPP) h += '<a class="btn ghost sm" href="' + esc(waHref(ownAsk(o, v))) + '" target="_blank" rel="noopener" data-octa="wa">' + esc(t("ownWa")) + "</a>";
+    return h ? '<div class="ocontact">' + h + "</div>" : "";
+  }
+  function ownInfo() {
+    var a = PICKUP[lang] || PICKUP.ru;
+    return "<li>" + esc(t("ownDelivery")) + "</li><li>" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</li><li>" + esc(t("ownPay")) + "</li>";
+  }
+  // Список ароматов
+  function drawOwnList() {
+    $("#ownlist").innerHTML = OWN.map(function (o) {
+      return '<li><button type="button" class="row orow" data-omore="' + esc(o.id) + '">' + ownThumb(o) + '<span class="txt"><b>' + esc(ownTitle(o)) + "</b><span>" +
+        esc(OWN_BRAND + " · " + ownOf(o)) + '</span><span><span class="op">' + esc(ownPrice(o)) + "</span> · " + ownStock(o) + '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
+    }).join("");
+    $("#oinfo8").innerHTML = ownInfo();
+  }
+  // Один аромат: фото, ноты, объёмы и цены, заказ
+  function drawOwnDetail() {
+    var o = state.own; if (!o) return;
+    var gal = o.photos.length ? o.photos.map(function (f, i) { return '<div><img src="' + esc(f) + '" alt="' + esc(ownTitle(o) + " — " + (i + 1)) + '"' + (i ? ' loading="lazy"' : "") + "></div>"; }).join("")
+      : '<div class="ph">' + ownBottle(o) + "</div>";
+    var L1 = [["top", "layerTop"], ["mid", "layerHeart"], ["base", "layerBase"], ["key", "ownNotesKey"]].filter(function (x) { return (o.notes[x[0]] || []).length; });
+    var notes = L1.map(function (x) {
+      return '<div class="onl"><span class="small">' + esc(t(x[1])) + '</span><div class="chips">' + o.notes[x[0]].map(function (n) { return '<span class="chip">' + esc(ownNote(n)) + "</span>"; }).join("") + "</div></div>";
+    }).join("");
+    $("#owndet").innerHTML = '<div class="ogal' + (o.photos.length > 1 ? " many" : "") + '">' + gal + "</div>" +
+      '<div class="ohead"><h1 id="h9">' + esc(ownTitle(o)) + '</h1><span class="by">' + esc(OWN_BRAND + " · " + ownOf(o)) + "</span>" +
+      '<span><span class="oprice">' + esc(ownPrice(o)) + "</span> · " + ownStock(o) + "</span></div>" +
+      (o.desc && (o.desc[lang] || o.desc.ru) ? '<p class="odesc">' + esc(o.desc[lang] || o.desc.ru) + "</p>" : "") +
+      (notes ? '<div class="onotes"><h2>' + esc(t("ownNotes")) + "</h2>" + notes + '<p class="small" style="margin:0">' + esc(t("ownNotesSame")) + "</p></div>" : "") +
+      (o.vol.length ? '<div class="ovols"><h2>' + esc(t("ownVol")) + "</h2><ul>" + o.vol.map(function (v) {
+        return "<li><span>" + esc(ownMl(v)) + "</span>" + (v[1] > 0 ? "<b>" + esc(money(v[1])) + "</b>" : '<b class="ask">' + esc(t("ownPriceAsk")) + "</b>") + "</li>";
+      }).join("") + "</ul></div>" : "") +
+      '<ul class="oinfo">' + ownInfo() + "</ul>" +
+      '<div class="cardacts">' + rvBtn(ownRv(o)) + "</div>" + ownContacts(o, null);
+    rvLoad();
+  }
+  // Карточка «Наш аромат» в «Найти дюп» (первой) и строка «Есть наш дюп» в подборе
+  function ownCardHtml(o) {
+    return '<li class="card own"><div class="head"><span class="badge hit">' + esc(t("ownOur")) + "</span>" + ownStock(o) + "</div>" +
+      '<div class="body">' + (o.photos[0] ? '<img class="bottle" src="' + esc(o.photos[0]) + '" alt="" loading="lazy" style="border-radius:10px;aspect-ratio:1;object-fit:cover">' : ownBottle(o)) +
+      "<div><h3>" + esc(ownTitle(o)) + '</h3><div class="by">' + esc(OWN_BRAND) + "</div>" +
+      (o.desc && (o.desc[lang] || o.desc.ru) ? '<p class="odesc" style="margin-top:6px">' + esc(o.desc[lang] || o.desc.ru) + "</p>" : "") + "</div></div>" +
+      '<p class="stock" style="color:var(--fg)">' + esc(ownPrice(o)) + "</p>" +
+      '<div class="cardacts"><button type="button" class="btn sm" data-oorder="' + esc(o.id) + '">' + esc(t("orderBtn")) + '</button><button type="button" class="btn ghost sm" data-omore="' + esc(o.id) + '">' + esc(t("ownMore")) + "</button></div></li>";
+  }
+  function ownHintHtml(p) {
+    var o = OWN_BY_ORIG[p.i]; if (!o) return "";
+    return '<button type="button" class="ownhint" data-omore="' + esc(o.id) + '"><span class="txt">' + esc(t("ownHasLine", { n: OWN_BRAND + " " + ownTitle(o) })) +
+      " · <b>" + esc(ownPrice(o)) + '</b></span><span class="go" aria-hidden="true">→</span></button>';
+  }
+  function openOwn(o) { histFlush(); state.mode = "own"; state.own = o; go(9); track("own/" + o.id); }
+  $("#goOwn").addEventListener("click", function () { histFlush(); state.mode = "own"; state.own = null; go(8); track("own-open"); });
+  document.addEventListener("click", function (e) {
+    var m = e.target.closest("[data-omore]"), od = e.target.closest("[data-oorder]"), c = e.target.closest("[data-octa]");
+    if (m && OWN_BY_ID[m.getAttribute("data-omore")]) openOwn(OWN_BY_ID[m.getAttribute("data-omore")]);
+    if (od && OWN_BY_ID[od.getAttribute("data-oorder")]) openOrder(OWN_BY_ID[od.getAttribute("data-oorder")], od);
+    if (c) track("own-contact/" + c.getAttribute("data-octa"));
+  });
+  $("#back8").addEventListener("click", function () { navBack("1:::known", resetAll); });
+  $("#back9").addEventListener("click", function () { navBack("8:::own", function () { state.own = null; go(8); }); });
+  $("#ordgo9").addEventListener("click", function (e) { if (state.own) openOrder(state.own, e.currentTarget); });
+
+  /* ---------- Заказ: имя, телефон, объём, количество, доставка / самовывоз → Telegram-бот магазина ---------- */
+  var ord = $("#ord"), ordCur = null, ordF = {}, ordView = "form", ordRes = null, ordBusy = false, ordOpener = null;
+  function openOrder(o, opener) {
+    ordCur = o; ordOpener = opener || null; ordView = "form"; ordRes = null;
+    ordF = { vol: o.vol.length === 1 ? 0 : -1, qty: 1, get: 0, pay: 0 };
+    ord.hidden = false; histOverlay(); ordDraw();
+    track("order-open/" + o.id);
+  }
+  function closeOrder() { ord.hidden = true; ordCur = null; if (ordOpener && ordOpener.focus) ordOpener.focus(); histOverlayClosed(); }
+  function ordSeg(field, opts) {
+    return '<div class="seg" role="group">' + opts.map(function (txt, i) {
+      return '<button type="button" data-of="' + field + '" data-v="' + i + '" aria-pressed="' + (ordF[field] === i + (field === "vol" ? 0 : 1)) + '">' + esc(txt) + "</button>";
+    }).join("") + "</div>";
+  }
+  function ordTotal() {
+    var v = ordCur.vol[ordF.vol];
+    return (v && v[1] > 0 ? '<p class="ordtotal">' + esc(t("ordTotal", { p: money(v[1] * ordF.qty) })) + "</p>" : "") + '<p class="small" style="margin:0">' + esc(t("ordConfirm")) + "</p>";
+  }
+  function ordFormHtml() {
+    var o = ordCur, X = L(), req = ' <i aria-hidden="true">*</i>', a = PICKUP[lang] || PICKUP.ru;
+    return '<div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(o)) + "</b><span>" + esc(ownOf(o)) + "</span></div>" +
+      (o.vol.length ? '<div class="rvq"><span>' + esc(t("ordVol")) + req + "</span>" + ordSeg("vol", o.vol.map(function (v) { return v[1] > 0 ? t("ordVolPrice", { v: ownMl(v), p: money(v[1]) }) : ownMl(v); })) + "</div>" : "") +
+      '<div class="rvq"><span>' + esc(t("ordQty")) + '</span><div class="qty"><button type="button" data-oq="-1" aria-label="' + esc(t("ordLess")) + '">−</button><b id="ordqty">' + ordF.qty +
+      '</b><button type="button" data-oq="1" aria-label="' + esc(t("ordMoreQ")) + '">+</button></div></div>' +
+      '<div id="ordtot">' + ordTotal() + "</div>" +
+      '<div class="rvq"><span>' + esc(t("ordGet")) + req + "</span>" + ordSeg("get", X.ordGetOpts) + "</div>" +
+      '<input id="ordaddr" class="search" type="text" maxlength="200" autocomplete="street-address" placeholder="' + esc(t("ordAddr")) + '" aria-label="' + esc(t("ordAddr")) + '"' + (ordF.get === 1 ? "" : " hidden") + ">" +
+      '<p class="small" id="ordpick" style="margin:0"' + (ordF.get === 2 ? "" : " hidden") + ">" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</p>" +
+      '<div class="rvq"><span>' + esc(t("ordPay")) + "</span>" + ordSeg("pay", X.ordPayOpts) + "</div>" +
+      '<input id="ordname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("ordName")) + ' *" aria-label="' + esc(t("ordName")) + '">' +
+      '<input id="ordphone" class="search" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="' + esc(t("ordPhone")) + ' * (+992 …)" aria-label="' + esc(t("ordPhone")) + '">' +
+      '<textarea id="ordcomment" class="search" maxlength="500" style="min-height:80px" placeholder="' + esc(t("ordComment")) + '" aria-label="' + esc(t("ordComment")) + '"></textarea>' +
+      '<input id="ordweb" class="vh" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+      '<p class="status" id="ordstatus" role="status"></p><button type="button" class="btn" id="ordsend">' + esc(t("ordSend")) + "</button>" +
+      (TELEGRAM || WHATSAPP ? '<p class="small" style="margin:0">' + esc(t("ordOr")) + "</p>" + ownContacts(o, o.vol[ordF.vol]) : "");
+  }
+  function ordDraw() {
+    $("#ordtitle").textContent = t("ordTitle");
+    $("#ordbody").innerHTML = ordView === "thanks"
+      ? '<div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(ordCur)) + "</b><span>" + esc(ownOf(ordCur)) + "</span></div>" +
+        '<p class="rvnote">' + esc(t("ordThanks", { n: ordRes && ordRes.id ? ordRes.id : "—" })) + "</p>" +
+        (ordRes && ordRes.test ? '<p class="small" style="margin:0">' + esc(t("ordThanksTest")) + "</p>" : "") +
+        '<button type="button" class="btn" id="orddone">' + esc(t("ordDone")) + "</button>"
+      : ordFormHtml();
+    ord.querySelector(".sheet").scrollTop = 0;
+  }
+  function phoneDigits(s) { var d = String(s || "").replace(/\D/g, ""); if (d.length === 9) d = "992" + d; return d; }
+  function ordSubmit() {
+    if (ordBusy) return;
+    var st = $("#ordstatus"), btn = $("#ordsend"), o = ordCur, miss = [];
+    var name = $("#ordname").value.trim(), phone = $("#ordphone").value.trim(), addr = $("#ordaddr").value.trim();
+    if (o.vol.length && ordF.vol < 0) miss.push(t("ordVol"));
+    if (!ordF.get) miss.push(t("ordGet"));
+    else if (ordF.get === 1 && !addr) miss.push(t("ordAddr"));
+    if (!name) miss.push(t("ordName"));
+    if (!phone) miss.push(t("ordPhone"));
+    if (miss.length) { st.textContent = t("ordReq", { list: miss.map(function (x) { return x.toLowerCase(); }).join(", ") }); return; }
+    var pd = phoneDigits(phone);
+    if (pd.length < 9 || pd.length > 15) { st.textContent = t("ordPhoneBad"); $("#ordphone").focus(); return; }
+    var v = o.vol[ordF.vol] || null;
+    var body = { id: o.id, name: OWN_BRAND + " " + ownTitle(o), of: o.ob + " " + o.on, ml: v ? v[0] : null, price: v ? v[1] : 0, qty: ordF.qty,
+      get: ordF.get === 1 ? "delivery" : "pickup", addr: ordF.get === 1 ? addr : "", pay: ordF.pay === 1 ? "cash" : (ordF.pay === 2 ? "card" : ""),
+      cname: name, phone: phone, comment: $("#ordcomment").value, website: $("#ordweb").value, lang: lang, dev: devId() };
+    var done = function (j) { ordBusy = false; ordRes = j; ordView = "thanks"; track("order-sent/" + o.id); ordDraw(); };
+    if (inClaude) { done({ ok: true, id: 0, test: true }); return; }          // превью в чате: заявку никуда не отправляем
+    ordBusy = true; btn.disabled = true; st.textContent = t("ordSending");
+    fetch(RV_API + "order", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return j; }, function () { return {}; }); })
+      .then(function (j) {
+        if (j && j.ok) { done(j); return; }
+        ordBusy = false; btn.disabled = false; st.textContent = t(j && j.error === "limit" ? "ordErrLimit" : "ordErrNet");
+      })
+      .catch(function () { ordBusy = false; btn.disabled = false; st.textContent = t("ordErrNet"); });
+  }
+  $("#ordclose").addEventListener("click", closeOrder);
+  ord.addEventListener("click", function (e) { if (e.target === ord) closeOrder(); });
+  $("#ordbody").addEventListener("click", function (e) {
+    var f = e.target.closest("[data-of]"), q = e.target.closest("[data-oq]"), b = e.target.closest("button");
+    if (f) {
+      var field = f.getAttribute("data-of"), v = Number(f.getAttribute("data-v")) + (field === "vol" ? 0 : 1);
+      ordF[field] = field === "pay" && ordF.pay === v ? 0 : v;                    // оплату можно снять повторным нажатием
+      f.parentNode.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(Number(x.getAttribute("data-v")) + (field === "vol" ? 0 : 1) === ordF[field])); });
+      if (field === "get") { $("#ordaddr").hidden = ordF.get !== 1; $("#ordpick").hidden = ordF.get !== 2; if (ordF.get === 1) $("#ordaddr").focus(); }
+      if (field === "vol") {
+        $("#ordtot").innerHTML = ordTotal();
+        var oc = $("#ordbody .ocontact"); if (oc) oc.outerHTML = ownContacts(ordCur, ordCur.vol[ordF.vol]);
+      }
+      $("#ordstatus").textContent = "";
+      return;
+    }
+    if (q) { ordF.qty = Math.max(1, Math.min(10, ordF.qty + Number(q.getAttribute("data-oq")))); $("#ordqty").textContent = ordF.qty; $("#ordtot").innerHTML = ordTotal(); return; }
+    if (b && b.id === "ordsend") ordSubmit();
+    if (b && b.id === "orddone") closeOrder();
+  });
 
   /* ======================= Сравнить: два парфюма рядом ======================= */
   // Слева и справа по аромату → сходство, известный дюп, сезон, пол, цена, оценка, хит, год, концентрация (что известно),
@@ -2738,8 +3108,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     track("reviews/" + p.b + " — " + p.n);
   }
   // Ссылка с кодом покупки (?otziv=КОД): сразу выбор купленного аромата и форма
-  function openReviewByCode(code) {
+  function openReviewByCode(code, own) {
     rvCur = null; rvCode = code; rvView = "pick"; rvQ = ""; rvForm = {}; rvOpener = null;
+    if (own) { var x = ownRv(own); rvCur = { b: x.b, n: x.n, uid: rvKey(x) }; rvView = "form"; }
     rv.hidden = false; histOverlay(); rvDraw();
     track("review-code-link");
   }
@@ -2951,6 +3322,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function restoreFromUrl() {
     if (inClaude) return false;
     var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
+    var a = q.get("a");
+    if (a && OWN_BY_ID[a] && !q.get("otziv")) {
+      // ссылка на наш аромат: ?a=id
+      state.mode = "own"; state.own = OWN_BY_ID[a]; state.step = 9;
+      var la = q.get("l"); if (LANGS.indexOf(la) !== -1) lang = la;
+      return true;
+    }
     var c = q.get("c");
     if (c) {
       // ссылка на сравнение: ?c=код1-код2
@@ -3061,7 +3439,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   applyLang();
   histFlush();
   // Ссылка из бота магазина с кодом покупки: shoh-parfumer.com/?otziv=КОД
-  try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) openReviewByCode(oc); } } catch (e) {}
+  try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) { var oa = new URLSearchParams(location.search).get("a"); openReviewByCode(oc, (oa && OWN_BY_ID[oa]) || null); } } } catch (e) {}
   // любое нажатие или ввод текста — сохраняем экран в его запись истории (с небольшой задержкой)
   document.addEventListener("click", histSave);
   document.addEventListener("input", histSave);

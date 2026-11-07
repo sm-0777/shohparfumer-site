@@ -4,6 +4,7 @@
 //   GET  /api/reviews?uid=…            одобренные отзывы об аромате и сводка (стойкость, шлейф…)
 //   GET  /api/reviews/summary?uids=…   число отзывов и средняя оценка для нескольких ароматов
 //   POST /api/reviews                  новый отзыв → на проверку владельцу в Telegram
+//   POST /api/order                    заявка на аромат Shoh Parfumer → владельцу в Telegram («Принят / Выполнен / Отменён»)
 //   POST /api/tg/<секрет>              Telegram-бот: «Опубликовать / Удалить», /kod, проверка бонус-кода
 //   GET  /api/health                   проверка: подключён ли бот (без секретов)
 //   по расписанию (раз в 3 часа)        сайт обновился (новая дата в sitemap.xml) → сообщить Яндексу и Bing (IndexNow)
@@ -19,6 +20,8 @@ const WHO = ["", "мужчина", "женщина", "оба"];
 const ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";     // без похожих 0/O и 1/I
 const LIMIT_PER_IP_DAY = 5;                          // отзывов с одного адреса за сутки
 const MAX_PENDING = 300;                             // если на проверке больше — новые временно не принимаем
+const ORDERS_PER_IP_DAY = 10;                        // заявок с одного адреса за сутки
+const MAX_NEW_ORDERS = 300;                          // если новых заявок больше — временно не принимаем (защита от спама)
 
 let webhookChecked = false;
 
@@ -34,6 +37,7 @@ export default {
       if (p === "/api/reviews" && request.method === "GET") return await listReviews(env, url);
       if (p === "/api/reviews/summary" && request.method === "GET") return await summary(env, url);
       if (p === "/api/reviews" && request.method === "POST") return await addReview(request, env, ctx);
+      if (p === "/api/order" && request.method === "POST") return await addOrder(request, env, ctx);
       if (p.startsWith("/api/tg/") && request.method === "POST") return await telegram(request, env, p.slice(8));
       if (p === "/api/health") return json({ ok: true, bot: !!env.TG_TOKEN, owner: !!(await getSetting(env, "owner_chat")) });
       return json({ error: "not_found" }, 404);
@@ -197,7 +201,7 @@ async function hookSecret(env) { return (await sha256(env.TG_TOKEN + "|shoh-hook
 async function ensureWebhook(env) {
   webhookChecked = true;
   const site = env.SITE || "https://shoh-parfumer.com";
-  const want = (await sha256(env.TG_TOKEN + "|" + site)).slice(0, 16);
+  const want = (await sha256(env.TG_TOKEN + "|" + site + "|v2")).slice(0, 16);   // v2: добавлена команда /zakazy
   if ((await getSetting(env, "webhook")) === want) return;
   const sec = await hookSecret(env);
   const r = await tg(env, "setWebhook", { url: site + "/api/tg/" + sec, secret_token: sec, allowed_updates: ["message", "callback_query"] });
@@ -205,6 +209,7 @@ async function ensureWebhook(env) {
   await setSetting(env, "webhook", want);
   await tg(env, "setMyCommands", { commands: [
     { command: "kod", description: "Новый код покупки (бонус за отзыв)" },
+    { command: "zakazy", description: "Новые и принятые заявки" },
     { command: "otzyvy", description: "Отзывы на проверке" },
     { command: "pomosh", description: "Как пользоваться ботом" },
   ] });
@@ -258,6 +263,7 @@ const HELP = [
   "• /kod — новый код покупки. Дайте его покупателю (или ссылку с ним): по коду его отзыв отмечается «Проверенная покупка», а он получает бонус-код. /kod 10 — сразу 10 кодов (для печати).",
   "• Покупатель пришёл с бонус-кодом — отправьте код сюда (например, B-4T8PK): бот покажет, действует ли он, и кнопку «Бонус выдан».",
   "• /otzyvy — отзывы, которые ждут проверки.",
+  "• Заявка на ваш аромат с сайта тоже приходит сюда: «Принят» → «Выполнен» (бот сразу даст код для отзыва и кнопку отправить его покупателю в WhatsApp) или «Отменён». /zakazy — новые и принятые заявки.",
 ].join("\n");
 
 async function telegram(request, env, pathSecret) {
@@ -302,6 +308,7 @@ async function onMessage(env, m, owner) {
     return;
   }
   if (/^\/(otzyvy|otzivy|pending|отзывы)/i.test(text)) { await sendPending(env, chat); return; }
+  if (/^\/(zakazy|zakaz|orders|заказы)/i.test(text)) { await sendOrders(env, chat); return; }
   if (/^\/(pomosh|help|start)/i.test(text)) { await send(HELP); return; }
 
   // Код от покупателя: бонус-код (B-XXXXX) или код покупки (6 знаков)
@@ -336,6 +343,8 @@ async function sendPending(env, chat) {
 async function onButton(env, q, owner) {
   const answer = (text) => tg(env, "answerCallbackQuery", { callback_query_id: q.id, text });
   if (!owner || String(q.from && q.from.id) !== String(owner)) { await answer("Нет доступа"); return; }
+  const om = String(q.data || "").match(/^o_(ok|done|no):(\d+)$/);
+  if (om) { await answer(await orderButton(env, q, om[1], Number(om[2]))); return; }
   const m = String(q.data || "").match(/^(ok|no|use):(\d+)$/);
   if (!m) { await answer(""); return; }
   const id = Number(m[2]), t = now();
@@ -353,4 +362,117 @@ async function onButton(env, q, owner) {
     await tg(env, "editMessageText", { chat_id: q.message.chat.id, message_id: q.message.message_id, text: reviewMessage(r), parse_mode: "HTML", reply_markup: { inline_keyboard: reviewButtons(r) } });
   }
   await answer(note);
+}
+
+/* ---------------- Заявки на ароматы Shoh Parfumer ---------------- */
+const GET = { delivery: "🚚 Доставка", pickup: "🏬 Самовывоз" };
+const PAY = { cash: "наличными", card: "переводом на карту" };
+const OSTATUS = { new: "🆕 новая", ok: "✅ принята", done: "📦 выполнена", no: "❌ отменена" };
+// Тексты для покупателя в WhatsApp — на языке, на котором он оформил заявку
+const WA_TEXT = {
+  ru: { hi: "Здравствуйте, {n}! Это Shoh Parfumer, по вашей заявке №{id}.", rv: "Здравствуйте, {n}! Спасибо за покупку в Shoh Parfumer. Оставьте, пожалуйста, отзыв об аромате — и получите бонус: {l}" },
+  tg: { hi: "Салом, {n}! Ин Shoh Parfumer аст, оид ба дархости №{id}-и шумо.", rv: "Салом, {n}! Ташаккур барои харид дар Shoh Parfumer. Лутфан дар бораи атр фикри худро нависед ва бонус гиред: {l}" },
+  en: { hi: "Hello, {n}! This is Shoh Parfumer about your order №{id}.", rv: "Hello, {n}! Thank you for shopping at Shoh Parfumer. Please leave a review of the fragrance and get a bonus: {l}" },
+};
+function fill(t, v) { return t.replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m)); }
+function phoneDigits(s) { let d = String(s || "").replace(/\D/g, ""); if (d.length === 9) d = "992" + d; return d; }
+function som(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " сомони"; }
+
+async function addOrder(request, env, ctx) {
+  const b = await request.json().catch(() => null);
+  if (!b || typeof b !== "object") return json({ error: "bad" }, 400);
+  if (b.website) return json({ ok: true, id: 0 });                 // ловушка для роботов
+  const item = /^[a-z0-9-]{1,40}$/.test(b.id || "") ? b.id : null;
+  const name = cleanText(b.name, 120), itemOf = cleanText(b.of, 160);
+  const ml = b.ml == null ? null : int(b.ml, 1, 1000), price = int(b.price, 0, 1000000) || 0, qty = int(b.qty, 1, 10);
+  const get = b.get === "delivery" || b.get === "pickup" ? b.get : null;
+  const addr = cleanText(b.addr, 200), pay = b.pay === "cash" || b.pay === "card" ? b.pay : null;
+  const cname = cleanText(b.cname, 40), phone = cleanText(b.phone, 20), comment = cleanText(b.comment, 500, true);
+  const pd = phoneDigits(phone);
+  if (!item || !name || !qty || !get || (get === "delivery" && !addr) || !cname || pd.length < 9 || pd.length > 15) return json({ error: "bad" }, 400);
+  const lang = ["ru", "tg", "en"].includes(b.lang) ? b.lang : "ru";
+  const dev = /^[a-z0-9]{8,40}$/.test(b.dev || "") ? b.dev : null;
+  const iph = (await sha256((request.headers.get("cf-connecting-ip") || "") + "|" + (env.TG_TOKEN || "shoh"))).slice(0, 24);
+  const db = env.DB;
+  const day = new Date(Date.now() - 864e5).toISOString();
+  const byIp = await db.prepare("SELECT COUNT(*) AS c FROM orders WHERE iph = ? AND created > ?").bind(iph, day).first();
+  if (byIp.c >= ORDERS_PER_IP_DAY) return json({ error: "limit" }, 429);
+  const fresh = await db.prepare("SELECT COUNT(*) AS c FROM orders WHERE status = 'new'").first();
+  if (fresh.c >= MAX_NEW_ORDERS) return json({ error: "busy" }, 503);
+  const ins = await db.prepare(
+    "INSERT INTO orders (item, name, item_of, ml, price, qty, get, addr, pay, cname, phone, phone_d, comment, lang, status, created, iph, dev) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?)"
+  ).bind(item, name, itemOf || null, ml, price, qty, get, get === "delivery" ? addr : null, pay, cname, phone, pd, comment || null, lang, now(), iph, dev).run();
+  const id = ins.meta.last_row_id;
+  ctx.waitUntil(notifyOrder(env, id).catch((e) => console.error("notify order", e)));
+  return json({ ok: true, id });
+}
+
+function reviewLink(env, o) { return (env.SITE || "https://shoh-parfumer.com") + "/?otziv=" + o.pcode + "&a=" + o.item; }
+function orderMessage(env, o) {
+  const lines = [
+    "🛍 <b>Заявка №" + o.id + "</b> · " + dt(o.created, true),
+    "<b>" + esc(o.name) + "</b>" + (o.item_of ? " — дюп " + esc(o.item_of) : ""),
+    (o.ml ? o.ml + " мл" : "объём не указан") + " × " + o.qty + " шт. · " +
+      (o.price > 0 ? som(o.price) + (o.qty > 1 ? " × " + o.qty + " = " + som(o.price * o.qty) : "") + " (цена на сайте)" : "цену уточнить"),
+    GET[o.get] + (o.get === "delivery" ? ": " + esc(o.addr || "") : ""),
+    "💵 Оплата: " + (PAY[o.pay] || "не выбрана"),
+    "👤 " + esc(o.cname) + " · " + esc(o.phone),
+  ];
+  if (o.comment) lines.push("💬 «" + esc(o.comment) + "»");
+  lines.push("Язык сайта: " + ({ ru: "русский", tg: "тоҷикӣ", en: "English" }[o.lang] || o.lang));
+  lines.push("Статус: " + OSTATUS[o.status] + (o.decided ? " (" + dt(o.decided, true) + ")" : ""));
+  if (o.status === "done" && o.pcode) lines.push("🎁 Код для отзыва: <b>" + o.pcode + "</b>\n" + reviewLink(env, o));
+  return lines.join("\n");
+}
+function orderButtons(env, o) {
+  const T = WA_TEXT[o.lang] || WA_TEXT.ru, rows = [];
+  if (o.status === "new") rows.push([{ text: "✅ Принят", callback_data: "o_ok:" + o.id }, { text: "❌ Отменён", callback_data: "o_no:" + o.id }]);
+  if (o.status === "ok") rows.push([{ text: "📦 Выполнен", callback_data: "o_done:" + o.id }, { text: "❌ Отменён", callback_data: "o_no:" + o.id }]);
+  if (o.status === "no") rows.push([{ text: "↩️ Вернуть заявку", callback_data: "o_ok:" + o.id }]);
+  if (o.phone_d && (o.status === "new" || o.status === "ok"))
+    rows.push([{ text: "💬 Написать покупателю в WhatsApp", url: "https://wa.me/" + o.phone_d + "?text=" + encodeURIComponent(fill(T.hi, { n: o.cname, id: o.id })) }]);
+  if (o.status === "done" && o.pcode && o.phone_d)
+    rows.push([{ text: "🎁 Отправить код для отзыва в WhatsApp", url: "https://wa.me/" + o.phone_d + "?text=" + encodeURIComponent(fill(T.rv, { n: o.cname, l: reviewLink(env, o) })) }]);
+  return rows;
+}
+async function getOrder(env, id) { return env.DB.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first(); }
+async function notifyOrder(env, id) {
+  if (!env.TG_TOKEN) return;
+  const chat = await getSetting(env, "owner_chat");
+  if (!chat) return;                                   // владелец ещё не написал боту /start — заявка ждёт в базе (/zakazy)
+  const o = await getOrder(env, id);
+  const m = await tg(env, "sendMessage", { chat_id: Number(chat), text: orderMessage(env, o), parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: orderButtons(env, o) } });
+  if (m.ok) await env.DB.prepare("UPDATE orders SET tg_msg = ? WHERE id = ?").bind(m.result.message_id, id).run();
+}
+async function sendOrders(env, chat) {
+  const { results } = await env.DB.prepare("SELECT * FROM orders WHERE status IN ('new', 'ok') ORDER BY id LIMIT 10").all();
+  const total = (await env.DB.prepare("SELECT COUNT(*) AS c FROM orders WHERE status IN ('new', 'ok')").first()).c;
+  if (!total) { await tg(env, "sendMessage", { chat_id: chat, text: "Новых и принятых заявок нет." }); return; }
+  await tg(env, "sendMessage", { chat_id: chat, text: "Новые и принятые заявки: " + total + (total > 10 ? " (показываю первые 10)" : "") });
+  for (const o of results) {
+    const m = await tg(env, "sendMessage", { chat_id: chat, text: orderMessage(env, o), parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: orderButtons(env, o) } });
+    if (m.ok) await env.DB.prepare("UPDATE orders SET tg_msg = ? WHERE id = ?").bind(m.result.message_id, o.id).run();
+  }
+}
+// Кнопки заявки: принят → выполнен (код для отзыва) / отменён
+async function orderButton(env, q, act, id) {
+  const o0 = await getOrder(env, id);
+  if (!o0) return "Заявка не найдена";
+  const t = now();
+  let note;
+  if (act === "ok") { await env.DB.prepare("UPDATE orders SET status = 'ok', decided = ? WHERE id = ?").bind(t, id).run(); note = "Заявка принята"; }
+  else if (act === "no") { await env.DB.prepare("UPDATE orders SET status = 'no', decided = ? WHERE id = ?").bind(t, id).run(); note = "Заявка отменена"; }
+  else {
+    let code = o0.pcode;
+    if (!code) {                                       // код для отзыва (тот же, что /kod): «Проверенная покупка» и бонус
+      code = purchaseCode();
+      await env.DB.prepare("INSERT OR IGNORE INTO codes (code, created) VALUES (?, ?)").bind(code, t).run();
+    }
+    await env.DB.prepare("UPDATE orders SET status = 'done', decided = ?, pcode = ? WHERE id = ?").bind(t, code, id).run();
+    note = "Заявка выполнена. Код для отзыва: " + code;
+  }
+  const o = await getOrder(env, id);
+  if (q.message) await tg(env, "editMessageText", { chat_id: q.message.chat.id, message_id: q.message.message_id, text: orderMessage(env, o), parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: orderButtons(env, o) } });
+  return note;
 }
