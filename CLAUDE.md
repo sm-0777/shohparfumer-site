@@ -49,6 +49,15 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Cloudflare connector). Site: rvBtn/rvLoad/openReviews in src/site.html, `#rv` sheet, `?otziv=CODE` link.
   Secret TG_TOKEN is added by the owner in the Cloudflare dashboard — never ask for it in chat. Don't put test reviews
   into the production DB (if you must check live, delete the row right after).
+- «Ароматы Shoh Parfumer» (owner's own dupes, launched 07.11.2026): data = OWN at the top of the script in `src/site.html`
+  (id, name, of "Brand|Name" as in the DB, vol [[ml, price]], stock, photos in public/aromaty/, notes from official brand
+  sites/shops with `src`, desc ru/tg/en). First card on home (#goOwn), step 8 list, step 9 aroma (mode "own", `?a=id`,
+  `?a=all`, `?a=id&z=1` opens the order form). Our dupe is shown first in «Найти дюп» and as «Есть наш дюп» on result cards.
+  Orders: #ord sheet → POST /api/order (worker, D1 table `orders`, migrations/0002_orders.sql) → owner's Telegram bot with
+  «Принят / Выполнен / Отменён»; «Выполнен» creates a review code + WhatsApp button for the customer (?otziv=CODE&a=id).
+  Pickup is off (PICKUP_ON = false, owner). WhatsApp button appears when WHATSAPP is set. In the Claude preview orders are
+  not sent (test notice). make_site.py --standalone also writes light SEO pages /aromaty/, /aromaty/<id>/ (+ /tg/, /en/)
+  with Product data and adds them to sitemap.xml. Review identity = "Shoh Parfumer|<name>" — don't rename after launch.
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,

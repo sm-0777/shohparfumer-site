@@ -15,8 +15,10 @@ import html
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import urllib.parse
 
 SITE = "https://shoh-parfumer.com/"   # адрес сайта (для превью ссылки и поисковиков)
 LANGS = {"ru": "", "tg": "tg/", "en": "en/"}            # язык → адрес страницы
@@ -159,6 +161,197 @@ for l, p in LANGS.items():
     open(path, "w", encoding="utf-8").write(txt)
     print("ok", path, len(txt.encode("utf-8")), "bytes (standalone, " + l + ")")
 
+# ---------- Страницы ароматов Shoh Parfumer для поисковиков ----------
+# /aromaty/ — список, /aromaty/<id>/ — аромат (и то же в /tg/ и /en/). Лёгкие страницы без скрипта: название, цена,
+# ноты, описание, доставка и кнопка «Заказать» → сайт с открытой формой заказа (?a=id&z=1).
+def load_own(src):
+    a = src.index("  var TELEGRAM = ")
+    b = src.index("\n", src.index("  var PICKUP = "))
+    na = src.index("  var NOTE_TG = {")
+    nb = src.index("\n  };\n", na) + 5
+    code = src[a:b] + "\n" + src[na:nb] + "\nprocess.stdout.write(JSON.stringify({OWN: OWN, NOTE_TG: NOTE_TG, TELEGRAM: TELEGRAM, WHATSAPP: WHATSAPP, PICKUP_ON: PICKUP_ON, PICKUP: PICKUP}));"
+    r = subprocess.run(["node", "-e", code], capture_output=True, text=True, check=True)
+    return json.loads(r.stdout)
+
+
+SHOP = load_own(tpl)
+DBJ = json.loads(db)
+NOTES_RU, NOTES_EN = DBJ["n"], DBJ["ne"]
+CITY = {"ru": "Душанбе", "tg": "Душанбе", "en": "Dushanbe"}
+LIDX = {l: i for i, l in enumerate(LANGS)}
+H = lambda s: html.escape(str(s), quote=False)
+
+
+def note_name(s, l):
+    x = s.split("|")
+    if len(x) == 3:
+        return x[LIDX[l]] or x[0]
+    if l == "en" and s in NOTES_RU:
+        return NOTES_EN[NOTES_RU.index(s)] or s
+    if l == "tg":
+        return SHOP["NOTE_TG"].get(s, s)
+    return s
+
+
+def money(n, l):
+    return "{:,}".format(n).replace(",", " ") + " " + I18N[l]["currency"]
+
+
+def own_info(o):
+    ob, on = (o["of"].split("|") + [""])[:2]
+    vols = [v for v in o.get("vol", []) if v and v[0] > 0]
+    prices = [v[1] for v in vols if v[1] > 0]
+    return ob, on, o.get("name") or on, vols, prices
+
+
+def own_price(o, l):
+    _, _, _, vols, prices = own_info(o)
+    if not prices:
+        return I18N[l]["ownPriceAsk"]
+    return I18N[l]["ownFrom"].replace("{p}", money(min(prices), l)) if len(vols) > 1 else money(prices[0], l)
+
+
+OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;--fg:#F5F2E9;--muted:#A8A496;--accent:#FFC61A;--ink:#1A1400;--ok:#34C771;--at:#FFC61A;color-scheme:dark}"
+           "@media (prefers-color-scheme:light){:root{--bg:#F6F4EE;--surface:#FFFFFF;--soft:#EFEBDF;--line:#DDD8C9;--fg:#17160F;--muted:#625E4D;--ok:#178A49;--at:#8A6A00;color-scheme:light}}"
+           "*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Onest,system-ui,sans-serif;overflow-wrap:break-word}"
+           "a{color:inherit}header{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}"
+           ".in{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}"
+           ".brand{text-decoration:none;font-family:Unbounded,system-ui,sans-serif;font-weight:600;font-size:1.0625rem}"
+           ".langs{display:flex;gap:4px}.langs a{min-width:40px;min-height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;text-decoration:none;font-size:.8125rem;font-weight:600}"
+           ".langs a[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--ink)}"
+           "main{max-width:720px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:18px}"
+           "h1,h2{font-family:Unbounded,system-ui,sans-serif;font-weight:600;line-height:1.2;margin:0}h1{font-size:clamp(1.4rem,5.4vw,2rem)}h2{font-size:1.0625rem}"
+           ".by,.small{color:var(--muted)}.small{font-size:.875rem}.price{font-weight:600;font-size:1.0625rem}.ok{color:var(--ok)}.out{color:var(--muted)}"
+           "p{margin:0}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.chip{font-size:.8125rem;padding:3px 10px;border-radius:999px;background:var(--soft)}"
+           ".layer{display:flex;flex-direction:column;gap:2px}.stack{display:flex;flex-direction:column;gap:10px}"
+           "ul{list-style:none;margin:0;padding:0}.vols li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}"
+           ".info{padding:12px 14px;border-radius:14px;background:var(--soft);display:flex;flex-direction:column;gap:6px}"
+           ".acts{display:flex;flex-wrap:wrap;gap:8px}.acts .btn{flex:1 1 9rem}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:12px;background:var(--accent);color:var(--ink);font-weight:600;text-decoration:none;text-align:center}"
+           ".btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}"
+           ".list{display:flex;flex-direction:column;gap:8px}.list a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-decoration:none}"
+           ".list b{font-weight:600}.list span{color:var(--muted);font-size:.875rem}.list .p{color:var(--fg);font-weight:600}")
+
+
+def own_head(l, title, desc, url, alts_map, ld):
+    return ("<!doctype html>\n<html lang=\"" + l + "\">\n<head>\n<meta charset=\"utf-8\">\n"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
+            "<title>" + H(title) + "</title>\n<meta name=\"description\" content=\"" + A(desc) + "\">\n"
+            "<meta name=\"theme-color\" content=\"#0B0B0A\">\n<link rel=\"canonical\" href=\"" + url + "\">\n" +
+            "".join('<link rel="alternate" hreflang="%s" href="%s">\n' % (x, alts_map[x]) for x in LANGS) +
+            '<link rel="alternate" hreflang="x-default" href="%s">\n' % alts_map["ru"] +
+            "<meta property=\"og:type\" content=\"website\">\n<meta property=\"og:site_name\" content=\"Shoh Parfumer\">\n"
+            "<meta property=\"og:title\" content=\"" + A(title) + "\">\n<meta property=\"og:description\" content=\"" + A(desc) + "\">\n"
+            "<meta property=\"og:url\" content=\"" + url + "\">\n<meta property=\"og:image\" content=\"" + SITE + "og.png\">\n"
+            "<meta property=\"og:locale\" content=\"" + LOCALE[l] + "\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n"
+            "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n"
+            "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
+            "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
+            "<link href=\"https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap\" rel=\"stylesheet\">\n"
+            '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + "</script>\n"
+            "<style>" + OWN_CSS + "</style>\n</head>\n<body>\n")
+
+
+def own_header(l, alts_map):
+    return ('<header><div class="in"><a class="brand" href="/' + LANGS[l] + '">Shoh Parfumer</a><nav class="langs">' +
+            "".join('<a href="%s" hreflang="%s"%s>%s</a>' % (alts_map[x].replace(SITE, "/"), x, ' aria-current="page"' if x == l else "", {"ru": "RU", "tg": "TJ", "en": "EN"}[x]) for x in LANGS) +
+            "</nav></div></header>\n")
+
+
+def info_list(l):
+    T = I18N[l]
+    a = SHOP["PICKUP"].get(l) or SHOP["PICKUP"].get("ru")
+    items = [T["ownDelivery"]] + ([T["ownPickup"].replace("{a}", a) if a else T["ownPickupSoon"]] if SHOP["PICKUP_ON"] else []) + [T["ownPay"]]
+    return '<ul class="info">' + "".join("<li>" + H(x) + "</li>" for x in items) + "</ul>"
+
+
+def own_page(o, l):
+    T, base = I18N[l], SITE + LANGS[l]
+    ob, on, title, vols, prices = own_info(o)
+    full = "Shoh Parfumer " + title
+    dupe = T["ownDupeOf"].replace("{n}", ob + " " + on)
+    url = base + "aromaty/" + o["id"] + "/"
+    alts_map = {x: SITE + LANGS[x] + "aromaty/" + o["id"] + "/" for x in LANGS}
+    desc = (o.get("desc") or {}).get(l) or (o.get("desc") or {}).get("ru") or ""
+    ptitle = full + " — " + dupe + " · " + own_price(o, l) + ", " + CITY[l]
+    pdesc = (desc + " " + T["ownDelivery"] + ".").strip()
+    offers = [{"@type": "Offer", "name": T["ownMl"].replace("{n}", str(v[0])), "price": str(v[1]), "priceCurrency": "TJS", "url": url,
+               "availability": "https://schema.org/" + ("InStock" if o.get("stock") else "OutOfStock"), "seller": {"@id": SITE + "#store"}}
+              for v in vols if v[1] > 0]
+    prod = {"@type": "Product", "name": full, "description": desc, "brand": {"@type": "Brand", "name": "Shoh Parfumer"}, "url": url}
+    if offers:
+        prod["offers"] = offers if len(offers) > 1 else offers[0]
+    ld = {"@context": "https://schema.org", "@graph": [prod,
+          {"@type": "Store", "@id": SITE + "#store", "name": "Shoh Parfumer", "url": SITE,
+           "address": {"@type": "PostalAddress", "addressLocality": "Dushanbe", "addressCountry": "TJ"}},
+          {"@type": "BreadcrumbList", "itemListElement": [
+              {"@type": "ListItem", "position": 1, "name": "Shoh Parfumer", "item": base},
+              {"@type": "ListItem", "position": 2, "name": T["h8"], "item": base + "aromaty/"},
+              {"@type": "ListItem", "position": 3, "name": title, "item": url}]}]}
+    layers = [("top", "layerTop"), ("mid", "layerHeart"), ("base", "layerBase"), ("key", "ownNotesKey")]
+    notes = "".join('<div class="layer"><span class="small">' + H(T[k]) + '</span><div class="chips">' +
+                    "".join('<span class="chip">' + H(note_name(n, l)) + "</span>" for n in o["notes"][f]) + "</div></div>"
+                    for f, k in layers if o.get("notes", {}).get(f))
+    ask = T["ownAskText"].replace("{n}", full + " (" + dupe + ")").replace("{v}", ", " + T["ownMl"].replace("{n}", str(vols[0][0])) if len(vols) == 1 else "")
+    contacts = ""
+    if SHOP["TELEGRAM"]:
+        contacts += '<a class="btn ghost" href="https://t.me/' + A(SHOP["TELEGRAM"]) + "?text=" + A(urllib.parse.quote(ask)) + '" rel="noopener">' + H(T["ownTg"]) + "</a>"
+    if SHOP["WHATSAPP"]:
+        contacts += '<a class="btn ghost" href="https://wa.me/' + A(re.sub(r"\D", "", SHOP["WHATSAPP"])) + "?text=" + A(urllib.parse.quote(ask)) + '" rel="noopener">' + H(T["ownWa"]) + "</a>"
+    others = [x for x in SHOP["OWN"] if x["id"] != o["id"]]
+    body = (own_header(l, alts_map) + "<main>\n" +
+            '<div class="stack"><h1>' + H(title) + '</h1><span class="by">' + H("Shoh Parfumer · " + dupe) + "</span>" +
+            '<span><span class="price">' + H(own_price(o, l)) + '</span> · <span class="' + ("ok" if o.get("stock") else "out") + '">' + H(T["ownIn"] if o.get("stock") else T["ownOut"]) + "</span></span></div>\n" +
+            ("<p>" + H(desc) + "</p>\n" if desc else "") +
+            '<div class="acts"><a class="btn" href="/' + LANGS[l] + "?a=" + A(o["id"]) + '&amp;z=1">' + H(T["orderBtn"]) + "</a>" + contacts + "</div>\n" +
+            ('<section class="stack"><h2>' + H(T["ownNotes"]) + "</h2>" + notes + '<p class="small">' + H(T["ownNotesSame"]) + "</p></section>\n" if notes else "") +
+            ('<section class="stack"><h2>' + H(T["ownVol"]) + '</h2><ul class="stack vols" style="gap:6px">' + "".join(
+                "<li><span>" + H(T["ownMl"].replace("{n}", str(v[0]))) + "</span><b>" + H(money(v[1], l) if v[1] > 0 else T["ownPriceAsk"]) + "</b></li>" for v in vols) + "</ul></section>\n" if vols else "") +
+            info_list(l) + "\n" +
+            '<section class="stack"><h2>' + H(T["h8"]) + '</h2><div class="list">' + "".join(
+                '<a href="/' + LANGS[l] + "aromaty/" + A(x["id"]) + '/"><b>' + H(own_info(x)[2]) + "</b><span>" + H(T["ownDupeOf"].replace("{n}", own_info(x)[0] + " " + own_info(x)[1])) +
+                '</span><span class="p">' + H(own_price(x, l)) + "</span></a>" for x in others) + "</div></section>\n" +
+            '<a class="btn ghost" href="/' + LANGS[l] + '">' + H(T["pageTitle"].split(" — ")[0]) + " — " + H(I18N[l]["brandSub"]) + "</a>\n</main>\n</body>\n</html>\n")
+    return own_head(l, ptitle, pdesc, url, alts_map, ld) + body
+
+
+def own_list_page(l):
+    T, base = I18N[l], SITE + LANGS[l]
+    url = base + "aromaty/"
+    alts_map = {x: SITE + LANGS[x] + "aromaty/" for x in LANGS}
+    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": T["h8"], "url": url, "itemListElement": [
+        {"@type": "ListItem", "position": i + 1, "url": url + x["id"] + "/", "name": "Shoh Parfumer " + own_info(x)[2]} for i, x in enumerate(SHOP["OWN"])]}
+    body = (own_header(l, alts_map) + "<main>\n<h1>" + H(T["h8"]) + "</h1>\n<p class=\"by\">" + H(T["lead8"]) + "</p>\n" +
+            '<div class="list">' + "".join(
+                '<a href="' + A(x["id"]) + '/"><b>' + H(own_info(x)[2]) + "</b><span>" + H("Shoh Parfumer · " + T["ownDupeOf"].replace("{n}", own_info(x)[0] + " " + own_info(x)[1])) +
+                '</span><span class="p">' + H(own_price(x, l)) + "</span></a>" for x in SHOP["OWN"]) + "</div>\n" + info_list(l) + "\n" +
+            '<div class="acts"><a class="btn" href="/' + LANGS[l] + '?a=all">' + H(T["ownAll"]) + "</a></div>\n</main>\n</body>\n</html>\n")
+    return own_head(l, T["h8"] + " · " + CITY[l], T["lead8"], url, alts_map, ld) + body
+
+
+def write_if(path, txt):
+    global changed
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:
+        changed |= open(path, encoding="utf-8").read() != txt
+    except OSError:
+        changed = True
+    open(path, "w", encoding="utf-8").write(txt)
+
+
+ids = [o["id"] for o in SHOP["OWN"]]
+assert len(ids) == len(set(ids)) and all(re.fullmatch(r"[a-z0-9-]+", i) for i in ids), "id ароматов: латиница, цифры, дефис, без повторов"
+for l, p in LANGS.items():
+    adir = os.path.join(root, p, "aromaty")
+    if os.path.isdir(adir):                            # аромат убрали из списка — убираем и его страницу
+        for d in os.listdir(adir):
+            if os.path.isdir(os.path.join(adir, d)) and d not in ids:
+                shutil.rmtree(os.path.join(adir, d)); changed = True
+    if ids:
+        write_if(os.path.join(adir, "index.html"), own_list_page(l))
+        for o in SHOP["OWN"]:
+            write_if(os.path.join(adir, o["id"], "index.html"), own_page(o, l))
+print("ok aromaty: %d ароматов × %d языка" % (len(ids), len(LANGS)))
+
 # ---------- Карта сайта и robots.txt ----------
 # Дата в карте меняется, только когда страницы действительно изменились (Worker по ней сообщает Яндексу и Bing)
 smp = os.path.join(root, "sitemap.xml")
@@ -166,12 +359,18 @@ old = open(smp, encoding="utf-8").read() if os.path.exists(smp) else ""
 m = re.search(r"<lastmod>([^<]+)</lastmod>", old)
 today = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=5)).strftime("%Y-%m-%d")   # время Душанбе
 lastmod = today if changed or not m else m.group(1)
-links = "".join('    <xhtml:link rel="alternate" hreflang="%s" href="%s"/>\n' % (l, SITE + p) for l, p in LANGS.items()) + \
-    '    <xhtml:link rel="alternate" hreflang="x-default" href="%s"/>\n' % SITE
+groups = [""] + (["aromaty/"] + ["aromaty/" + i + "/" for i in ids] if ids else [])   # страница + её версии на трёх языках
+
+
+def sm_group(sub):
+    links = "".join('    <xhtml:link rel="alternate" hreflang="%s" href="%s"/>\n' % (l, SITE + p + sub) for l, p in LANGS.items()) + \
+        '    <xhtml:link rel="alternate" hreflang="x-default" href="%s"/>\n' % (SITE + sub)
+    return "".join("  <url>\n    <loc>%s</loc>\n    <lastmod>%s</lastmod>\n%s  </url>\n" % (SITE + p + sub, lastmod, links) for p in LANGS.values())
+
+
 smx = ('<?xml version="1.0" encoding="UTF-8"?>\n'
        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
-       "".join("  <url>\n    <loc>%s</loc>\n    <lastmod>%s</lastmod>\n%s  </url>\n" % (SITE + p, lastmod, links) for p in LANGS.values()) +
-       "</urlset>\n")
+       "".join(sm_group(g) for g in groups) + "</urlset>\n")
 open(smp, "w", encoding="utf-8").write(smx)
 open(os.path.join(root, "robots.txt"), "w", encoding="utf-8").write(
     "# Shoh Parfumer — поисковикам можно всё, кроме служебного адреса Telegram-бота\n"

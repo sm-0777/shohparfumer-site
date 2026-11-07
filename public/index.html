@@ -822,8 +822,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       desc: { ru: "Яркий и сочный: грейпфрут и серая амбра — свежесть цитруса на глубокой амбровой основе.",
               tg: "Дурахшон ва серобу: грейпфрут ва анбари хокистарӣ — тозагии ситрус дар заминаи амиқи анбарӣ.",
               en: "Bright and juicy: grapefruit and ambergris — citrus freshness over a deep ambery base." } },
-    // Absolu Aventus — в списке цен его нет: цена 0 («цену уточняйте»). Уточнить у владельца, оставить ли.
-    { id: "absolu-aventus", name: "", of: "Creed|Absolu Aventus", vol: [[50, 0]], stock: true, photos: [],
+    { id: "absolu-aventus", name: "", of: "Creed|Absolu Aventus", vol: [[50, 440]], stock: true, photos: [],
       notes: { top: ["бергамот", "имбирь", "грейпфрут"], mid: ["кардамон", "корица", "ананас"], base: ["лабданум", "ветивер", "пачули"] },
       src: "creedfragrances.co.uk",
       desc: { ru: "Свежий и тёплый одновременно: бергамот, имбирь и грейпфрут, затем ананас с кардамоном и корицей, а в основе — лабданум, ветивер и пачули.",
@@ -3378,9 +3377,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (inClaude) return false;
     var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
     var a = q.get("a");
+    if (a === "all" && !q.get("otziv")) { state.mode = "own"; state.own = null; state.step = 8; return true; }   // список ароматов
     if (a && OWN_BY_ID[a] && !q.get("otziv")) {
       // ссылка на наш аромат: ?a=id
-      state.mode = "own"; state.own = OWN_BY_ID[a]; state.step = 9;
+      state.mode = "own"; state.own = OWN_BY_ID[a]; state.step = 9; OPEN_ORDER = q.get("z") === "1";
       var la = q.get("l"); if (LANGS.indexOf(la) !== -1) lang = la;
       return true;
     }
@@ -3484,7 +3484,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
 
   // Открытие страницы: после обновления — тот же экран из истории; по ссылке «Поделиться» — подборка; иначе главная
-  var fromHist = false;
+  var fromHist = false, OPEN_ORDER = false;
   try { if (HIST && history.state && history.state.sp) fromHist = applySnap(history.state.sp); } catch (e) { fromHist = false; }
   if (!fromHist && restoreFromUrl()) track("opened-shared-link");
   // человек начал печатать, пока страница ещё загружалась (слабый телефон) — подхватываем набранное
@@ -3495,6 +3495,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   histFlush();
   // Ссылка из бота магазина с кодом покупки: shoh-parfumer.com/?otziv=КОД
   try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) { var oa = new URLSearchParams(location.search).get("a"); openReviewByCode(oc, (oa && OWN_BY_ID[oa]) || null); } } } catch (e) {}
+  // Со страницы аромата (/aromaty/…) нажали «Заказать»: ?a=id&z=1 — сразу форма заказа (z убираем из адреса)
+  if (OPEN_ORDER && state.step === 9 && state.own) {
+    try { history.replaceState(history.state, "", location.pathname + "?a=" + encodeURIComponent(state.own.id)); } catch (e) {}
+    openOrder(state.own);
+  }
   // любое нажатие или ввод текста — сохраняем экран в его запись истории (с небольшой задержкой)
   document.addEventListener("click", histSave);
   document.addEventListener("input", histSave);
