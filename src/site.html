@@ -199,7 +199,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .owncard .go { flex: none; color: var(--accent-text); font-size: 1.25rem; }
 .orow { align-items: center; padding: 10px 12px; }
 .othumb { width: 56px; height: 64px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 10px; background: var(--soft); }
-.othumb img { width: 100%; height: 100%; object-fit: cover; }
+.othumb img { width: 56px; height: 64px; display: block; object-fit: contain; background: #fff; }
 .othumb .bottle { width: 40px; }
 .orow .txt .op { color: var(--fg); font-weight: 600; }
 .ostock { color: var(--ok); }
@@ -208,7 +208,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .ogal::-webkit-scrollbar { display: none; }
 .ogal > * { flex: 0 0 100%; scroll-snap-align: center; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
 .ogal.many > * { flex-basis: 86%; }
-.ogal img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.ogal .pic { background: #fff; }
+.ogal img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; background: #fff; }
+.bottle.ophoto { border-radius: 10px; aspect-ratio: 2 / 3; object-fit: contain; background: #fff; }
 .ogal .ph { height: 210px; }
 .ogal .ph .bottle { width: 112px; }
 .ohead { display: flex; flex-direction: column; gap: 4px; }
@@ -740,18 +742,18 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // of     — оригинал: "Бренд|Название" так же, как на сайте (тогда аромат виден и в «Найти дюп», и в подборе).
   // vol    — объёмы и цены: [мл, цена в сомони]. Цена 0 — «цену уточняйте».
   // stock  — true: в наличии, false: нет в наличии.
-  // photos — фото (файлы в public/aromaty/), первое — главное. Пусто — рисованный флакон.
+  // photos — фото: "img/aromaty/<id>-1.webp" (делает src/make_photos.py из data/photos/), первое — главное. Пусто — рисованный флакон.
   // notes  — ноты оригинала по слоям (по-русски, как в базе сайта). Своя нота, которой нет в базе: "русский|тоҷикӣ|english".
   // src    — откуда ноты (официальный сайт бренда или магазин), desc — описание на трёх языках.
   var OWN = [
-    { id: "oud-maracuja", name: "", of: "Maison Crivelli|Oud Maracujá", vol: [[50, 380]], stock: true, photos: [],
+    { id: "oud-maracuja", name: "", of: "Maison Crivelli|Oud Maracujá", vol: [[50, 380]], stock: true, photos: ["img/aromaty/oud-maracuja-1.webp"],
       notes: { top: ["маракуйя", "фруктовые ноты", "турецкая роза|гули туркӣ|Turkish rose", "шафран"], mid: ["уд", "пачули", "бензоин"],
                base: ["кожа", "акигалавуд|акигалавуд|akigalawood", "амбра", "лабданум", "ваниль"] },
       src: "macciocu.com, selfridges.com",
       desc: { ru: "Тёплый древесный аромат с удом: сочная маракуйя, турецкая роза и шафран, затем уд, пачули и бензоин, а в основе — кожа, амбра и ваниль.",
               tg: "Атри гарми чӯбӣ бо уд: маракуйяи серобу, гули туркӣ ва заъфарон, сипас уд, пачулӣ ва бензоин, дар асос — чарм, анбар ва ваниль.",
               en: "A warm woody oud scent: juicy passion fruit, Turkish rose and saffron, then oud, patchouli and benzoin over leather, amber and vanilla." } },
-    { id: "ombre-nomade", name: "", of: "Louis Vuitton|Ombre Nomade", vol: [[50, 420]], stock: true, photos: [],
+    { id: "ombre-nomade", name: "", of: "Louis Vuitton|Ombre Nomade", vol: [[50, 420]], stock: true, photos: ["img/aromaty/ombre-nomade-1.webp"],
       notes: { key: ["уд", "бензоин", "ладан"] },
       src: "louisvuitton.com",
       desc: { ru: "Глубокий восточный аромат: уд, бензоин и ладан — тёплый, смолистый и дымный.",
@@ -796,7 +798,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
               tg: "Ҳам тоза, ҳам гарм: бергамот, занҷабил ва грейпфрут, сипас ананас бо ҳел ва дорчин, дар асос — лабданум, ветивер ва пачулӣ.",
               en: "Fresh and warm at once: bergamot, ginger and grapefruit, then pineapple with cardamom and cinnamon over labdanum, vetiver and patchouli." } }
   ];
-  var WHATSAPP = "";            // номер WhatsApp для заказов: код страны и номер, только цифры, например "992900000000"
+  var WHATSAPP = "992719011111"; // номер WhatsApp для заказов: код страны и номер, только цифры, например "992900000000"
   var PICKUP_ON = false;        // самовывоз: false — пока только доставка (решение владельца 07.11.2026), true — можно выбрать самовывоз
   var PICKUP = { ru: "", tg: "", en: "" };   // адрес самовывоза на трёх языках (пусто — «адрес сообщим при звонке»)
 
@@ -2537,7 +2539,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     var i = DB.n.indexOf(s); return i >= 0 ? noteName(i) : s;
   }
   function ownBottle(o) { return bottleSvg(o.orig || { v: [0, 0, 0, 0, 0, 0, 0, 3, 0, 0], n: ownTitle(o), b: OWN_BRAND }); }
-  function ownThumb(o) { return '<span class="othumb">' + (o.photos[0] ? '<img src="' + esc(o.photos[0]) + '" alt="" loading="lazy">' : ownBottle(o)) + "</span>"; }
+  function ownImg(f, small) {
+    if (small) f = f.replace(/\.webp$/, "-s.webp");
+    return /^(https?:|\/)/.test(f) || inClaude ? f : "/" + f;
+  }
+  function ownThumb(o) { return '<span class="othumb">' + (o.photos[0] ? '<img src="' + esc(ownImg(o.photos[0], true)) + '" alt="" loading="lazy">' : ownBottle(o)) + "</span>"; }
   function ownMl(v) { return t("ownMl", { n: v[0] }); }
   function ownAsk(o, v) { return t("ownAskText", { n: OWN_BRAND + " " + ownTitle(o) + " (" + ownOf(o) + ")", v: v ? ", " + ownMl(v) : "" }); }
   function tgHref(text) { return "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(text); }
@@ -2563,7 +2569,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Один аромат: фото, ноты, объёмы и цены, заказ
   function drawOwnDetail() {
     var o = state.own; if (!o) return;
-    var gal = o.photos.length ? o.photos.map(function (f, i) { return '<div><img src="' + esc(f) + '" alt="' + esc(ownTitle(o) + " — " + (i + 1)) + '"' + (i ? ' loading="lazy"' : "") + "></div>"; }).join("")
+    var gal = o.photos.length ? o.photos.map(function (f, i) { return '<div class="pic"><img src="' + esc(ownImg(f)) + '" alt="' + esc(OWN_BRAND + " " + ownTitle(o) + (o.photos.length > 1 ? " — " + (i + 1) : "")) + '"' + (i ? ' loading="lazy"' : "") + "></div>"; }).join("")
       : '<div class="ph">' + ownBottle(o) + "</div>";
     var L1 = [["top", "layerTop"], ["mid", "layerHeart"], ["base", "layerBase"], ["key", "ownNotesKey"]].filter(function (x) { return (o.notes[x[0]] || []).length; });
     var notes = L1.map(function (x) {
@@ -2584,7 +2590,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Карточка «Наш аромат» в «Найти дюп» (первой) и строка «Есть наш дюп» в подборе
   function ownCardHtml(o) {
     return '<li class="card own"><div class="head"><span class="badge hit">' + esc(t("ownOur")) + "</span>" + ownStock(o) + "</div>" +
-      '<div class="body">' + (o.photos[0] ? '<img class="bottle" src="' + esc(o.photos[0]) + '" alt="" loading="lazy" style="border-radius:10px;aspect-ratio:1;object-fit:cover">' : ownBottle(o)) +
+      '<div class="body">' + (o.photos[0] ? '<img class="bottle ophoto" src="' + esc(ownImg(o.photos[0], true)) + '" alt="" loading="lazy">' : ownBottle(o)) +
       "<div><h3>" + esc(ownTitle(o)) + '</h3><div class="by">' + esc(OWN_BRAND) + "</div>" +
       (o.desc && (o.desc[lang] || o.desc.ru) ? '<p class="odesc" style="margin-top:6px">' + esc(o.desc[lang] || o.desc.ru) + "</p>" : "") + "</div></div>" +
       '<p class="stock" style="color:var(--fg)">' + esc(ownPrice(o)) + "</p>" +

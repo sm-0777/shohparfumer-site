@@ -229,10 +229,11 @@ OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;-
            ".acts{display:flex;flex-wrap:wrap;gap:8px}.acts .btn{flex:1 1 9rem}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:12px;background:var(--accent);color:var(--ink);font-weight:600;text-decoration:none;text-align:center}"
            ".btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}"
            ".list{display:flex;flex-direction:column;gap:8px}.list a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-decoration:none}"
+           ".photo{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:#fff;border-radius:16px}"
            ".list b{font-weight:600}.list span{color:var(--muted);font-size:.875rem}.list .p{color:var(--fg);font-weight:600}")
 
 
-def own_head(l, title, desc, url, alts_map, ld):
+def own_head(l, title, desc, url, alts_map, ld, image=None):
     return ("<!doctype html>\n<html lang=\"" + l + "\">\n<head>\n<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
             "<title>" + H(title) + "</title>\n<meta name=\"description\" content=\"" + A(desc) + "\">\n"
@@ -241,7 +242,7 @@ def own_head(l, title, desc, url, alts_map, ld):
             '<link rel="alternate" hreflang="x-default" href="%s">\n' % alts_map["ru"] +
             "<meta property=\"og:type\" content=\"website\">\n<meta property=\"og:site_name\" content=\"Shoh Parfumer\">\n"
             "<meta property=\"og:title\" content=\"" + A(title) + "\">\n<meta property=\"og:description\" content=\"" + A(desc) + "\">\n"
-            "<meta property=\"og:url\" content=\"" + url + "\">\n<meta property=\"og:image\" content=\"" + SITE + "og.png\">\n"
+            "<meta property=\"og:url\" content=\"" + url + "\">\n<meta property=\"og:image\" content=\"" + A(image or SITE + "og.png") + "\">\n"
             "<meta property=\"og:locale\" content=\"" + LOCALE[l] + "\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n"
             "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n"
             "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
@@ -277,7 +278,10 @@ def own_page(o, l):
     offers = [{"@type": "Offer", "name": T["ownMl"].replace("{n}", str(v[0])), "price": str(v[1]), "priceCurrency": "TJS", "url": url,
                "availability": "https://schema.org/" + ("InStock" if o.get("stock") else "OutOfStock"), "seller": {"@id": SITE + "#store"}}
               for v in vols if v[1] > 0]
+    photos = [SITE + f.lstrip("/") for f in o.get("photos") or []]
     prod = {"@type": "Product", "name": full, "description": desc, "brand": {"@type": "Brand", "name": "Shoh Parfumer"}, "url": url}
+    if photos:
+        prod["image"] = photos
     if offers:
         prod["offers"] = offers if len(offers) > 1 else offers[0]
     ld = {"@context": "https://schema.org", "@graph": [prod,
@@ -299,6 +303,7 @@ def own_page(o, l):
         contacts += '<a class="btn ghost" href="https://wa.me/' + A(re.sub(r"\D", "", SHOP["WHATSAPP"])) + "?text=" + A(urllib.parse.quote(ask)) + '" rel="noopener">' + H(T["ownWa"]) + "</a>"
     others = [x for x in SHOP["OWN"] if x["id"] != o["id"]]
     body = (own_header(l, alts_map) + "<main>\n" +
+            ('<img class="photo" src="' + A(photos[0].replace(SITE, "/")) + '" alt="' + A(full) + '" width="800" height="1200">\n' if photos else "") +
             '<div class="stack"><h1>' + H(title) + '</h1><span class="by">' + H("Shoh Parfumer · " + dupe) + "</span>" +
             '<span><span class="price">' + H(own_price(o, l)) + '</span> · <span class="' + ("ok" if o.get("stock") else "out") + '">' + H(T["ownIn"] if o.get("stock") else T["ownOut"]) + "</span></span></div>\n" +
             ("<p>" + H(desc) + "</p>\n" if desc else "") +
@@ -311,7 +316,7 @@ def own_page(o, l):
                 '<a href="/' + LANGS[l] + "aromaty/" + A(x["id"]) + '/"><b>' + H(own_info(x)[2]) + "</b><span>" + H(T["ownDupeOf"].replace("{n}", own_info(x)[0] + " " + own_info(x)[1])) +
                 '</span><span class="p">' + H(own_price(x, l)) + "</span></a>" for x in others) + "</div></section>\n" +
             '<a class="btn ghost" href="/' + LANGS[l] + '">' + H(T["pageTitle"].split(" — ")[0]) + " — " + H(I18N[l]["brandSub"]) + "</a>\n</main>\n</body>\n</html>\n")
-    return own_head(l, ptitle, pdesc, url, alts_map, ld) + body
+    return own_head(l, ptitle, pdesc, url, alts_map, ld, photos[0] if photos else None) + body
 
 
 def own_list_page(l):
