@@ -63,8 +63,14 @@ for line in open("data/perfumes_extra.jsonl", encoding="utf-8"):
     if line.strip():
         o = json.loads(line)
         k = (o["b"].lower(), o["n"].lower())
-        if k not in best and (o["b"].lower(), o["copy_of"].lower()) in best:
+        if k in best:
+            continue
+        if o.get("copy_of") and (o["b"].lower(), o["copy_of"].lower()) in best:
             best[k] = best[(o["b"].lower(), o["copy_of"].lower())]
+        elif not o.get("copy_of"):                      # оригинала линейки нет — вкус по нотам, как в add_perfumes.py
+            u = unit(note_vec(o["top"] + o["heart"] + o["base"]))
+            if any(u):
+                best[k] = (0, u)
 CH = "0123456789abcdefghijk"          # 0…20 → 0%…100% с шагом 5%
 out, same, miss = [], 0, 0
 for x in P:
