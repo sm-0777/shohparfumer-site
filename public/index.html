@@ -240,7 +240,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .ogal > * { flex: 0 0 100%; scroll-snap-align: center; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
 .ogal.many > * { flex-basis: 86%; }
 .ogal .pic { background: #fff; }
-.ogal img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; background: #fff; }
+.ogal img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; background: #fff center / contain no-repeat; }
 .bottle.ophoto { border-radius: 10px; aspect-ratio: 2 / 3; object-fit: contain; background: #fff; }
 .ogal .ph { height: 210px; }
 .ogal .ph .bottle { width: 112px; }
@@ -2576,7 +2576,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (small) f = f.replace(/\.webp$/, "-s.webp");
     return /^(https?:|\/)/.test(f) || inClaude ? f : "/" + f;
   }
-  function ownThumb(o) { return '<span class="othumb">' + (o.photos[0] ? '<img src="' + esc(ownImg(o.photos[0], true)) + '" alt="" loading="lazy">' : ownBottle(o)) + "</span>"; }
+  function ownThumb(o) { return '<span class="othumb">' + (o.photos[0] ? '<img src="' + esc(ownImg(o.photos[0], true)) + '" alt="" width="56" height="64" decoding="async">' : ownBottle(o)) + "</span>"; }
   function ownMl(v) { return t("ownMl", { n: v[0] }); }
   function ownAsk(o, v) { return t("ownAskText", { n: OWN_BRAND + " " + ownTitle(o) + " (" + ownOf(o) + ")", v: v ? ", " + ownMl(v) : "" }); }
   function tgHref(text) { return "https://t.me/" + encodeURIComponent(TELEGRAM) + "?text=" + encodeURIComponent(text); }
@@ -2602,7 +2602,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // Один аромат: фото, ноты, объёмы и цены, заказ
   function drawOwnDetail() {
     var o = state.own; if (!o) return;
-    var gal = o.photos.length ? o.photos.map(function (f, i) { return '<div class="pic"><img src="' + esc(ownImg(f)) + '" alt="' + esc(OWN_BRAND + " " + ownTitle(o) + (o.photos.length > 1 ? " — " + (i + 1) : "")) + '"' + (i ? ' loading="lazy"' : "") + "></div>"; }).join("")
+    var gal = o.photos.length ? o.photos.map(function (f, i) {
+      return '<div class="pic"><img src="' + esc(ownImg(f)) + '" alt="' + esc(OWN_BRAND + " " + ownTitle(o) + (o.photos.length > 1 ? " — " + (i + 1) : "")) + '"' +
+        ' style="background-image:url(\'' + esc(ownImg(f, true)) + '\')"' + (i ? ' loading="lazy"' : ' fetchpriority="high"') + ' decoding="async"></div>';
+    }).join("")
       : '<div class="ph">' + ownBottle(o) + "</div>";
     var L1 = [["top", "layerTop"], ["mid", "layerHeart"], ["base", "layerBase"], ["key", "ownNotesKey"]].filter(function (x) { return (o.notes[x[0]] || []).length; });
     var notes = L1.map(function (x) {
@@ -2636,6 +2639,11 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }
   function openOwn(o) { histFlush(); state.mode = "own"; state.own = o; go(9); track("own/" + o.id); }
   $("#goOwn").addEventListener("click", function () { histFlush(); state.mode = "own"; state.own = null; go(8); track("own-open"); });
+  var ownPre = {};
+  document.addEventListener("pointerdown", function (e) {
+    var m = e.target.closest && e.target.closest("[data-omore]"), o = m && OWN_BY_ID[m.getAttribute("data-omore")];
+    if (o && o.photos[0] && !ownPre[o.id]) { ownPre[o.id] = 1; var im = new Image(); im.src = ownImg(o.photos[0]); }
+  }, { passive: true });
   document.addEventListener("click", function (e) {
     var m = e.target.closest("[data-omore]"), od = e.target.closest("[data-oorder]"), c = e.target.closest("[data-octa]");
     if (m && OWN_BY_ID[m.getAttribute("data-omore")]) openOwn(OWN_BY_ID[m.getAttribute("data-omore")]);
