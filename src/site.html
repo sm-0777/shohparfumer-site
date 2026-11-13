@@ -143,6 +143,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .bcard span { color: var(--muted); font-size: 0.8125rem; }
 .bcard:hover { border-color: var(--accent); }
 .bcard.more { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.bcard.sk { opacity: .5; pointer-events: none; }
+.dbfail { grid-column: 1 / -1; margin: 0; }
+.dbfail .btn { margin-top: 8px; }
 .bcard.more span { color: var(--accent-ink); opacity: .75; }
 .bcard.more:hover { border-color: var(--fg); }
 /* «Найти дюп» и «Сравнить» — обычные карточки (жёлтая только «Посмотреть другие бренды», решение владельца) */
@@ -415,6 +418,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .status { font-size: 0.875rem; color: var(--accent-text); min-height: 1.2em; }
 
 @media (prefers-reduced-motion: no-preference) {
+  .bcard.sk { animation: skp 1.2s ease-in-out infinite; }
+  @keyframes skp { 50% { opacity: .25; } }
   .fill { transition: width .5s ease; }
   .row, .opt, .btn, .bcard, .tool, .langs button { transition: background-color .15s, border-color .15s, color .15s; }
 }
@@ -1054,7 +1059,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpOur: "Наш дюп", dpKnown: "Известные дюпы", dpAbout: "Об оригинале", dpOpen: "Открыть в «Найти дюп»", dpCompare: "Сравнить с оригиналом",
       dpSrc: "Список дюпов — по открытым подборкам (scentverdict.com, sensabeauty.com, whatscent.app). Дюп пахнет похоже, но это другой аромат.",
       dpAllH: "Дюпы известных ароматов", dpAllLead: "Недорогие ароматы, которые пахнут похоже на известные. Выберите оригинал — покажем его дюпы.",
-      dpMore: "Ещё дюпы {b}", dpAllLink: "Все дюпы известных ароматов", dpHome: "Подбор парфюма", aboutDupes: "Дюпы известных ароматов →",
+      dpMore: "Ещё дюпы {b}", dpAllLink: "Все дюпы известных ароматов", dbFail: "Не удалось загрузить список ароматов. Проверьте интернет.", dbRetry: "Обновить страницу", dpHome: "Подбор парфюма", aboutDupes: "Дюпы известных ароматов →",
       aboutH: "О Shoh Parfumer", aboutP1: "Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.",
       aboutP2: "«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.",
       aboutOrder: "Заказ — на сайте или в Telegram", aboutOwn: "Наши ароматы:", cAddress: "Адрес", cHours: "Часы работы", cPhone: "Телефон", lastRvH: "Отзывы покупателей",
@@ -1155,7 +1160,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpOur: "Дюпи мо", dpKnown: "Дюпҳои маълум", dpAbout: "Дар бораи асл", dpOpen: "Дар «Ёфтани дюп» кушодан", dpCompare: "Бо асл муқоиса кардан",
       dpSrc: "Рӯйхати дюпҳо — аз рӯи интихобҳои ошкор (scentverdict.com, sensabeauty.com, whatscent.app). Дюп монанд бӯй медиҳад, вале атри дигар аст.",
       dpAllH: "Дюпҳои атрҳои машҳур", dpAllLead: "Атрҳои арзон, ки ба атрҳои машҳур монанд бӯй медиҳанд. Аслро интихоб кунед — дюпҳояшро нишон медиҳем.",
-      dpMore: "Дигар дюпҳои {b}", dpAllLink: "Ҳамаи дюпҳои атрҳои машҳур", dpHome: "Интихоби атр", aboutDupes: "Дюпҳои атрҳои машҳур →",
+      dpMore: "Дигар дюпҳои {b}", dpAllLink: "Ҳамаи дюпҳои атрҳои машҳур", dbFail: "Рӯйхати атрҳо бор нашуд. Интернетро санҷед.", dbRetry: "Саҳифаро аз нав кушодан", dpHome: "Интихоби атр", aboutDupes: "Дюпҳои атрҳои машҳур →",
       aboutH: "Дар бораи Shoh Parfumer", aboutP1: "Shoh Parfumer — мағозаи атриёт дар Душанбе. Дар ин сайт метавонед атр интихоб кунед: се атри дӯстдоштаи худро интихоб кунед — мо панҷ атри навро аз рӯи завқи шумо пешниҳод мекунем. Дар база зиёда аз 17 000 атр бо нотаҳо ҳаст.",
       aboutP2: "«Ёфтани дюп» дюпҳои маълуми арзони атрҳои қиматро нишон медиҳад, «Муқоисаи атрҳо» — ду атр бо чӣ монанд ва бо чӣ фарқ мекунанд. Дюпҳои худро аз атрҳои машҳур мо бо тамғаи Shoh Parfumer мефурӯшем.",
       aboutOrder: "Фармоиш — дар сайт ё дар Telegram", aboutOwn: "Атрҳои мо:", cAddress: "Суроға", cHours: "Соатҳои корӣ", cPhone: "Телефон", lastRvH: "Фикрҳои харидорон",
@@ -1256,7 +1261,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpOur: "Our dupe", dpKnown: "Known dupes", dpAbout: "About the original", dpOpen: "Open in “Find a dupe”", dpCompare: "Compare with the original",
       dpSrc: "The dupe list comes from open roundups (scentverdict.com, sensabeauty.com, whatscent.app). A dupe smells similar, but it is a different fragrance.",
       dpAllH: "Dupes of famous fragrances", dpAllLead: "Affordable fragrances that smell similar to famous ones. Pick the original and we will show its dupes.",
-      dpMore: "More {b} dupes", dpAllLink: "All dupes of famous fragrances", dpHome: "Perfume finder", aboutDupes: "Dupes of famous fragrances →",
+      dpMore: "More {b} dupes", dpAllLink: "All dupes of famous fragrances", dbFail: "Couldn't load the fragrance list. Check your connection.", dbRetry: "Reload the page", dpHome: "Perfume finder", aboutDupes: "Dupes of famous fragrances →",
       aboutH: "About Shoh Parfumer", aboutP1: "Shoh Parfumer is a perfume shop in Dushanbe. On this site you can find a fragrance: pick three perfumes you love and we will suggest five new ones to your taste. The base has more than 17,000 fragrances with notes.",
       aboutP2: "“Find a dupe” shows known affordable alternatives to expensive fragrances, and “Compare” shows how two fragrances are alike and how they differ. We sell our own dupes of famous fragrances under the Shoh Parfumer name.",
       aboutOrder: "Order on the site or on Telegram", aboutOwn: "Our fragrances:", cAddress: "Address", cHours: "Opening hours", cPhone: "Phone", lastRvH: "Customer reviews",
@@ -1446,7 +1451,46 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
 
   /* ======================= База ======================= */
-  var DB = JSON.parse(document.getElementById("db").textContent);
+  // На хостинге база ароматов — отдельный файл /d/<код>.json (make_site.py): браузер хранит его год и не скачивает
+  // заново, пока база не изменилась; страница без базы приходит в разы быстрее. В странице-артефакте база внутри.
+  // Пока база грузится: на месте брендов — пустые карточки; нажатую кнопку и набранный поиск выполняем сразу после загрузки.
+  var dbEl = document.getElementById("db"), dbSrc = dbEl.getAttribute("data-src"), bootTap = null;
+  function bootCatch(e) {
+    var b = e.target.closest && e.target.closest("button[id], a[id]");
+    if (b) { bootTap = b; if (b.tagName === "A") e.preventDefault(); }
+  }
+  function dbReady(d) {
+    document.removeEventListener("click", bootCatch, true);
+    document.documentElement.classList.remove("booting");
+    start(d);
+    if (bootTap && document.body.contains(bootTap)) bootTap.click();
+    var q0 = document.getElementById("q");
+    if (q0 && q0.value) q0.dispatchEvent(new Event("input"));
+  }
+  function dbLoad(n) {
+    fetch(dbSrc).then(function (r) { if (!r.ok) throw new Error("db " + r.status); return r.json(); }).then(dbReady, function () {
+      if (n < 2) { setTimeout(function () { dbLoad(n + 1); }, 1500 * (n + 1)); return; }
+      var box = document.getElementById("brands");
+      box.innerHTML = '<p class="small dbfail">' + esc0(t("dbFail")) + ' <button type="button" class="btn ghost sm">' + esc0(t("dbRetry")) + "</button></p>";
+      box.querySelector("button").addEventListener("click", function () { location.reload(); });
+    });
+  }
+  function esc0(x) { return String(x).replace(/[&<>"]/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
+  if (dbSrc) {
+    document.documentElement.classList.add("booting");
+    document.getElementById("brands").innerHTML = new Array(7).join('<div class="bcard sk" aria-hidden="true"></div>');
+    document.addEventListener("click", bootCatch, true);
+    dbLoad(0);
+  } else {
+    start(JSON.parse(dbEl.textContent));
+  }
+
+  function start(DB) {
+  if (DB.pc) {   // база по столбцам (так файл меньше) → обратно в строки
+    var pc = DB.pc, rows = new Array(pc[0].length);
+    for (var ri = 0; ri < rows.length; ri++) { var rr = new Array(pc.length); for (var ci = 0; ci < pc.length; ci++) rr[ci] = pc[ci][ri]; rows[ri] = rr; }
+    DB.p = rows; delete DB.pc;
+  }
   var AX = ["cit", "fresh", "flo", "fru", "swe", "spi", "woo", "amb", "mus", "lea"];
   var AXCOL = { cit: "#E6D447", fresh: "#5FC3D9", flo: "#E58FB4", fru: "#F0875A", swe: "#D9A15B", spi: "#C8472E", woo: "#A9774A", amb: "#E0A22E", mus: "#D6CBB6", lea: "#7A5238" };
   var BRAND_FIRST = ["Dior", "Chanel", "Creed", "Louis Vuitton", "Tom Ford"];
@@ -3623,5 +3667,6 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   // ушли в другое приложение или закрывают вкладку — сохраняем сразу
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") histFlush(); });
   window.addEventListener("pagehide", histFlush);
+  }   // start
 })();
 </script>

@@ -30,6 +30,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (/^\/(yandex_[0-9a-f]+|google[0-9a-f]+)\.html$/.test(url.pathname)) return verifyFile(env, url);
+    if (/^\/d\/[0-9a-f]+\.json$/.test(url.pathname)) return dbFile(request, env, url);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors() });
     try {
@@ -60,6 +61,23 @@ async function verifyFile(env, url) {
   const r = await env.ASSETS.fetch(new Request(url.origin + url.pathname.replace(/\.html$/, "")));
   if (!r.ok) return r;                    // такого файла нет — обычная страница 404
   return new Response(await r.text(), { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" } });
+}
+
+/* ---------------- База ароматов /d/<код>.json ---------------- */
+// Файл меняет имя при каждом изменении базы, поэтому браузер хранит его год (immutable). Рядом лежит <код>.json.br —
+// тот же файл, сжатый заранее сильнее, чем сжимает Cloudflare на лету (~420 КБ вместо ~640 КБ); отдаём его, если браузер умеет br.
+async function dbFile(request, env, url) {
+  const head = { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=31536000, immutable", "vary": "Accept-Encoding" };
+  if (/\bbr\b/.test(request.headers.get("accept-encoding") || "")) {
+    const r = await env.ASSETS.fetch(new Request(url.origin + url.pathname + ".br"));
+    if (r.ok) {
+      const body = request.method === "HEAD" ? null : await r.arrayBuffer();
+      return new Response(body, { headers: { ...head, "content-encoding": "br" }, encodeBody: "manual" });
+    }
+  }
+  const r = await env.ASSETS.fetch(request);
+  if (!r.ok) return r;
+  return new Response(r.body, { status: r.status, headers: { ...head, ...(r.headers.get("etag") ? { etag: r.headers.get("etag") } : {}) } });
 }
 
 /* ---------------- IndexNow: сообщить поисковикам об обновлении ---------------- */

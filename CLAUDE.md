@@ -66,6 +66,11 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   original with known dupes (du) or our dupe (OWN): our dupe first, known dupes (DB ones link to `?c=uidA-uidB`), year/
   concentration, notes only if not flagged 128/16, link `?d=uid` (opens «Найти дюп»; `?d=all` = the screen). Texts = I18N dp*.
   Python js_uid() must stay equal to the site's uid hash. /aromaty/<id>/ links to its original's dupe page.
+- Fast load (14.11.2026): --standalone writes the DB as public/d/<sha12>.json (rows stored by columns `pc`, site.html turns
+  them back into rows) + a brotli-11 .br copy; keeps the 3 newest. Pages preload it; worker/index.js serves /d/* (run_worker_first)
+  with the .br when the browser accepts br, cache 1 year immutable. site.html: the app runs inside start(DB) after the file
+  loads (skeleton cards in #brands, a tap made during loading is replayed, 3 tries then «dbFail» + reload button).
+  The artifact build still inlines the DB (no data-src → start() at once). Test locally: `boot.js`-style check.
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,

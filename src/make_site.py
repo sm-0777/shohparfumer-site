@@ -34,6 +34,40 @@ db = open(args[1], encoding="utf-8").read()
 assert tpl.count("__DB__") == 1, "в шаблоне должна быть ровно одна метка __DB__"
 assert "</script" not in db.lower(), "в базе не должно быть </script"
 out = tpl.replace("__DB__", db)
+DB_URL = ""
+if standalone:
+    # На хостинге база — отдельный файл public/d/<код>.json (+ .br, сжатый заранее; его отдаёт worker/index.js).
+    # Код меняется вместе с базой, поэтому браузер хранит файл год. Строки базы записаны по столбцам — так файл меньше
+    # (site.html собирает строки обратно). Держим 3 последних файла: страница, открытая до обновления сайта, догрузит свою базу.
+    import hashlib
+    dbo = json.loads(db)
+    rows = dbo.pop("p")
+    width = max(len(r) for r in rows)
+    dbo["pc"] = [[r[i] if i < len(r) else None for r in rows] for i in range(width)]
+    dbs = json.dumps(dbo, ensure_ascii=False, separators=(",", ":"))
+    dbh = hashlib.sha256(dbs.encode("utf-8")).hexdigest()[:12]
+    DB_URL = "/d/" + dbh + ".json"
+    ddir = os.path.join(os.path.dirname(os.path.abspath(args[2])), "d")
+    os.makedirs(ddir, exist_ok=True)
+    dpath = os.path.join(ddir, dbh + ".json")
+    if not os.path.exists(dpath) or open(dpath, encoding="utf-8").read() != dbs:
+        open(dpath, "w", encoding="utf-8").write(dbs)
+    if not os.path.exists(dpath + ".br"):
+        subprocess.run(["node", "-e", "const z=require('zlib'),f=require('fs'),a=process.argv[1];"
+                        "const b=f.readFileSync(a);f.writeFileSync(a+'.br',z.brotliCompressSync(b,{params:{"
+                        "[z.constants.BROTLI_PARAM_QUALITY]:11,[z.constants.BROTLI_PARAM_LGWIN]:24,[z.constants.BROTLI_PARAM_SIZE_HINT]:b.length}}))",
+                        dpath], check=True)
+    old = sorted((f for f in os.listdir(ddir) if f.endswith(".json") and f != dbh + ".json"),
+                 key=lambda f: os.path.getmtime(os.path.join(ddir, f)), reverse=True)
+    keep = set([dbh + ".json"] + old[:2])
+    for f in os.listdir(ddir):
+        base = f[:-3] if f.endswith(".br") else f
+        if base not in keep:
+            os.remove(os.path.join(ddir, f))
+    dtag = '<script type="application/json" id="db">' + db + "</script>"
+    assert out.count(dtag) == 1, "метка базы в шаблоне изменилась"
+    out = out.replace(dtag, '<script type="application/json" id="db" data-src="' + DB_URL + '"></script>')
+    print("ok база", DB_URL, len(dbs.encode("utf-8")), "bytes, br", os.path.getsize(dpath + ".br"))
 # Точный «Характер» (public/taste.json из src/make_taste.py). На хостинге сайт скачивает его сам, только когда открыто
 # сравнение; в странице-артефакте Claude загрузить его не откуда — вставляем прямо в страницу.
 assert out.count("__TASTE__") == 1, "в шаблоне должна быть ровно одна метка __TASTE__"
@@ -147,6 +181,8 @@ def page_for(l):
     head = ("<!doctype html>\n<html lang=\"" + l + "\">\n<head>\n"
             "<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
+            # База ароматов начинает скачиваться сразу, вместе со страницей
+            "<link rel=\"preload\" href=\"" + DB_URL + "\" as=\"fetch\" crossorigin>\n"
             "<title>" + html.escape(T["pageTitle"], quote=False) + "</title>\n"
             "<meta name=\"description\" content=\"" + A(T["metaDesc"]) + "\">\n"
             "<meta name=\"theme-color\" content=\"#0B0B0A\">\n" +
