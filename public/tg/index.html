@@ -1497,6 +1497,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function dbReady(d) {
     document.removeEventListener("click", bootCatch, true);
     document.documentElement.classList.remove("booting");
+    document.getElementById("brands").innerHTML = "";   // пустые карточки убираем: бренды нарисует сайт, когда покажет главную
     start(d);
     if (bootTap && document.body.contains(bootTap)) bootTap.click();
     var q0 = document.getElementById("q");
