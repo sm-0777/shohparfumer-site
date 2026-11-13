@@ -59,6 +59,9 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Pickup is off (PICKUP_ON = false, owner). WhatsApp is off for now (owner: Telegram only; WHATSAPP = ""). In the Claude preview orders are
   not sent (test notice). make_site.py --standalone also writes light SEO pages /aromaty/, /aromaty/<id>/ (+ /tg/, /en/)
   with Product data and adds them to sitemap.xml. Review identity = "Shoh Parfumer|<name>" — don't rename after launch.
+- Home bottom block #about (owner 14.11.2026): about text + FAQ (static, prerendered — keeps Google from «soft 404»),
+  links to our aromas, contacts from CONTACTS (top of script; show only when the owner fills real data), latest approved
+  reviews with text (GET /api/reviews/latest). Bot /stat. robots.txt disallows /api/. site.webmanifest + icon-192.png.
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,

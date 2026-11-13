@@ -29,6 +29,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-96.png" sizes="96x96" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://shoh-parfumer.com/#site", "url": "https://shoh-parfumer.com/", "name": "Shoh Parfumer", "description": "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.", "inLanguage": ["ru", "tg", "en"], "publisher": {"@id": "https://shoh-parfumer.com/#store"}}, {"@type": "Store", "@id": "https://shoh-parfumer.com/#store", "name": "Shoh Parfumer", "url": "https://shoh-parfumer.com/", "logo": "https://shoh-parfumer.com/logo.png", "image": "https://shoh-parfumer.com/og.png", "description": "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.", "address": {"@type": "PostalAddress", "addressLocality": "Dushanbe", "addressCountry": "TJ"}}]}</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -221,6 +222,17 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 /* ---------- Сравнить ---------- */
 .cslots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cmpbtn { margin-top: 0; }
+/* О магазине и вопросы — спокойный текст внизу главной */
+.about { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.about h2 { font-size: 1.0625rem; margin: 6px 0 0; }
+.about p { margin: 0; color: var(--muted); font-size: 0.9375rem; line-height: 1.55; }
+.about .facts { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; border-radius: 14px; background: var(--soft); font-size: 0.9375rem; }
+.about .facts:empty { display: none; }
+.about .facts a, .ownlinks a { color: var(--accent-text); }
+.ownlinks:empty { display: none; }
+.about .tip p { color: var(--fg); }
+.lrv { padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.lrv .rvtext { margin: 0; color: var(--fg); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 /* Ароматы Shoh Parfumer */
 .owncard { flex-direction: row; align-items: center; gap: 12px; min-height: 76px; border-color: var(--accent); }
 .owncard .t { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
@@ -495,6 +507,29 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       </div>
       <button type="button" class="bcard dupebtn" id="goDupe"><b data-t="dupeBtn">Найти дюп</b><span data-t="dupeBtnSub">Один парфюм → до 5 известных дюпов</span></button>
       <button type="button" class="bcard dupebtn cmpbtn" id="goCompare"><b data-t="cmpBtn">Сравнить ароматы</b><span data-t="cmpBtnSub">Два парфюма → чем похожи и чем отличаются</span></button>
+
+      <!-- О магазине, условия, отзывы, вопросы — текст есть в странице и без скрипта (для покупателей и для Google) -->
+      <section class="about" id="about" aria-labelledby="hAbout">
+        <h2 id="hAbout" data-t="aboutH">О Shoh Parfumer</h2>
+        <p data-t="aboutP1">Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.</p>
+        <p data-t="aboutP2">«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.</p>
+        <p class="ownlinks" id="ownlinks"></p>
+        <ul class="facts">
+          <li data-t="ownDelivery">Доставка по Душанбе — за 1 день</li>
+          <li data-t="ownPay">Оплата наличными или переводом на карту</li>
+          <li data-t="aboutOrder">Заказ — на сайте или в Telegram</li>
+        </ul>
+        <ul class="facts" id="contacts"></ul>
+        <div class="stack" id="lastrv" style="gap:10px" hidden></div>
+        <h2 data-t="faqH">Вопросы и ответы</h2>
+        <div class="stack" style="gap:8px">
+          <details class="tip"><summary data-t="faq1q">Что такое дюп?</summary><p data-t="faq1a">Дюп — аромат другой марки, который пахнет похоже на известный, но стоит дешевле. В «Найти дюп» собраны известные дюпы популярных ароматов, а если у оригинала есть наш дюп — он стоит первым.</p></details>
+          <details class="tip"><summary data-t="faq2q">Как работает подбор?</summary><p data-t="faq2a">Выберите три аромата, которые вам нравятся, расставьте их по порядку и ответьте на пару вопросов. Сайт сравнит ноты и характер ароматов и покажет пять самых похожих — с процентом совпадения.</p></details>
+          <details class="tip"><summary data-t="faq3q">Как заказать наш аромат?</summary><p data-t="faq3a">Откройте «Ароматы Shoh Parfumer», выберите аромат и нажмите «Заказать»: укажите адрес, имя и телефон. Мы позвоним, чтобы подтвердить заказ. Доставка по Душанбе — за 1 день, оплата наличными или переводом на карту.</p></details>
+          <details class="tip"><summary data-t="faq4q">Как оставить отзыв и получить бонус?</summary><p data-t="faq4a">После покупки мы даём ссылку с кодом. Откройте её, оцените аромат — и получите бонус-код за отзыв. Каждый отзыв перед публикацией проверяет магазин.</p></details>
+          <details class="tip"><summary data-t="faq5q">Откуда ноты ароматов?</summary><p data-t="faq5a">Ноты и характер ароматов в базе — из открытых данных о парфюмерии. Ноты наших ароматов — с официальных сайтов брендов-оригиналов и магазинов.</p></details>
+        </div>
+      </section>
     </div>
 
     <div class="stack" id="resultsblock" style="gap:12px" hidden>
@@ -832,6 +867,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
               en: "Fresh and warm at once: bergamot, ginger and grapefruit, then pineapple with cardamom and cinnamon over labdanum, vetiver and patchouli." } }
   ];
   var WHATSAPP = "";            // номер WhatsApp (владелец 07.11.2026: пока не ставить, только Telegram) для заказов: код страны и номер, только цифры, например "992900000000"
+  // Контакты магазина (внизу главной и в данных для Google). Пусто — строка не показывается. Только настоящие данные.
+  var CONTACTS = {
+    address: { ru: "", tg: "", en: "" },   // адрес магазина
+    hours: { ru: "", tg: "", en: "" },     // часы работы, например «Каждый день 10:00–21:00»
+    phone: "",                             // телефон, например "+992 90 000 00 00"
+    instagram: ""                          // ник в Instagram без @
+  };
   var PICKUP_ON = false;        // самовывоз: false — пока только доставка (решение владельца 07.11.2026), true — можно выбрать самовывоз
   var PICKUP = { ru: "", tg: "", en: "" };   // адрес самовывоза на трёх языках (пусто — «адрес сообщим при звонке»)
 
@@ -1038,6 +1080,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       pageTitle: "Shoh Parfumer — подбор парфюма, дюпы и сравнение ароматов · Душанбе",
       metaDesc: "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.",
       // Ароматы Shoh Parfumer и заказ
+      aboutH: "О Shoh Parfumer", aboutP1: "Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.",
+      aboutP2: "«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.",
+      aboutOrder: "Заказ — на сайте или в Telegram", aboutOwn: "Наши ароматы:", cAddress: "Адрес", cHours: "Часы работы", cPhone: "Телефон", lastRvH: "Отзывы покупателей",
+      faqH: "Вопросы и ответы",
+      faq1q: "Что такое дюп?", faq1a: "Дюп — аромат другой марки, который пахнет похоже на известный, но стоит дешевле. В «Найти дюп» собраны известные дюпы популярных ароматов, а если у оригинала есть наш дюп — он стоит первым.",
+      faq2q: "Как работает подбор?", faq2a: "Выберите три аромата, которые вам нравятся, расставьте их по порядку и ответьте на пару вопросов. Сайт сравнит ноты и характер ароматов и покажет пять самых похожих — с процентом совпадения.",
+      faq3q: "Как заказать наш аромат?", faq3a: "Откройте «Ароматы Shoh Parfumer», выберите аромат и нажмите «Заказать»: укажите адрес, имя и телефон. Мы позвоним, чтобы подтвердить заказ. Доставка по Душанбе — за 1 день, оплата наличными или переводом на карту.",
+      faq4q: "Как оставить отзыв и получить бонус?", faq4a: "После покупки мы даём ссылку с кодом. Откройте её, оцените аромат — и получите бонус-код за отзыв. Каждый отзыв перед публикацией проверяет магазин.",
+      faq5q: "Откуда ноты ароматов?", faq5a: "Ноты и характер ароматов в базе — из открытых данных о парфюмерии. Ноты наших ароматов — с официальных сайтов брендов-оригиналов и магазинов.",
+      ordPrivacy: "Имя, телефон и адрес нужны только для доставки этого заказа.",
       ownBtn: "Ароматы Shoh Parfumer", ownBtnSub: "Наши дюпы известных ароматов · доставка по Душанбе за 1 день",
       h8: "Ароматы Shoh Parfumer", lead8: "Наши дюпы известных ароматов. Закажите на сайте — доставим по Душанбе за 1 день.",
       ownDupeOf: "дюп {n}", ownFrom: "от {p}", ownPriceAsk: "цену уточняйте", ownOut: "Нет в наличии", ownIn: "В наличии",
@@ -1122,6 +1174,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     tg: {
       pageTitle: "Shoh Parfumer — интихоби атр, дюпҳо ва муқоисаи атрҳо · Душанбе",
       metaDesc: "Интихоби атр аз рӯи се атри дӯстдоштаи шумо, дюпҳои маълуми атрҳои машҳур ва муқоисаи ду атр. Зиёда аз 17 000 атр, нотаҳо ва фикрҳои харидорон. Мағозаи Shoh Parfumer, Душанбе.",
+      aboutH: "Дар бораи Shoh Parfumer", aboutP1: "Shoh Parfumer — мағозаи атриёт дар Душанбе. Дар ин сайт метавонед атр интихоб кунед: се атри дӯстдоштаи худро интихоб кунед — мо панҷ атри навро аз рӯи завқи шумо пешниҳод мекунем. Дар база зиёда аз 17 000 атр бо нотаҳо ҳаст.",
+      aboutP2: "«Ёфтани дюп» дюпҳои маълуми арзони атрҳои қиматро нишон медиҳад, «Муқоисаи атрҳо» — ду атр бо чӣ монанд ва бо чӣ фарқ мекунанд. Дюпҳои худро аз атрҳои машҳур мо бо тамғаи Shoh Parfumer мефурӯшем.",
+      aboutOrder: "Фармоиш — дар сайт ё дар Telegram", aboutOwn: "Атрҳои мо:", cAddress: "Суроға", cHours: "Соатҳои корӣ", cPhone: "Телефон", lastRvH: "Фикрҳои харидорон",
+      faqH: "Саволу ҷавобҳо",
+      faq1q: "Дюп чист?", faq1a: "Дюп — атри тамғаи дигар, ки ба атри машҳур монанд бӯй медиҳад, вале арзонтар аст. Дар «Ёфтани дюп» дюпҳои маълуми атрҳои машҳур ҷамъ оварда шудаанд, ва агар аз атри асл дюпи мо бошад — он аввал меистад.",
+      faq2q: "Интихоб чӣ тавр кор мекунад?", faq2a: "Се атреро, ки ба шумо писанд аст, интихоб кунед, онҳоро бо тартиб гузоред ва ба якчанд савол ҷавоб диҳед. Сайт нотаҳо ва хусусияти атрҳоро муқоиса карда, панҷ атри аз ҳама монандро бо фоизи мувофиқат нишон медиҳад.",
+      faq3q: "Атри моро чӣ тавр фармоиш диҳам?", faq3a: "«Атрҳои Shoh Parfumer»-ро кушоед, атрро интихоб кунед ва «Фармоиш»-ро пахш кунед: суроға, ном ва телефонро нависед. Барои тасдиқи фармоиш ба шумо занг мезанем. Расонидан дар Душанбе — дар 1 рӯз, пардохт нақд ё интиқол ба корт.",
+      faq4q: "Чӣ тавр фикр гузорам ва бонус гирам?", faq4a: "Пас аз харид мо пайванд бо код медиҳем. Онро кушоед, атрро баҳо диҳед — ва барои фикр бонус-код гиред. Ҳар фикрро пеш аз нашр мағоза месанҷад.",
+      faq5q: "Нотаҳои атрҳо аз куҷоянд?", faq5a: "Нотаҳо ва хусусияти атрҳо дар база — аз маълумоти ошкор дар бораи атриёт. Нотаҳои атрҳои мо — аз сайтҳои расмии брендҳои асл ва мағозаҳо.",
+      ordPrivacy: "Ном, телефон ва суроға танҳо барои расонидани ҳамин фармоиш лозиманд.",
       ownBtn: "Атрҳои Shoh Parfumer", ownBtnSub: "Дюпҳои мо аз атрҳои машҳур · расонидан дар Душанбе дар 1 рӯз",
       h8: "Атрҳои Shoh Parfumer", lead8: "Дюпҳои мо аз атрҳои машҳур. Дар сайт фармоиш диҳед — дар Душанбе дар 1 рӯз мерасонем.",
       ownDupeOf: "дюпи {n}", ownFrom: "аз {p}", ownPriceAsk: "нархро пурсед", ownOut: "Дар мавҷудият нест", ownIn: "Дар мавҷудият",
@@ -1206,6 +1268,16 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     en: {
       pageTitle: "Shoh Parfumer — perfume finder, dupes and fragrance comparison · Dushanbe",
       metaDesc: "Find new perfumes from three fragrances you love, known dupes of popular perfumes and side-by-side comparisons. 17,000+ fragrances, notes and customer reviews. Shoh Parfumer shop, Dushanbe.",
+      aboutH: "About Shoh Parfumer", aboutP1: "Shoh Parfumer is a perfume shop in Dushanbe. On this site you can find a fragrance: pick three perfumes you love and we will suggest five new ones to your taste. The base has more than 17,000 fragrances with notes.",
+      aboutP2: "“Find a dupe” shows known affordable alternatives to expensive fragrances, and “Compare” shows how two fragrances are alike and how they differ. We sell our own dupes of famous fragrances under the Shoh Parfumer name.",
+      aboutOrder: "Order on the site or on Telegram", aboutOwn: "Our fragrances:", cAddress: "Address", cHours: "Opening hours", cPhone: "Phone", lastRvH: "Customer reviews",
+      faqH: "Questions and answers",
+      faq1q: "What is a dupe?", faq1a: "A dupe is a fragrance from another brand that smells similar to a famous one but costs less. “Find a dupe” lists known dupes of popular fragrances, and if we have our own dupe of the original, it comes first.",
+      faq2q: "How does the finder work?", faq2a: "Pick three fragrances you like, put them in order and answer a couple of questions. The site compares the notes and character of fragrances and shows the five closest matches, with a match percentage.",
+      faq3q: "How do I order your fragrance?", faq3a: "Open “Shoh Parfumer fragrances”, choose a fragrance and tap “Order”: enter your address, name and phone. We will call to confirm the order. Delivery in Dushanbe takes 1 day; pay in cash or by card transfer.",
+      faq4q: "How do I leave a review and get a bonus?", faq4a: "After a purchase we give you a link with a code. Open it, rate the fragrance and get a bonus code for your review. The shop checks every review before it is published.",
+      faq5q: "Where do the notes come from?", faq5a: "Notes and character in the base come from open perfume data. Notes of our own fragrances come from the official sites of the original brands and from shops.",
+      ordPrivacy: "Your name, phone and address are used only to deliver this order.",
       ownBtn: "Shoh Parfumer fragrances", ownBtnSub: "Our dupes of famous fragrances · delivery in Dushanbe in 1 day",
       h8: "Shoh Parfumer fragrances", lead8: "Our dupes of famous fragrances. Order on the site — we deliver in Dushanbe in 1 day.",
       ownDupeOf: "dupe of {n}", ownFrom: "from {p}", ownPriceAsk: "ask for the price", ownOut: "Out of stock", ownIn: "In stock",
@@ -2637,6 +2709,36 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     return '<button type="button" class="ownhint" data-omore="' + esc(o.id) + '"><span class="txt">' + esc(t("ownHasLine", { n: OWN_BRAND + " " + ownTitle(o) })) +
       " · <b>" + esc(ownPrice(o)) + '</b></span><span class="go" aria-hidden="true">→</span></button>';
   }
+  // Внизу главной: ссылки на наши ароматы (страницы для Google, на сайте открываются сразу), контакты, свежие отзывы
+  function drawAbout() {
+    var tx = function (o) { return (o && (o[lang] || o.ru)) || ""; }, h = "", base = "/" + (lang === "ru" ? "" : lang + "/");
+    if (tx(CONTACTS.address)) h += "<li>" + esc(t("cAddress")) + ": " + esc(tx(CONTACTS.address)) + "</li>";
+    if (tx(CONTACTS.hours)) h += "<li>" + esc(t("cHours")) + ": " + esc(tx(CONTACTS.hours)) + "</li>";
+    if (CONTACTS.phone) h += "<li>" + esc(t("cPhone")) + ': <a href="tel:+' + esc(CONTACTS.phone.replace(/\D/g, "")) + '">' + esc(CONTACTS.phone) + "</a></li>";
+    if (TELEGRAM) h += '<li>Telegram: <a href="https://t.me/' + esc(TELEGRAM) + '" target="_blank" rel="noopener">@' + esc(TELEGRAM) + "</a></li>";
+    if (CONTACTS.instagram) h += '<li>Instagram: <a href="https://instagram.com/' + esc(CONTACTS.instagram) + '" target="_blank" rel="noopener">@' + esc(CONTACTS.instagram) + "</a></li>";
+    $("#contacts").innerHTML = h;
+    $("#ownlinks").innerHTML = OWN.length ? esc(t("aboutOwn")) + " " + OWN.map(function (o) {
+      return '<a href="' + (inClaude ? "#" : base + "aromaty/" + o.id + "/") + '" data-omore="' + esc(o.id) + '">' + esc(ownTitle(o)) + "</a>";
+    }).join(" · ") : "";
+    drawLastReviews();
+  }
+  var LAST_RV = null;
+  function drawLastReviews() {
+    var box = $("#lastrv");
+    if (!LAST_RV || !LAST_RV.length) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = "<h2>" + esc(t("lastRvH")) + "</h2>" + LAST_RV.map(function (r) {
+      return '<div class="lrv"><span class="rvstars" aria-label="' + r.s + '/5">' + starStr(r.s) + '</span><p class="rvtext">' + esc(r.text) + "</p>" +
+        '<span class="small">— ' + esc(r.author || t("rvBuyer")) + " · " + esc(r.n) + (r.ver ? ' · <span class="rvver">✓ ' + esc(t("rvVerified")) + "</span>" : "") + "</span></div>";
+    }).join("");
+  }
+  function loadLastReviews() {
+    if (!window.fetch) return;
+    fetch(RV_API + "reviews/latest").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j && j.items) { LAST_RV = j.items; drawLastReviews(); }
+    }).catch(function () {});
+  }
   function openOwn(o) { histFlush(); state.mode = "own"; state.own = o; go(9); track("own/" + o.id); }
   $("#goOwn").addEventListener("click", function () { histFlush(); state.mode = "own"; state.own = null; go(8); track("own-open"); });
   var ownPre = {};
@@ -2646,7 +2748,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }, { passive: true });
   document.addEventListener("click", function (e) {
     var m = e.target.closest("[data-omore]"), od = e.target.closest("[data-oorder]"), c = e.target.closest("[data-octa]");
-    if (m && OWN_BY_ID[m.getAttribute("data-omore")]) openOwn(OWN_BY_ID[m.getAttribute("data-omore")]);
+    if (m && OWN_BY_ID[m.getAttribute("data-omore")]) { if (m.tagName === "A") e.preventDefault(); openOwn(OWN_BY_ID[m.getAttribute("data-omore")]); }
     if (od && OWN_BY_ID[od.getAttribute("data-oorder")]) openOrder(OWN_BY_ID[od.getAttribute("data-oorder")], od);
     if (c) track("own-contact/" + c.getAttribute("data-octa"));
   });
@@ -2687,6 +2789,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       '<input id="ordname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("ordName")) + ' *" aria-label="' + esc(t("ordName")) + '">' +
       '<input id="ordphone" class="search" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="' + esc(t("ordPhone")) + ' * (+992 …)" aria-label="' + esc(t("ordPhone")) + '">' +
       '<textarea id="ordcomment" class="search" maxlength="500" style="min-height:80px" placeholder="' + esc(t("ordComment")) + '" aria-label="' + esc(t("ordComment")) + '"></textarea>' +
+      '<p class="small" style="margin:0">' + esc(t("ordPrivacy")) + "</p>" +
       '<input id="ordweb" class="vh" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
       '<p class="status" id="ordstatus" role="status"></p><button type="button" class="btn" id="ordsend">' + esc(t("ordSend")) + "</button>" +
       (TELEGRAM || WHATSAPP ? '<p class="small" style="margin:0">' + esc(t("ordOr")) + "</p>" + ownContacts(o, o.vol[ordF.vol]) : "");
@@ -3480,6 +3583,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
     document.querySelectorAll("[data-tt]").forEach(function (el) { el.setAttribute("title", t(el.getAttribute("data-tt"))); });
     document.querySelectorAll(".langs button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang)); });
+    drawAbout();
     render();
     if (!fb.hidden) fbUpdate();
     if (!sim.hidden) drawSimilar();
@@ -3508,6 +3612,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   });
   applyLang();
   histFlush();
+  setTimeout(loadLastReviews, 1500);       // свежие отзывы внизу главной — после загрузки, не мешая первому экрану
   // Ссылка из бота магазина с кодом покупки: shoh-parfumer.com/?otziv=КОД
   try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) { var oa = new URLSearchParams(location.search).get("a"); openReviewByCode(oc, (oa && OWN_BY_ID[oa]) || null); } } } catch (e) {}
   // Со страницы аромата (/aromaty/…) нажали «Заказать»: ?a=id&z=1 — сразу форма заказа (z убираем из адреса)

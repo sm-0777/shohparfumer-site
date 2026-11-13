@@ -60,6 +60,19 @@ def load_i18n(src):
 
 
 I18N = load_i18n(tpl)
+
+
+def load_own(src):
+    a = src.index("  var TELEGRAM = ")
+    b = src.index("\n", src.index("  var PICKUP = "))
+    na = src.index("  var NOTE_TG = {")
+    nb = src.index("\n  };\n", na) + 5
+    code = src[a:b] + "\n" + src[na:nb] + "\nprocess.stdout.write(JSON.stringify({OWN: OWN, NOTE_TG: NOTE_TG, TELEGRAM: TELEGRAM, WHATSAPP: WHATSAPP, PICKUP_ON: PICKUP_ON, PICKUP: PICKUP, CONTACTS: CONTACTS}));"
+    r = subprocess.run(["node", "-e", code], capture_output=True, text=True, check=True)
+    return json.loads(r.stdout)
+
+
+SHOP = load_own(tpl)
 for l in LANGS:
     assert I18N[l].get("pageTitle") and I18N[l].get("metaDesc"), "нет pageTitle/metaDesc для " + l
 
@@ -100,6 +113,14 @@ alts = "".join('<link rel="alternate" hreflang="%s" href="%s">\n' % (l, SITE + p
     '<link rel="alternate" hreflang="x-default" href="%s">\n' % SITE
 
 
+def store_address():
+    a = {"@type": "PostalAddress", "addressLocality": "Dushanbe", "addressCountry": "TJ"}
+    street = (SHOP["CONTACTS"].get("address") or {}).get("ru")
+    if street:
+        a["streetAddress"] = street
+    return a
+
+
 def ld_json(l):
     T = I18N[l]
     data = {"@context": "https://schema.org", "@graph": [
@@ -108,8 +129,15 @@ def ld_json(l):
         # Магазин: адрес, часы и телефон добавить, когда владелец пришлёт (только настоящие данные)
         {"@type": "Store", "@id": SITE + "#store", "name": "Shoh Parfumer", "url": SITE,
          "logo": SITE + "logo.png", "image": SITE + "og.png", "description": T["metaDesc"],
-         "address": {"@type": "PostalAddress", "addressLocality": "Dushanbe", "addressCountry": "TJ"}},
+         "address": store_address()},
     ]}
+    c = SHOP["CONTACTS"]
+    if c.get("phone"):
+        data["@graph"][1]["telephone"] = c["phone"]
+    if c.get("instagram"):
+        data["@graph"][1]["sameAs"] = ["https://instagram.com/" + c["instagram"]]
+    if (c.get("hours") or {}).get("en"):
+        data["@graph"][1]["openingHours"] = c["hours"]["en"]
     return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace("</", "<\\/") + "</script>\n"
 
 
@@ -141,7 +169,8 @@ def page_for(l):
             "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n"
             "<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n"
             "<link rel=\"icon\" href=\"/favicon-96.png\" sizes=\"96x96\" type=\"image/png\">\n"
-            "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n" + ld_json(l) +
+            "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
+            "<link rel=\"manifest\" href=\"/site.webmanifest\">\n" + ld_json(l) +
             "<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}"
             "body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n"
             + head0 + "</head>\n<body>\n")
@@ -164,17 +193,6 @@ for l, p in LANGS.items():
 # ---------- Страницы ароматов Shoh Parfumer для поисковиков ----------
 # /aromaty/ — список, /aromaty/<id>/ — аромат (и то же в /tg/ и /en/). Лёгкие страницы без скрипта: название, цена,
 # ноты, описание, доставка и кнопка «Заказать» → сайт с открытой формой заказа (?a=id&z=1).
-def load_own(src):
-    a = src.index("  var TELEGRAM = ")
-    b = src.index("\n", src.index("  var PICKUP = "))
-    na = src.index("  var NOTE_TG = {")
-    nb = src.index("\n  };\n", na) + 5
-    code = src[a:b] + "\n" + src[na:nb] + "\nprocess.stdout.write(JSON.stringify({OWN: OWN, NOTE_TG: NOTE_TG, TELEGRAM: TELEGRAM, WHATSAPP: WHATSAPP, PICKUP_ON: PICKUP_ON, PICKUP: PICKUP}));"
-    r = subprocess.run(["node", "-e", code], capture_output=True, text=True, check=True)
-    return json.loads(r.stdout)
-
-
-SHOP = load_own(tpl)
 DBJ = json.loads(db)
 NOTES_RU, NOTES_EN = DBJ["n"], DBJ["ne"]
 CITY = {"ru": "Душанбе", "tg": "Душанбе", "en": "Dushanbe"}
@@ -285,8 +303,7 @@ def own_page(o, l):
     if offers:
         prod["offers"] = offers if len(offers) > 1 else offers[0]
     ld = {"@context": "https://schema.org", "@graph": [prod,
-          {"@type": "Store", "@id": SITE + "#store", "name": "Shoh Parfumer", "url": SITE,
-           "address": {"@type": "PostalAddress", "addressLocality": "Dushanbe", "addressCountry": "TJ"}},
+          {"@type": "Store", "@id": SITE + "#store", "name": "Shoh Parfumer", "url": SITE, "address": store_address()},
           {"@type": "BreadcrumbList", "itemListElement": [
               {"@type": "ListItem", "position": 1, "name": "Shoh Parfumer", "item": base},
               {"@type": "ListItem", "position": 2, "name": T["h8"], "item": base + "aromaty/"},
@@ -378,6 +395,11 @@ smx = ('<?xml version="1.0" encoding="UTF-8"?>\n'
        "".join(sm_group(g) for g in groups) + "</urlset>\n")
 open(smp, "w", encoding="utf-8").write(smx)
 open(os.path.join(root, "robots.txt"), "w", encoding="utf-8").write(
-    "# Shoh Parfumer — поисковикам можно всё, кроме служебного адреса Telegram-бота\n"
-    "User-agent: *\nAllow: /\nDisallow: /api/tg/\n\nSitemap: " + SITE + "sitemap.xml\n")
-print("ok sitemap.xml (lastmod " + lastmod + "), robots.txt")
+    "# Shoh Parfumer — поисковикам можно всё, кроме служебных адресов (/api/ — отзывы, заказы, бот)\n"
+    "User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: " + SITE + "sitemap.xml\n")
+open(os.path.join(root, "site.webmanifest"), "w", encoding="utf-8").write(json.dumps({
+    "name": "Shoh Parfumer — " + I18N["ru"]["brandSub"], "short_name": "Shoh Parfumer", "lang": "ru", "start_url": "/", "scope": "/",
+    "display": "standalone", "background_color": "#0B0B0A", "theme_color": "#0B0B0A", "description": I18N["ru"]["metaDesc"],
+    "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/logo.png", "sizes": "512x512", "type": "image/png"},
+              {"src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}, ensure_ascii=False, indent=1))
+print("ok sitemap.xml (lastmod " + lastmod + "), robots.txt, site.webmanifest")

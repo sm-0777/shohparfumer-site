@@ -20,6 +20,7 @@
   "vars": {
     "OWNER_TG": "sm_0777",
     "SITE": "https://shoh-parfumer.com",
+    "GOATCOUNTER": "shoh-parfumer",
     // Ключ IndexNow (не секрет, лежит открыто в public/<ключ>.txt): так Яндекс и Bing узнают об обновлениях сайта
     "INDEXNOW_KEY": "7760fe1240ba089a3e362ca26d76cb83"
   },

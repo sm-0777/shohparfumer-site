@@ -3,6 +3,7 @@
 //
 //   GET  /api/reviews?uid=…            одобренные отзывы об аромате и сводка (стойкость, шлейф…)
 //   GET  /api/reviews/summary?uids=…   число отзывов и средняя оценка для нескольких ароматов
+//   GET  /api/reviews/latest           3 свежих одобренных отзыва с текстом (для главной)
 //   POST /api/reviews                  новый отзыв → на проверку владельцу в Telegram
 //   POST /api/order                    заявка на аромат Shoh Parfumer → владельцу в Telegram («Принят / Выполнен / Отменён»)
 //   POST /api/tg/<секрет>              Telegram-бот: «Опубликовать / Удалить», /kod, проверка бонус-кода
@@ -36,6 +37,7 @@ export default {
       const p = url.pathname;
       if (p === "/api/reviews" && request.method === "GET") return await listReviews(env, url);
       if (p === "/api/reviews/summary" && request.method === "GET") return await summary(env, url);
+      if (p === "/api/reviews/latest" && request.method === "GET") return await latest(env);
       if (p === "/api/reviews" && request.method === "POST") return await addReview(request, env, ctx);
       if (p === "/api/order" && request.method === "POST") return await addOrder(request, env, ctx);
       if (p.startsWith("/api/tg/") && request.method === "POST") return await telegram(request, env, p.slice(8));
@@ -201,7 +203,7 @@ async function hookSecret(env) { return (await sha256(env.TG_TOKEN + "|shoh-hook
 async function ensureWebhook(env) {
   webhookChecked = true;
   const site = env.SITE || "https://shoh-parfumer.com";
-  const want = (await sha256(env.TG_TOKEN + "|" + site + "|v2")).slice(0, 16);   // v2: добавлена команда /zakazy
+  const want = (await sha256(env.TG_TOKEN + "|" + site + "|v3")).slice(0, 16);   // v3: добавлена команда /stat
   if ((await getSetting(env, "webhook")) === want) return;
   const sec = await hookSecret(env);
   const r = await tg(env, "setWebhook", { url: site + "/api/tg/" + sec, secret_token: sec, allowed_updates: ["message", "callback_query"] });
@@ -210,6 +212,7 @@ async function ensureWebhook(env) {
   await tg(env, "setMyCommands", { commands: [
     { command: "kod", description: "Новый код покупки (бонус за отзыв)" },
     { command: "zakazy", description: "Новые и принятые заявки" },
+    { command: "stat", description: "Статистика: заявки, отзывы, коды" },
     { command: "otzyvy", description: "Отзывы на проверке" },
     { command: "pomosh", description: "Как пользоваться ботом" },
   ] });
@@ -263,6 +266,7 @@ const HELP = [
   "• /kod — новый код покупки. Дайте его покупателю (или ссылку с ним): по коду его отзыв отмечается «Проверенная покупка», а он получает бонус-код. /kod 10 — сразу 10 кодов (для печати).",
   "• Покупатель пришёл с бонус-кодом — отправьте код сюда (например, B-4T8PK): бот покажет, действует ли он, и кнопку «Бонус выдан».",
   "• /otzyvy — отзывы, которые ждут проверки.",
+  "• /stat — статистика за 7 дней и за всё время: заявки, отзывы, коды.",
   "• Заявка на ваш аромат с сайта тоже приходит сюда: «Принят» → «Выполнен» (бот сразу даст код для отзыва и кнопку отправить его покупателю в WhatsApp) или «Отменён». /zakazy — новые и принятые заявки.",
 ].join("\n");
 
@@ -309,6 +313,7 @@ async function onMessage(env, m, owner) {
   }
   if (/^\/(otzyvy|otzivy|pending|отзывы)/i.test(text)) { await sendPending(env, chat); return; }
   if (/^\/(zakazy|zakaz|orders|заказы)/i.test(text)) { await sendOrders(env, chat); return; }
+  if (/^\/(stat|stats|статистика)/i.test(text)) { await sendStat(env, chat); return; }
   if (/^\/(pomosh|help|start)/i.test(text)) { await send(HELP); return; }
 
   // Код от покупателя: бонус-код (B-XXXXX) или код покупки (6 знаков)
@@ -475,4 +480,35 @@ async function orderButton(env, q, act, id) {
   const o = await getOrder(env, id);
   if (q.message) await tg(env, "editMessageText", { chat_id: q.message.chat.id, message_id: q.message.message_id, text: orderMessage(env, o), parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: orderButtons(env, o) } });
   return note;
+}
+
+/* ---------------- Свежие отзывы для главной и статистика для владельца ---------------- */
+async function latest(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT brand, name, stars, text, author, pcode, created FROM reviews WHERE status = 'ok' AND length(text) >= 15 ORDER BY id DESC LIMIT 3"
+  ).all();
+  return json({ items: results.map((r) => ({ b: r.brand, n: r.name, s: r.stars, text: r.text, author: r.author, ver: !!r.pcode, date: dt(r.created) })) }, 200, "public, max-age=300");
+}
+async function sendStat(env, chat) {
+  const db = env.DB, week = new Date(Date.now() - 7 * 864e5).toISOString();
+  const o = await db.prepare(
+    "SELECT COUNT(*) AS all_n, SUM(created > ?1) AS w, SUM(status = 'new') AS nw, SUM(status = 'ok') AS ok, SUM(status = 'done') AS done, SUM(status = 'no') AS no, " +
+    "SUM(CASE WHEN status = 'done' THEN price * qty ELSE 0 END) AS sum_done, SUM(CASE WHEN status = 'done' AND decided > ?1 THEN price * qty ELSE 0 END) AS sum_w FROM orders"
+  ).bind(week).first();
+  const r = await db.prepare("SELECT SUM(status = 'ok') AS ok, SUM(status = 'pending') AS pend, SUM(created > ?1) AS w, SUM(pcode IS NOT NULL AND status = 'ok') AS ver FROM reviews").bind(week).first();
+  const c = await db.prepare("SELECT COUNT(*) AS n, SUM(used_by IS NOT NULL) AS used FROM codes").first();
+  const n = (x) => x || 0;
+  const lines = [
+    "📊 <b>Статистика</b>",
+    "",
+    "🛍 <b>Заявки</b>: за 7 дней " + n(o.w) + ", всего " + n(o.all_n),
+    "новые " + n(o.nw) + " · приняты " + n(o.ok) + " · выполнены " + n(o.done) + " · отменены " + n(o.no),
+    "выполнено на " + som(n(o.sum_done)) + " (за 7 дней " + som(n(o.sum_w)) + ")",
+    "",
+    "⭐ <b>Отзывы</b>: на сайте " + n(r.ok) + " (из них проверенная покупка " + n(r.ver) + "), ждут проверки " + n(r.pend) + ", новых за 7 дней " + n(r.w),
+    "🔑 <b>Коды покупки</b>: выдано " + n(c.n) + ", использовано " + n(c.used),
+  ];
+  const gc = env.GOATCOUNTER ? "https://" + env.GOATCOUNTER + ".goatcounter.com" : "";
+  if (gc) lines.push("", "👀 Посещения сайта: " + gc);
+  await tg(env, "sendMessage", { chat_id: chat, text: lines.join("\n"), parse_mode: "HTML", disable_web_page_preview: true });
 }

@@ -1,6 +1,6 @@
-# Shoh Parfumer — поисковикам можно всё, кроме служебного адреса Telegram-бота
+# Shoh Parfumer — поисковикам можно всё, кроме служебных адресов (/api/ — отзывы, заказы, бот)
 User-agent: *
 Allow: /
-Disallow: /api/tg/
+Disallow: /api/
 
 Sitemap: https://shoh-parfumer.com/sitemap.xml
