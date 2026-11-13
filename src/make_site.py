@@ -18,6 +18,7 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 import urllib.parse
 
 SITE = "https://shoh-parfumer.com/"   # адрес сайта (для превью ссылки и поисковиков)
@@ -248,6 +249,10 @@ OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;-
            ".btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}"
            ".list{display:flex;flex-direction:column;gap:8px}.list a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-decoration:none}"
            ".photo{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:#fff;border-radius:16px}"
+           ".ourcard{display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--accent)}"
+           ".ourcard img{width:64px;height:96px;object-fit:contain;background:#fff;border-radius:10px;flex:none}"
+           ".list .it{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}"
+           ".list .it span{color:var(--muted);font-size:.875rem}"
            ".list b{font-weight:600}.list span{color:var(--muted);font-size:.875rem}.list .p{color:var(--fg);font-weight:600}")
 
 
@@ -319,6 +324,7 @@ def own_page(o, l):
     if SHOP["WHATSAPP"]:
         contacts += '<a class="btn ghost" href="https://wa.me/' + A(re.sub(r"\D", "", SHOP["WHATSAPP"])) + "?text=" + A(urllib.parse.quote(ask)) + '" rel="noopener">' + H(T["ownWa"]) + "</a>"
     others = [x for x in SHOP["OWN"] if x["id"] != o["id"]]
+    oi = next((k for k, v in own_by_orig.items() if v is o), None)
     body = (own_header(l, alts_map) + "<main>\n" +
             ('<img class="photo" src="' + A(photos[0].replace(SITE, "/")) + '" alt="' + A(full) + '" width="800" height="1200">\n' if photos else "") +
             '<div class="stack"><h1>' + H(title) + '</h1><span class="by">' + H("Shoh Parfumer · " + dupe) + "</span>" +
@@ -329,6 +335,7 @@ def own_page(o, l):
             ('<section class="stack"><h2>' + H(T["ownVol"]) + '</h2><ul class="stack vols" style="gap:6px">' + "".join(
                 "<li><span>" + H(T["ownMl"].replace("{n}", str(v[0]))) + "</span><b>" + H(money(v[1], l) if v[1] > 0 else T["ownPriceAsk"]) + "</b></li>" for v in vols) + "</ul></section>\n" if vols else "") +
             info_list(l) + "\n" +
+            ('<p class="small"><a href="/' + LANGS[l] + "dupy/" + dslug[oi] + '/">' + H(tpl_t(T["dpH"], o=ob + " " + on)) + " →</a></p>\n" if oi is not None else "") +
             '<section class="stack"><h2>' + H(T["h8"]) + '</h2><div class="list">' + "".join(
                 '<a href="/' + LANGS[l] + "aromaty/" + A(x["id"]) + '/"><b>' + H(own_info(x)[2]) + "</b><span>" + H(T["ownDupeOf"].replace("{n}", own_info(x)[0] + " " + own_info(x)[1])) +
                 '</span><span class="p">' + H(own_price(x, l)) + "</span></a>" for x in others) + "</div></section>\n" +
@@ -360,6 +367,181 @@ def write_if(path, txt):
     open(path, "w", encoding="utf-8").write(txt)
 
 
+
+
+# ---------- Страницы «Дюпы …» для поисковиков: /dupy/ и /dupy/<оригинал>/ (+ /tg/, /en/) ----------
+# Оригиналы, у которых есть известные дюпы (data/dupes.txt → du/xd в базе) или наш дюп. Ссылки ведут в «Найти дюп» (?d=uid)
+# и в «Сравнить» (?c=uidA-uidB) на сайте.
+DB_B, DB_P = DBJ["b"], DBJ["p"]
+
+
+def js_uid(s):   # тот же код аромата, что на сайте: hash(brand + "|" + name).toString(36) по 16-битным знакам строки
+    h = 0
+    b = s.encode("utf-16-le")
+    for i in range(0, len(b), 2):
+        h = (h * 31 + (b[i] | (b[i + 1] << 8))) & 0xFFFFFFFF
+    d, out = "0123456789abcdefghijklmnopqrstuvwxyz", ""
+    while True:
+        h, r = divmod(h, 36)
+        out = d[r] + out
+        if not h:
+            return out
+
+
+def slug(s):
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def pl_ru(n, f):
+    n10, n100 = n % 10, n % 100
+    return f[0] if n10 == 1 and n100 != 11 else (f[1] if 2 <= n10 <= 4 and not 12 <= n100 <= 14 else f[2])
+
+
+def plural(n, forms, l):
+    if l == "ru":
+        return pl_ru(n, forms)
+    if l == "en":
+        return forms[0] if n == 1 else forms[2]
+    return forms[0]
+
+
+def tpl_t(s, **kw):
+    for k, v in kw.items():
+        s = s.replace("{" + k + "}", str(v))
+    return s
+
+
+own_by_orig = {}
+for o in SHOP["OWN"]:
+    ob, on = (o["of"].split("|") + [""])[:2]
+    for i, x in enumerate(DB_P):
+        if DB_B[x[1]] == ob and x[0] == on:
+            own_by_orig[i] = o
+            break
+dupes_of = {i: refs for i, refs in DBJ.get("du", [])}
+dorig = sorted(set(dupes_of) | set(own_by_orig), key=lambda i: (DB_B[DB_P[i][1]].lower(), DB_P[i][0].lower()))
+dslug, used = {}, set()
+for i in dorig:
+    sl = slug(DB_B[DB_P[i][1]] + " " + DB_P[i][0]) or "x"
+    k = 2
+    while sl in used:
+        sl = slug(DB_B[DB_P[i][1]] + " " + DB_P[i][0]) + "-" + str(k); k += 1
+    used.add(sl); dslug[i] = sl
+
+
+def dupe_list(i):   # [(название, бренд, номер в базе или None)]
+    out = []
+    for r in dupes_of.get(i, []):
+        if r >= 0:
+            out.append((DB_P[r][0], DB_B[DB_P[r][1]], r))
+        else:
+            n, b = DBJ["xd"][-r - 1]
+            out.append((n, b, None))
+    return out
+
+
+def orig_name(i):
+    return DB_B[DB_P[i][1]] + " " + DB_P[i][0]
+
+
+def dupe_page(i, l):
+    T, base = I18N[l], SITE + LANGS[l]
+    x = DB_P[i]
+    o = own_by_orig.get(i)
+    ds = dupe_list(i)
+    n = len(ds) + (1 if o else 0)
+    oname = orig_name(i)
+    url = base + "dupy/" + dslug[i] + "/"
+    alts_map = {y: SITE + LANGS[y] + "dupy/" + dslug[i] + "/" for y in LANGS}
+    uid = js_uid(DB_B[x[1]] + "|" + x[0])
+    title = tpl_t(T["dpTitle"], o=oname, n=str(n) + " " + plural(n, T["dpSimilar"], l))
+    if o:
+        title = tpl_t(T["dpTitleOwn"], t=title, p=own_price(o, l))
+    names = ([("Shoh Parfumer " + own_info(o)[2])] if o else []) + [b + " " + nm for nm, b, _ in ds]
+    desc = tpl_t(T["dpDesc"], o=oname, list=", ".join(names[:4]) + ("…" if len(names) > 4 else "")) + (" " + tpl_t(T["dpDescOwn"], p=own_price(o, l)) if o else "")
+    app = "/" + LANGS[l]
+    # наш дюп — первым
+    our = ""
+    if o:
+        ph = (o.get("photos") or [None])[0]
+        our = ('<section class="stack"><h2>' + H(T["dpOur"]) + "</h2>" +
+               '<div class="ourcard">' + ('<img src="/' + A(ph.replace(".webp", "-s.webp")) + '" alt="" width="80" height="120">' if ph else "") +
+               '<div class="stack" style="gap:4px"><b>' + H("Shoh Parfumer " + own_info(o)[2]) + '</b><span class="price">' + H(own_price(o, l)) + "</span>" +
+               '<span class="small">' + H(T["ownDelivery"]) + "</span></div></div>" +
+               '<div class="acts"><a class="btn" href="' + app + "?a=" + A(o["id"]) + '&amp;z=1">' + H(T["orderBtn"]) + "</a>" +
+               '<a class="btn ghost" href="' + app + "aromaty/" + A(o["id"]) + '/">' + H(T["ownMore"]) + "</a></div></section>\n")
+    known = ""
+    if ds:
+        known = ('<section class="stack"><h2>' + H(T["dpKnown"]) + '</h2><div class="list">' + "".join(
+            ('<a href="' + app + "?c=" + uid + "-" + js_uid(b + "|" + nm) + "&amp;l=" + l + '"><b>' + H(nm) + "</b><span>" + H(b) + '</span><span class="p">' + H(T["dpCompare"]) + " →</span></a>")
+            if r is not None else ('<div class="it"><b>' + H(nm) + "</b><span>" + H(b) + "</span></div>")
+            for nm, b, r in ds) + '</div><p class="small">' + H(T["dpSrc"]) + "</p></section>\n")
+    # об оригинале: год, концентрация, ноты (только если ноты в базе надёжные)
+    facts = []
+    if len(x) > 8 and x[8]:
+        facts.append(T["cmpYear"] + ": " + str(x[8]))
+    if len(x) > 9 and x[9] and x[9] < len(T["concNames"]):
+        facts.append(T["cmpConc"] + ": " + T["concNames"][x[9]])
+    notes = ""
+    if not (x[3] & (128 | 16)) and x[6]:
+        by = {1: [], 2: [], 3: []}
+        for c in x[6]:
+            if (c & 3) in by:
+                by[c & 3].append(note_name(NOTES_RU[c >> 2], l))
+        notes = "".join('<div class="layer"><span class="small">' + H(T[k]) + '</span><div class="chips">' + "".join('<span class="chip">' + H(v) + "</span>" for v in by[ly][:10]) + "</div></div>"
+                        for ly, k in ((1, "layerTop"), (2, "layerHeart"), (3, "layerBase")) if by[ly])
+    about = ""
+    if facts or notes:
+        about = ('<section class="stack"><h2>' + H(T["dpAbout"]) + "</h2>" + ("<p class=\"by\">" + H(" · ".join(facts)) + "</p>" if facts else "") + notes + "</section>\n")
+    # ещё дюпы этого бренда
+    same = [j for j in dorig if j != i and DB_P[j][1] == x[1]][:8]
+    more = ('<section class="stack"><h2>' + H(tpl_t(T["dpMore"], b=DB_B[x[1]])) + '</h2><div class="list">' + "".join(
+        '<a href="' + app + "dupy/" + dslug[j] + '/"><b>' + H(DB_P[j][0]) + "</b><span>" + H(DB_B[DB_P[j][1]]) + "</span></a>" for j in same) + "</div></section>\n") if same else ""
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "ItemList", "name": tpl_t(T["dpH"], o=oname), "url": url, "itemListElement": [
+            {"@type": "ListItem", "position": k + 1, "name": nm} for k, nm in enumerate(names)]},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Shoh Parfumer", "item": base},
+            {"@type": "ListItem", "position": 2, "name": T["dpAllH"], "item": base + "dupy/"},
+            {"@type": "ListItem", "position": 3, "name": oname, "item": url}]}]}
+    body = (own_header(l, alts_map) + "<main>\n" +
+            '<div class="stack"><h1>' + H(tpl_t(T["dpH"], o=oname)) + '</h1><p class="by">' + H(tpl_t(T["dpLead"], o=oname)) + "</p></div>\n" +
+            our + known + about +
+            '<div class="acts"><a class="btn' + (" ghost" if o else "") + '" href="' + app + "?d=" + uid + "&amp;l=" + l + '">' + H(T["dpOpen"]) + "</a></div>\n" +
+            more +
+            '<p class="small"><a href="' + app + 'dupy/">' + H(T["dpAllLink"]) + "</a> · <a href=\"" + app + '">' + H(T["dpHome"]) + "</a></p>\n</main>\n</body>\n</html>\n")
+    return own_head(l, title, desc, url, alts_map, ld) + body
+
+
+def dupe_list_page(l):
+    T, base = I18N[l], SITE + LANGS[l]
+    url = base + "dupy/"
+    alts_map = {y: SITE + LANGS[y] + "dupy/" for y in LANGS}
+    rows = "".join('<a href="' + dslug[i] + '/"><b>' + H(DB_P[i][0]) + "</b><span>" + H(DB_B[DB_P[i][1]]) + "</span>" +
+                   ('<span class="p">' + H(T["ownHas"]) + " · " + H(own_price(own_by_orig[i], l)) + "</span>" if i in own_by_orig else "") + "</a>"
+                   for i in sorted(dorig, key=lambda i: (i not in own_by_orig, DB_B[DB_P[i][1]].lower(), DB_P[i][0].lower())))
+    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": T["dpAllH"], "url": url, "itemListElement": [
+        {"@type": "ListItem", "position": k + 1, "url": url + dslug[i] + "/", "name": orig_name(i)} for k, i in enumerate(dorig)]}
+    body = (own_header(l, alts_map) + "<main>\n<h1>" + H(T["dpAllH"]) + "</h1>\n<p class=\"by\">" + H(T["dpAllLead"]) + "</p>\n" +
+            '<div class="list">' + rows + "</div>\n" +
+            '<div class="acts"><a class="btn" href="/' + LANGS[l] + '?d=all&amp;l=' + l + '">' + H(T["dupeBtn"]) + "</a></div>\n</main>\n</body>\n</html>\n")
+    return own_head(l, T["dpAllH"] + " · Shoh Parfumer", T["dpAllLead"], url, alts_map, ld) + body
+
+
+dids = [dslug[i] for i in dorig]
+for l, p in LANGS.items():
+    ddir = os.path.join(root, p, "dupy")
+    if os.path.isdir(ddir):                            # оригинал больше не в списке — убираем его страницу
+        for d in os.listdir(ddir):
+            if os.path.isdir(os.path.join(ddir, d)) and d not in dids:
+                shutil.rmtree(os.path.join(ddir, d)); changed = True
+    write_if(os.path.join(ddir, "index.html"), dupe_list_page(l))
+    for i in dorig:
+        write_if(os.path.join(ddir, dslug[i], "index.html"), dupe_page(i, l))
+print("ok dupy: %d оригиналов × %d языка" % (len(dorig), len(LANGS)))
+
+# страницы ароматов пишем после «Дюпов»: на них ссылка «Дюпы <оригинал>»
 ids = [o["id"] for o in SHOP["OWN"]]
 assert len(ids) == len(set(ids)) and all(re.fullmatch(r"[a-z0-9-]+", i) for i in ids), "id ароматов: латиница, цифры, дефис, без повторов"
 for l, p in LANGS.items():
@@ -381,7 +563,7 @@ old = open(smp, encoding="utf-8").read() if os.path.exists(smp) else ""
 m = re.search(r"<lastmod>([^<]+)</lastmod>", old)
 today = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=5)).strftime("%Y-%m-%d")   # время Душанбе
 lastmod = today if changed or not m else m.group(1)
-groups = [""] + (["aromaty/"] + ["aromaty/" + i + "/" for i in ids] if ids else [])   # страница + её версии на трёх языках
+groups = [""] + (["aromaty/"] + ["aromaty/" + i + "/" for i in ids] if ids else []) + ["dupy/"] + ["dupy/" + d + "/" for d in dids]   # страница + её версии на трёх языках
 
 
 def sm_group(sub):

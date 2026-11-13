@@ -480,6 +480,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
         <p data-t="aboutP1">Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.</p>
         <p data-t="aboutP2">«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.</p>
         <p class="ownlinks" id="ownlinks"></p>
+        <p class="ownlinks"><a href="/dupy/" id="aboutDupes" data-t="aboutDupes">Дюпы известных ароматов →</a></p>
         <ul class="facts">
           <li data-t="ownDelivery">Доставка по Душанбе — за 1 день</li>
           <li data-t="ownPay">Оплата наличными или переводом на карту</li>
@@ -1046,6 +1047,14 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       pageTitle: "Shoh Parfumer — подбор парфюма, дюпы и сравнение ароматов · Душанбе",
       metaDesc: "Подбор парфюма по трём любимым ароматам, известные дюпы (аналоги) популярных духов и сравнение двух ароматов. Более 17 000 ароматов, ноты и отзывы покупателей. Магазин Shoh Parfumer, Душанбе.",
       // Ароматы Shoh Parfumer и заказ
+      // Страницы «Дюпы …» для поисковиков (make_site.py) и ссылка на них внизу главной
+      dpTitle: "Дюпы {o}: {n}", dpTitleOwn: "{t} · Shoh Parfumer — {p}", dpSimilar: ["похожий аромат", "похожих аромата", "похожих ароматов"],
+      dpH: "Дюпы {o}", dpLead: "Ароматы других марок, которые пахнут похоже на {o}, но стоят дешевле.",
+      dpDesc: "Известные дюпы {o}: {list}.", dpDescOwn: "Наш дюп Shoh Parfumer — {p}, доставка по Душанбе за 1 день.",
+      dpOur: "Наш дюп", dpKnown: "Известные дюпы", dpAbout: "Об оригинале", dpOpen: "Открыть в «Найти дюп»", dpCompare: "Сравнить с оригиналом",
+      dpSrc: "Список дюпов — по открытым подборкам (scentverdict.com, sensabeauty.com, whatscent.app). Дюп пахнет похоже, но это другой аромат.",
+      dpAllH: "Дюпы известных ароматов", dpAllLead: "Недорогие ароматы, которые пахнут похоже на известные. Выберите оригинал — покажем его дюпы.",
+      dpMore: "Ещё дюпы {b}", dpAllLink: "Все дюпы известных ароматов", dpHome: "Подбор парфюма", aboutDupes: "Дюпы известных ароматов →",
       aboutH: "О Shoh Parfumer", aboutP1: "Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.",
       aboutP2: "«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.",
       aboutOrder: "Заказ — на сайте или в Telegram", aboutOwn: "Наши ароматы:", cAddress: "Адрес", cHours: "Часы работы", cPhone: "Телефон", lastRvH: "Отзывы покупателей",
@@ -1140,6 +1149,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     tg: {
       pageTitle: "Shoh Parfumer — интихоби атр, дюпҳо ва муқоисаи атрҳо · Душанбе",
       metaDesc: "Интихоби атр аз рӯи се атри дӯстдоштаи шумо, дюпҳои маълуми атрҳои машҳур ва муқоисаи ду атр. Зиёда аз 17 000 атр, нотаҳо ва фикрҳои харидорон. Мағозаи Shoh Parfumer, Душанбе.",
+      dpTitle: "Дюпҳои {o}: {n}", dpTitleOwn: "{t} · Shoh Parfumer — {p}", dpSimilar: ["атри монанд", "атри монанд", "атри монанд"],
+      dpH: "Дюпҳои {o}", dpLead: "Атрҳои тамғаҳои дигар, ки ба {o} монанд бӯй медиҳанд, вале арзонтаранд.",
+      dpDesc: "Дюпҳои маълуми {o}: {list}.", dpDescOwn: "Дюпи мо Shoh Parfumer — {p}, расонидан дар Душанбе дар 1 рӯз.",
+      dpOur: "Дюпи мо", dpKnown: "Дюпҳои маълум", dpAbout: "Дар бораи асл", dpOpen: "Дар «Ёфтани дюп» кушодан", dpCompare: "Бо асл муқоиса кардан",
+      dpSrc: "Рӯйхати дюпҳо — аз рӯи интихобҳои ошкор (scentverdict.com, sensabeauty.com, whatscent.app). Дюп монанд бӯй медиҳад, вале атри дигар аст.",
+      dpAllH: "Дюпҳои атрҳои машҳур", dpAllLead: "Атрҳои арзон, ки ба атрҳои машҳур монанд бӯй медиҳанд. Аслро интихоб кунед — дюпҳояшро нишон медиҳем.",
+      dpMore: "Дигар дюпҳои {b}", dpAllLink: "Ҳамаи дюпҳои атрҳои машҳур", dpHome: "Интихоби атр", aboutDupes: "Дюпҳои атрҳои машҳур →",
       aboutH: "Дар бораи Shoh Parfumer", aboutP1: "Shoh Parfumer — мағозаи атриёт дар Душанбе. Дар ин сайт метавонед атр интихоб кунед: се атри дӯстдоштаи худро интихоб кунед — мо панҷ атри навро аз рӯи завқи шумо пешниҳод мекунем. Дар база зиёда аз 17 000 атр бо нотаҳо ҳаст.",
       aboutP2: "«Ёфтани дюп» дюпҳои маълуми арзони атрҳои қиматро нишон медиҳад, «Муқоисаи атрҳо» — ду атр бо чӣ монанд ва бо чӣ фарқ мекунанд. Дюпҳои худро аз атрҳои машҳур мо бо тамғаи Shoh Parfumer мефурӯшем.",
       aboutOrder: "Фармоиш — дар сайт ё дар Telegram", aboutOwn: "Атрҳои мо:", cAddress: "Суроға", cHours: "Соатҳои корӣ", cPhone: "Телефон", lastRvH: "Фикрҳои харидорон",
@@ -1234,6 +1250,13 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     en: {
       pageTitle: "Shoh Parfumer — perfume finder, dupes and fragrance comparison · Dushanbe",
       metaDesc: "Find new perfumes from three fragrances you love, known dupes of popular perfumes and side-by-side comparisons. 17,000+ fragrances, notes and customer reviews. Shoh Parfumer shop, Dushanbe.",
+      dpTitle: "{o} dupes: {n}", dpTitleOwn: "{t} · Shoh Parfumer — {p}", dpSimilar: ["similar fragrance", "similar fragrances", "similar fragrances"],
+      dpH: "{o} dupes", dpLead: "Fragrances from other brands that smell similar to {o} but cost less.",
+      dpDesc: "Known dupes of {o}: {list}.", dpDescOwn: "Our Shoh Parfumer dupe — {p}, delivery in Dushanbe in 1 day.",
+      dpOur: "Our dupe", dpKnown: "Known dupes", dpAbout: "About the original", dpOpen: "Open in “Find a dupe”", dpCompare: "Compare with the original",
+      dpSrc: "The dupe list comes from open roundups (scentverdict.com, sensabeauty.com, whatscent.app). A dupe smells similar, but it is a different fragrance.",
+      dpAllH: "Dupes of famous fragrances", dpAllLead: "Affordable fragrances that smell similar to famous ones. Pick the original and we will show its dupes.",
+      dpMore: "More {b} dupes", dpAllLink: "All dupes of famous fragrances", dpHome: "Perfume finder", aboutDupes: "Dupes of famous fragrances →",
       aboutH: "About Shoh Parfumer", aboutP1: "Shoh Parfumer is a perfume shop in Dushanbe. On this site you can find a fragrance: pick three perfumes you love and we will suggest five new ones to your taste. The base has more than 17,000 fragrances with notes.",
       aboutP2: "“Find a dupe” shows known affordable alternatives to expensive fragrances, and “Compare” shows how two fragrances are alike and how they differ. We sell our own dupes of famous fragrances under the Shoh Parfumer name.",
       aboutOrder: "Order on the site or on Telegram", aboutOwn: "Our fragrances:", cAddress: "Address", cHours: "Opening hours", cPhone: "Phone", lastRvH: "Customer reviews",
@@ -2687,6 +2710,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     $("#ownlinks").innerHTML = OWN.length ? esc(t("aboutOwn")) + " " + OWN.map(function (o) {
       return '<a href="' + (inClaude ? "#" : base + "aromaty/" + o.id + "/") + '" data-omore="' + esc(o.id) + '">' + esc(ownTitle(o)) + "</a>";
     }).join(" · ") : "";
+    $("#aboutDupes").setAttribute("href", inClaude ? "#" : base + "dupy/");
     drawLastReviews();
   }
   var LAST_RV = null;
@@ -2705,6 +2729,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       if (j && j.items) { LAST_RV = j.items; drawLastReviews(); }
     }).catch(function () {});
   }
+  $("#aboutDupes").addEventListener("click", function (e) { e.preventDefault(); $("#goDupe").click(); });
   function openOwn(o) { histFlush(); state.mode = "own"; state.own = o; go(9); track("own/" + o.id); }
   $("#goOwn").addEventListener("click", function () { histFlush(); state.mode = "own"; state.own = null; go(8); track("own-open"); });
   var ownPre = {};
@@ -3460,6 +3485,12 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   function restoreFromUrl() {
     if (inClaude) return false;
     var q; try { q = new URLSearchParams(location.search); } catch (e) { return false; }
+    var dd = q.get("d");
+    if (dd && !q.get("otziv") && (dd === "all" || BY_UID[dd])) {
+      applySnap({ st: 6, m: "dupe", ds: dd === "all" ? null : dd });
+      var ld = q.get("l"); if (LANGS.indexOf(ld) !== -1) lang = ld;
+      return true;
+    }
     var a = q.get("a");
     if (a === "all" && !q.get("otziv")) { state.mode = "own"; state.own = null; state.step = 8; return true; }   // список ароматов
     if (a && OWN_BY_ID[a] && !q.get("otziv")) {

@@ -62,6 +62,10 @@ minimal design, and wants questions asked BEFORE building anything unclear.
 - Home bottom block #about (owner 14.11.2026): about text + FAQ (static, prerendered — keeps Google from «soft 404»),
   links to our aromas, contacts from CONTACTS (top of script; show only when the owner fills real data), latest approved
   reviews with text (GET /api/reviews/latest). Bot /stat. robots.txt disallows /api/. site.webmanifest + icon-192.png.
+- SEO pages «Дюпы …» (14.11.2026): make_site.py --standalone writes /dupy/ and /dupy/<brand-name>/ (+ /tg/, /en/) for every
+  original with known dupes (du) or our dupe (OWN): our dupe first, known dupes (DB ones link to `?c=uidA-uidB`), year/
+  concentration, notes only if not flagged 128/16, link `?d=uid` (opens «Найти дюп»; `?d=all` = the screen). Texts = I18N dp*.
+  Python js_uid() must stay equal to the site's uid hash. /aromaty/<id>/ links to its original's dupe page.
 - Layout must hold from 320 px in all three languages (Tajik strings are the longest); never let words break mid-word.
 - After a rebuild, run a quick Playwright check (pick 3 perfumes → questions → results) before pushing.
 - Cloudflare Workers (project `shoh-parfumer`, config `wrangler.jsonc`) publishes `public/` on every push to `main`,
