@@ -3734,7 +3734,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", t("metaDesc"));
     } catch (e) {}
     langSync();
-    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    // текст меняем, только если он другой: заново вставленный тот же текст браузер считает новой отрисовкой (медленнее «первый экран»)
+    document.querySelectorAll("[data-t]").forEach(function (el) { var v = t(el.getAttribute("data-t")); if (el.textContent !== v) el.textContent = v; });
     document.querySelectorAll("[data-tp]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-tp"))); });
     document.querySelectorAll("[data-ta]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-ta"))); });
     document.querySelectorAll("[data-tt]").forEach(function (el) { el.setAttribute("title", t(el.getAttribute("data-tt"))); });
