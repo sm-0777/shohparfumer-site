@@ -113,6 +113,29 @@ for l in LANGS:
 
 A = lambda s: html.escape(s, quote=True)
 
+# Шрифты Onest и Unbounded (OFL) лежат на нашем сайте (public/fonts, из пакетов @fontsource-variable): без запроса к Google Fonts
+# страница не ждёт чужой сервер (~0,8 с на медленном интернете). Браузер скачивает только нужные наборы букв (unicode-range).
+# В странице-артефакте Claude остаётся Google Fonts (там свои файлы не подключить).
+FONT_RANGES = {
+    "cyrillic": "U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116",
+    "cyrillic-ext": "U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F",
+    "latin": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+    "latin-ext": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF",
+}
+GOOGLE_FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+                '<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">\n')
+
+
+def fonts_html(l):
+    face = "".join("@font-face{font-family:%s;font-style:normal;font-display:swap;font-weight:100 900;src:url(/fonts/%s-%s.woff2) format('woff2');unicode-range:%s}"
+                   % (fam, fam.lower(), sub, rng) for fam in ("Onest", "Unbounded") for sub, rng in FONT_RANGES.items())
+    main = "latin" if l == "en" else "cyrillic"          # шрифт основного текста — сразу, вместе со страницей
+    return ('<link rel="preload" href="/fonts/onest-%s.woff2" as="font" type="font/woff2" crossorigin>\n<style>%s</style>\n' % (main, face))
+
+
+# Сайт открыли по www.shoh-parfumer.com — сразу переходим на основной адрес (одна версия сайта для поисковиков)
+WWW_JS = ('<script>if(location.hostname.indexOf("www.")===0)location.replace("https://shoh-parfumer.com"+location.pathname+location.search+location.hash)</script>\n')
+
 
 def translate_static(page, l):
     """Тексты страницы до запуска скрипта — сразу на нужном языке (как их потом поставит applyLang)."""
@@ -144,6 +167,8 @@ cut = out.index("<header")
 head0, body0 = out[:cut], out[cut:]
 head0 = head0.replace('<meta name="claude:viewport-fit-sides" content="cover">\n', "")
 head0 = re.sub(r"<title>[^<]*</title>\n?", "", head0)
+assert head0.count(GOOGLE_FONTS) == 1, "строки Google Fonts в шаблоне изменились"
+head0 = head0.replace(GOOGLE_FONTS, "")
 alts = "".join('<link rel="alternate" hreflang="%s" href="%s">\n' % (l, SITE + p) for l, p in LANGS.items()) + \
     '<link rel="alternate" hreflang="x-default" href="%s">\n' % SITE
 
@@ -180,7 +205,7 @@ def page_for(l):
     T, url = I18N[l], SITE + LANGS[l]
     head = ("<!doctype html>\n<html lang=\"" + l + "\">\n<head>\n"
             "<meta charset=\"utf-8\">\n"
-            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n" + WWW_JS +
             # База ароматов начинает скачиваться сразу, вместе со страницей
             "<link rel=\"preload\" href=\"" + DB_URL + "\" as=\"fetch\" crossorigin>\n"
             "<title>" + html.escape(T["pageTitle"], quote=False) + "</title>\n"
@@ -210,7 +235,7 @@ def page_for(l):
             "<link rel=\"manifest\" href=\"/site.webmanifest\">\n" + ld_json(l) +
             "<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}"
             "body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n"
-            + head0 + "</head>\n<body>\n")
+            + fonts_html(l) + head0 + "</head>\n<body>\n")
     return head + translate_static(body0, l) + "\n</body>\n</html>\n"
 
 
@@ -267,7 +292,7 @@ def own_price(o, l):
 
 
 OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;--fg:#F5F2E9;--muted:#A8A496;--accent:#FFC61A;--ink:#1A1400;--ok:#34C771;--at:#FFC61A;color-scheme:dark}"
-           "@media (prefers-color-scheme:light){:root{--bg:#F6F4EE;--surface:#FFFFFF;--soft:#EFEBDF;--line:#DDD8C9;--fg:#17160F;--muted:#625E4D;--ok:#178A49;--at:#8A6A00;color-scheme:light}}"
+           "@media (prefers-color-scheme:light){:root{--bg:#F6F4EE;--surface:#FFFFFF;--soft:#EFEBDF;--line:#DDD8C9;--fg:#17160F;--muted:#625E4D;--ok:#127A3F;--at:#8A6A00;color-scheme:light}}"
            "*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Onest,system-ui,sans-serif;overflow-wrap:break-word}"
            "a{color:inherit}header{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}"
            ".in{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}"
@@ -295,7 +320,7 @@ OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;-
 
 def own_head(l, title, desc, url, alts_map, ld, image=None):
     return ("<!doctype html>\n<html lang=\"" + l + "\">\n<head>\n<meta charset=\"utf-8\">\n"
-            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n" + WWW_JS +
             "<title>" + H(title) + "</title>\n<meta name=\"description\" content=\"" + A(desc) + "\">\n"
             "<meta name=\"theme-color\" content=\"#0B0B0A\">\n<link rel=\"canonical\" href=\"" + url + "\">\n" +
             "".join('<link rel="alternate" hreflang="%s" href="%s">\n' % (x, alts_map[x]) for x in LANGS) +
@@ -306,8 +331,7 @@ def own_head(l, title, desc, url, alts_map, ld, image=None):
             "<meta property=\"og:locale\" content=\"" + LOCALE[l] + "\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n"
             "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n<link rel=\"icon\" href=\"/favicon.svg\" type=\"image/svg+xml\">\n"
             "<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
-            "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
-            "<link href=\"https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap\" rel=\"stylesheet\">\n"
+            + fonts_html(l) +
             '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + "</script>\n"
             "<style>" + OWN_CSS + "</style>\n</head>\n<body>\n")
 
@@ -363,7 +387,7 @@ def own_page(o, l):
     others = [x for x in SHOP["OWN"] if x["id"] != o["id"]]
     oi = next((k for k, v in own_by_orig.items() if v is o), None)
     body = (own_header(l, alts_map) + "<main>\n" +
-            ('<img class="photo" src="' + A(photos[0].replace(SITE, "/")) + '" alt="' + A(full) + '" width="800" height="1200">\n' if photos else "") +
+            ('<img class="photo" src="' + A(photos[0].replace(SITE, "/")) + '" alt="' + A(full) + '" width="800" height="1200" fetchpriority="high">\n' if photos else "") +
             '<div class="stack"><h1>' + H(title) + '</h1><span class="by">' + H("Shoh Parfumer · " + dupe) + "</span>" +
             '<span><span class="price">' + H(own_price(o, l)) + '</span> · <span class="' + ("ok" if o.get("stock") else "out") + '">' + H(T["ownIn"] if o.get("stock") else T["ownOut"]) + "</span></span></div>\n" +
             ("<p>" + H(desc) + "</p>\n" if desc else "") +
