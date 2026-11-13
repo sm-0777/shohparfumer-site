@@ -22,6 +22,7 @@ const ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";     // без похожих 0/O
 const LIMIT_PER_IP_DAY = 5;                          // отзывов с одного адреса за сутки
 const MAX_PENDING = 300;                             // если на проверке больше — новые временно не принимаем
 const ORDERS_PER_IP_DAY = 10;                        // заявок с одного адреса за сутки
+const ORDER_MAX_ITEMS = 10;                          // ароматов в одной заявке (корзина)
 const MAX_NEW_ORDERS = 300;                          // если новых заявок больше — временно не принимаем (защита от спама)
 
 let webhookChecked = false;
@@ -405,14 +406,20 @@ async function addOrder(request, env, ctx) {
   const b = await request.json().catch(() => null);
   if (!b || typeof b !== "object") return json({ error: "bad" }, 400);
   if (b.website) return json({ ok: true, id: 0 });                 // ловушка для роботов
-  const item = /^[a-z0-9-]{1,40}$/.test(b.id || "") ? b.id : null;
-  const name = cleanText(b.name, 120), itemOf = cleanText(b.of, 160);
-  const ml = b.ml == null ? null : int(b.ml, 1, 1000), price = int(b.price, 0, 1000000) || 0, qty = int(b.qty, 1, 10);
+  // Ароматы заявки: items (корзина) или, как раньше, один аромат отдельными полями
+  const raw = Array.isArray(b.items) && b.items.length ? b.items.slice(0, ORDER_MAX_ITEMS) : [b];
+  const items = raw.map((x) => x && typeof x === "object" ? {
+    id: /^[a-z0-9-]{1,40}$/.test(x.id || "") ? x.id : null, name: cleanText(x.name, 120), of: cleanText(x.of, 160) || null,
+    ml: x.ml == null ? null : int(x.ml, 1, 1000), price: int(x.price, 0, 1000000) || 0, qty: int(x.qty, 1, 10),
+  } : null);
+  if (!items.every((x) => x && x.id && x.name && x.qty)) return json({ error: "bad" }, 400);
+  const total = items.every((x) => x.price > 0) ? items.reduce((s, x) => s + x.price * x.qty, 0) : 0;
+  const { id: item, name, of: itemOf, ml, price, qty } = items[0];
   const get = b.get === "delivery" || b.get === "pickup" ? b.get : null;
   const addr = cleanText(b.addr, 200), pay = b.pay === "cash" || b.pay === "card" ? b.pay : null;
   const cname = cleanText(b.cname, 40), phone = cleanText(b.phone, 20), comment = cleanText(b.comment, 500, true);
   const pd = phoneDigits(phone);
-  if (!item || !name || !qty || !get || (get === "delivery" && !addr) || !cname || pd.length < 9 || pd.length > 15) return json({ error: "bad" }, 400);
+  if (!get || (get === "delivery" && !addr) || !cname || pd.length < 9 || pd.length > 15) return json({ error: "bad" }, 400);
   const lang = ["ru", "tg", "en"].includes(b.lang) ? b.lang : "ru";
   const dev = /^[a-z0-9]{8,40}$/.test(b.dev || "") ? b.dev : null;
   const iph = (await sha256((request.headers.get("cf-connecting-ip") || "") + "|" + (env.TG_TOKEN || "shoh"))).slice(0, 24);
@@ -423,25 +430,42 @@ async function addOrder(request, env, ctx) {
   const fresh = await db.prepare("SELECT COUNT(*) AS c FROM orders WHERE status = 'new'").first();
   if (fresh.c >= MAX_NEW_ORDERS) return json({ error: "busy" }, 503);
   const ins = await db.prepare(
-    "INSERT INTO orders (item, name, item_of, ml, price, qty, get, addr, pay, cname, phone, phone_d, comment, lang, status, created, iph, dev) " +
-    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?)"
-  ).bind(item, name, itemOf || null, ml, price, qty, get, get === "delivery" ? addr : null, pay, cname, phone, pd, comment || null, lang, now(), iph, dev).run();
+    "INSERT INTO orders (item, name, item_of, ml, price, qty, items, total, get, addr, pay, cname, phone, phone_d, comment, lang, status, created, iph, dev) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?)"
+  ).bind(item, name, itemOf, ml, price, qty, JSON.stringify(items), total, get, get === "delivery" ? addr : null, pay, cname, phone, pd, comment || null, lang, now(), iph, dev).run();
   const id = ins.meta.last_row_id;
   ctx.waitUntil(notifyOrder(env, id).catch((e) => console.error("notify order", e)));
   return json({ ok: true, id });
 }
 
-function reviewLink(env, o) { return (env.SITE || "https://shoh-parfumer.com") + "/?otziv=" + o.pcode + "&a=" + o.item; }
+// Ароматы заявки: из items (корзина) или, у старых заявок, из колонок одного аромата
+function orderItems(o) {
+  try { const a = JSON.parse(o.items || "null"); if (Array.isArray(a) && a.length) return a; } catch (e) { /* старая заявка */ }
+  return [{ id: o.item, name: o.name, of: o.item_of, ml: o.ml, price: o.price, qty: o.qty }];
+}
+function orderSum(o) { const a = orderItems(o); return a.every((x) => x.price > 0) ? a.reduce((s, x) => s + x.price * x.qty, 0) : 0; }
+// Ссылка для отзыва: один аромат — сразу его форма; несколько — покупатель выбирает из купленных, о каком написать
+function reviewLink(env, o) {
+  return (env.SITE || "https://shoh-parfumer.com") + "/?otziv=" + o.pcode + "&a=" + orderItems(o).map((x) => x.id).join(",");
+}
+function itemLine(x) {
+  return (x.ml ? x.ml + " мл" : "объём не указан") + " × " + x.qty + " шт. · " +
+    (x.price > 0 ? som(x.price) + (x.qty > 1 ? " × " + x.qty + " = " + som(x.price * x.qty) : "") : "цену уточнить");
+}
 function orderMessage(env, o) {
-  const lines = [
-    "🛍 <b>Заявка №" + o.id + "</b> · " + dt(o.created, true),
-    "<b>" + esc(o.name) + "</b>" + (o.item_of ? " — дюп " + esc(o.item_of) : ""),
-    (o.ml ? o.ml + " мл" : "объём не указан") + " × " + o.qty + " шт. · " +
-      (o.price > 0 ? som(o.price) + (o.qty > 1 ? " × " + o.qty + " = " + som(o.price * o.qty) : "") + " (цена на сайте)" : "цену уточнить"),
+  const a = orderItems(o), sum = orderSum(o);
+  const lines = ["🛍 <b>Заявка №" + o.id + "</b> · " + dt(o.created, true)];
+  if (a.length === 1) {
+    lines.push("<b>" + esc(a[0].name) + "</b>" + (a[0].of ? " — дюп " + esc(a[0].of) : ""), itemLine(a[0]) + (a[0].price > 0 ? " (цена на сайте)" : ""));
+  } else {
+    a.forEach((x, i) => lines.push((i + 1) + ". <b>" + esc(x.name) + "</b>" + (x.of ? " — дюп " + esc(x.of) : "") + "\n    " + itemLine(x)));
+    lines.push("💰 <b>Итого: " + (sum ? som(sum) + "</b> (цены на сайте)" : "цену уточнить</b>"));
+  }
+  lines.push(
     GET[o.get] + (o.get === "delivery" ? ": " + esc(o.addr || "") : ""),
     "💵 Оплата: " + (PAY[o.pay] || "не выбрана"),
     "👤 " + esc(o.cname) + " · " + esc(o.phone),
-  ];
+  );
   if (o.comment) lines.push("💬 «" + esc(o.comment) + "»");
   lines.push("Язык сайта: " + ({ ru: "русский", tg: "тоҷикӣ", en: "English" }[o.lang] || o.lang));
   lines.push("Статус: " + OSTATUS[o.status] + (o.decided ? " (" + dt(o.decided, true) + ")" : ""));
@@ -511,7 +535,8 @@ async function sendStat(env, chat) {
   const db = env.DB, week = new Date(Date.now() - 7 * 864e5).toISOString();
   const o = await db.prepare(
     "SELECT COUNT(*) AS all_n, SUM(created > ?1) AS w, SUM(status = 'new') AS nw, SUM(status = 'ok') AS ok, SUM(status = 'done') AS done, SUM(status = 'no') AS no, " +
-    "SUM(CASE WHEN status = 'done' THEN price * qty ELSE 0 END) AS sum_done, SUM(CASE WHEN status = 'done' AND decided > ?1 THEN price * qty ELSE 0 END) AS sum_w FROM orders"
+    "SUM(CASE WHEN status = 'done' THEN COALESCE(total, price * qty) ELSE 0 END) AS sum_done, " +
+    "SUM(CASE WHEN status = 'done' AND decided > ?1 THEN COALESCE(total, price * qty) ELSE 0 END) AS sum_w FROM orders"
   ).bind(week).first();
   const r = await db.prepare("SELECT SUM(status = 'ok') AS ok, SUM(status = 'pending') AS pend, SUM(created > ?1) AS w, SUM(pcode IS NOT NULL AND status = 'ok') AS ver FROM reviews").bind(week).first();
   const c = await db.prepare("SELECT COUNT(*) AS n, SUM(used_by IS NOT NULL) AS used FROM codes").first();

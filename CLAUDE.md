@@ -59,9 +59,15 @@ minimal design, and wants questions asked BEFORE building anything unclear.
   Pickup is off (PICKUP_ON = false, owner). WhatsApp is off for now (owner: Telegram only; WHATSAPP = ""). In the Claude preview orders are
   not sent (test notice). make_site.py --standalone also writes light SEO pages /aromaty/, /aromaty/<id>/ (+ /tg/, /en/)
   with Product data and adds them to sitemap.xml. Review identity = "Shoh Parfumer|<name>" — don't rename after launch.
-- Home bottom block #about (owner 14.11.2026): about text + FAQ (static, prerendered — keeps Google from «soft 404»),
-  links to our aromas, contacts from CONTACTS (top of script; show only when the owner fills real data), latest approved
-  reviews with text (GET /api/reviews/latest). Bot /stat. robots.txt disallows /api/. site.webmanifest + icon-192.png.
+- Home bottom #about (owner 14.11.2026): links «О Shoh Parfumer →» (/o-nas/) and «Дюпы известных ароматов →», latest approved
+  reviews with text (GET /api/reviews/latest), FAQ (static, prerendered — keeps Google from «soft 404»).
+  Page /o-nas/ (+ /tg/, /en/) from make_site.py about_page(): owner's text (I18N aboutI1–3, aboutP1–2), our aromas, delivery/
+  payment, contacts from CONTACTS only when filled. Owner: NO «Telegram: @…» contact line (customers see it when ordering).
+  Bot /stat. robots.txt disallows /api/. site.webmanifest + icon-192.png.
+- Cart (14.11.2026): the #ord sheet holds several aromas (ordItems; «+ Добавить другой аромат», qty, ×), kept until sent;
+  «Заказать» on another aroma adds it. POST /api/order sends items[] (+ first item as old fields); worker stores items JSON +
+  total (migrations/0003_order_items.sql, applied in production), bot lists items and «Итого». Review link for a multi-item
+  order: ?otziv=CODE&a=id1,id2 → picker starts with the bought aromas.
 - SEO pages «Дюпы …» (14.11.2026): make_site.py --standalone writes /dupy/ and /dupy/<brand-name>/ (+ /tg/, /en/) for every
   original with known dupes (du) or our dupe (OWN): our dupe first, known dupes (DB ones link to `?c=uidA-uidB`), year/
   concentration, notes only if not flagged 128/16, link `?d=uid` (opens «Найти дюп»; `?d=all` = the screen). Texts = I18N dp*.

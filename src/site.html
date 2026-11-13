@@ -253,6 +253,19 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
 .qty button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; font-size: 1.25rem; }
 .qty b { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
 .ordtotal { margin: 0; font-weight: 600; }
+.oitems { display: flex; flex-direction: column; gap: 10px; }
+.oitem { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.oihead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.oihead .rvhead { min-width: 0; }
+.oirm { flex: none; }
+.oirow { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.oiprice { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ordadd { align-self: flex-start; }
+.ordaddlist button { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.ordaddlist button:hover { border-color: var(--accent); }
+.ordaddlist b { font-weight: 600; overflow-wrap: break-word; }
+.ordaddlist span { color: var(--muted); font-size: 0.8125rem; }
+.ordaddlist .p { color: var(--fg); font-weight: 600; font-size: 0.875rem; }
 #ccount { white-space: nowrap; }
 .cmp-head { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .cmp-col { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
@@ -480,20 +493,12 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       <button type="button" class="bcard dupebtn cmpbtn" id="goCompare"><b data-t="cmpBtn">Сравнить ароматы</b><span data-t="cmpBtnSub">Два парфюма → чем похожи и чем отличаются</span></button>
 
       <!-- О магазине, условия, отзывы, вопросы — текст есть в странице и без скрипта (для покупателей и для Google) -->
-      <section class="about" id="about" aria-labelledby="hAbout">
-        <h2 id="hAbout" data-t="aboutH">О Shoh Parfumer</h2>
-        <p data-t="aboutP1">Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.</p>
-        <p data-t="aboutP2">«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.</p>
-        <p class="ownlinks" id="ownlinks"></p>
+      <!-- Низ главной: ссылки на страницу «О Shoh Parfumer» (/o-nas/) и «Дюпы», свежие отзывы, вопросы и ответы — текст есть и без скрипта -->
+      <section class="about" id="about" aria-labelledby="hFaq">
+        <p class="ownlinks"><a href="/o-nas/" id="aboutLink" data-t="aboutLink">О Shoh Parfumer →</a></p>
         <p class="ownlinks"><a href="/dupy/" id="aboutDupes" data-t="aboutDupes">Дюпы известных ароматов →</a></p>
-        <ul class="facts">
-          <li data-t="ownDelivery">Доставка по Душанбе — за 1 день</li>
-          <li data-t="ownPay">Оплата наличными или переводом на карту</li>
-          <li data-t="aboutOrder">Заказ — на сайте или в Telegram</li>
-        </ul>
-        <ul class="facts" id="contacts"></ul>
         <div class="stack" id="lastrv" style="gap:10px" hidden></div>
-        <h2 data-t="faqH">Вопросы и ответы</h2>
+        <h2 id="hFaq" data-t="faqH">Вопросы и ответы</h2>
         <div class="stack" style="gap:8px">
           <details class="tip"><summary data-t="faq1q">Что такое дюп?</summary><p data-t="faq1a">Дюп — аромат другой марки, который пахнет похоже на известный, но стоит дешевле. В «Найти дюп» собраны известные дюпы популярных ароматов, а если у оригинала есть наш дюп — он стоит первым.</p></details>
           <details class="tip"><summary data-t="faq2q">Как работает подбор?</summary><p data-t="faq2a">Выберите три аромата, которые вам нравятся, расставьте их по порядку и ответьте на пару вопросов. Сайт сравнит ноты и характер ароматов и покажет пять самых похожих — с процентом совпадения.</p></details>
@@ -1060,7 +1065,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpSrc: "Список дюпов — по открытым подборкам (scentverdict.com, sensabeauty.com, whatscent.app). Дюп пахнет похоже, но это другой аромат.",
       dpAllH: "Дюпы известных ароматов", dpAllLead: "Недорогие ароматы, которые пахнут похоже на известные. Выберите оригинал — покажем его дюпы.",
       dpMore: "Ещё дюпы {b}", dpAllLink: "Все дюпы известных ароматов", dbFail: "Не удалось загрузить список ароматов. Проверьте интернет.", dbRetry: "Обновить страницу", dpHome: "Подбор парфюма", aboutDupes: "Дюпы известных ароматов →",
-      aboutH: "О Shoh Parfumer", aboutP1: "Shoh Parfumer — магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.",
+      aboutLink: "О Shoh Parfumer →", aboutI1: "Shoh Parfumer — искусство ароматов, отражающих ваш характер.", aboutI2: "Наша цель — сделать мир парфюмерии ближе каждому, предлагая ароматы, которые подчёркивают стиль, дарят эмоции и оставляют незабываемое впечатление.", aboutI3: "Shoh Parfumer — ваш стиль. Ваш характер. Ваш аромат.", aboutHome: "Подобрать аромат",
+      aboutH: "О Shoh Parfumer", aboutP1: "Shoh-Parfumer.com — онлайн-магазин парфюмерии в Душанбе. На этом сайте можно подобрать аромат: выберите три любимых духа — и мы предложим пять новых по вашему вкусу. В базе более 17 000 ароматов с нотами.",
       aboutP2: "«Найти дюп» показывает известные недорогие аналоги дорогих ароматов, «Сравнить» — чем два аромата похожи и чем отличаются. Свои дюпы известных ароматов мы продаём под маркой Shoh Parfumer.",
       aboutOrder: "Заказ — на сайте или в Telegram", aboutOwn: "Наши ароматы:", cAddress: "Адрес", cHours: "Часы работы", cPhone: "Телефон", lastRvH: "Отзывы покупателей",
       faqH: "Вопросы и ответы",
@@ -1077,7 +1083,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       ownOur: "Наш аромат", ownHas: "есть наш дюп", ownHasLine: "Есть наш дюп: {n}",
       ownDelivery: "Доставка по Душанбе — за 1 день", ownPickup: "Самовывоз: {a}", ownPickupSoon: "Самовывоз — адрес сообщим при звонке",
       ownPay: "Оплата наличными или переводом на карту", ownAskText: "Здравствуйте! Хочу заказать {n}{v}.", ownTg: "Telegram", ownWa: "WhatsApp", ordVolPrice: "{v} — {p}", ownNotes: "Ноты", ownMl: "{n} мл",
-      ordTitle: "Заказ", ordVol: "Объём", ordQty: "Количество", ordLess: "Меньше", ordMoreQ: "Больше", ordGet: "Как получить", ordGetOpts: ["Доставка по Душанбе", "Самовывоз"],
+      ordAdd: "+ Добавить другой аромат", ordRemove: "Убрать из заказа", ordTitle: "Заказ", ordVol: "Объём", ordQty: "Количество", ordLess: "Меньше", ordMoreQ: "Больше", ordGet: "Как получить", ordGetOpts: ["Доставка по Душанбе", "Самовывоз"],
       ordAddr: "Адрес доставки", ordPay: "Оплата", ordPayOpts: ["Наличными", "Переводом на карту"], ordName: "Ваше имя", ordPhone: "Телефон",
       ordComment: "Комментарий (необязательно)", ordTotal: "Итого: {p}", ordConfirm: "Цену и доставку подтвердим по телефону.",
       ordSend: "Отправить заявку", ordSending: "Отправляем…", ordReq: "Заполните: {list}.", ordPhoneBad: "Проверьте номер телефона.",
@@ -1161,7 +1167,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpSrc: "Рӯйхати дюпҳо — аз рӯи интихобҳои ошкор (scentverdict.com, sensabeauty.com, whatscent.app). Дюп монанд бӯй медиҳад, вале атри дигар аст.",
       dpAllH: "Дюпҳои атрҳои машҳур", dpAllLead: "Атрҳои арзон, ки ба атрҳои машҳур монанд бӯй медиҳанд. Аслро интихоб кунед — дюпҳояшро нишон медиҳем.",
       dpMore: "Дигар дюпҳои {b}", dpAllLink: "Ҳамаи дюпҳои атрҳои машҳур", dbFail: "Рӯйхати атрҳо бор нашуд. Интернетро санҷед.", dbRetry: "Саҳифаро аз нав кушодан", dpHome: "Интихоби атр", aboutDupes: "Дюпҳои атрҳои машҳур →",
-      aboutH: "Дар бораи Shoh Parfumer", aboutP1: "Shoh Parfumer — мағозаи атриёт дар Душанбе. Дар ин сайт метавонед атр интихоб кунед: се атри дӯстдоштаи худро интихоб кунед — мо панҷ атри навро аз рӯи завқи шумо пешниҳод мекунем. Дар база зиёда аз 17 000 атр бо нотаҳо ҳаст.",
+      aboutLink: "Дар бораи Shoh Parfumer →", aboutI1: "Shoh Parfumer — санъати атрҳое, ки хислати шуморо инъикос мекунанд.", aboutI2: "Ҳадафи мо — олами атриётро ба ҳар кас наздик кардан: атрҳое пешниҳод мекунем, ки услубро таъкид мекунанд, ҳиссиёт мебахшанд ва таассуроти фаромӯшнашаванда мегузоранд.", aboutI3: "Shoh Parfumer — услуби шумо. Хислати шумо. Атри шумо.", aboutHome: "Интихоби атр",
+      aboutH: "Дар бораи Shoh Parfumer", aboutP1: "Shoh-Parfumer.com — мағозаи онлайни атриёт дар Душанбе. Дар ин сайт метавонед атр интихоб кунед: се атри дӯстдоштаи худро интихоб кунед — мо панҷ атри навро аз рӯи завқи шумо пешниҳод мекунем. Дар база зиёда аз 17 000 атр бо нотаҳо ҳаст.",
       aboutP2: "«Ёфтани дюп» дюпҳои маълуми арзони атрҳои қиматро нишон медиҳад, «Муқоисаи атрҳо» — ду атр бо чӣ монанд ва бо чӣ фарқ мекунанд. Дюпҳои худро аз атрҳои машҳур мо бо тамғаи Shoh Parfumer мефурӯшем.",
       aboutOrder: "Фармоиш — дар сайт ё дар Telegram", aboutOwn: "Атрҳои мо:", cAddress: "Суроға", cHours: "Соатҳои корӣ", cPhone: "Телефон", lastRvH: "Фикрҳои харидорон",
       faqH: "Саволу ҷавобҳо",
@@ -1178,7 +1185,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       ownOur: "Атри мо", ownHas: "дюпи мо ҳаст", ownHasLine: "Дюпи мо ҳаст: {n}",
       ownDelivery: "Расонидан дар Душанбе — дар 1 рӯз", ownPickup: "Худатон гирифтан: {a}", ownPickupSoon: "Худатон гирифтан — суроғаро ҳангоми занг мегӯем",
       ownPay: "Пардохт: нақд ё интиқол ба корт", ownAskText: "Салом! Мехоҳам {n}{v} фармоиш диҳам.", ownTg: "Telegram", ownWa: "WhatsApp", ordVolPrice: "{v} — {p}", ownNotes: "Нотаҳо", ownMl: "{n} мл",
-      ordTitle: "Фармоиш", ordVol: "Ҳаҷм", ordQty: "Миқдор", ordLess: "Камтар", ordMoreQ: "Бештар", ordGet: "Чӣ тавр гирифтан", ordGetOpts: ["Расонидан дар Душанбе", "Худатон гирифтан"],
+      ordAdd: "+ Илова кардани атри дигар", ordRemove: "Аз фармоиш хориҷ кардан", ordTitle: "Фармоиш", ordVol: "Ҳаҷм", ordQty: "Миқдор", ordLess: "Камтар", ordMoreQ: "Бештар", ordGet: "Чӣ тавр гирифтан", ordGetOpts: ["Расонидан дар Душанбе", "Худатон гирифтан"],
       ordAddr: "Суроғаи расонидан", ordPay: "Пардохт", ordPayOpts: ["Нақд", "Интиқол ба корт"], ordName: "Номи шумо", ordPhone: "Телефон",
       ordComment: "Шарҳ (ҳатмӣ нест)", ordTotal: "Ҳамагӣ: {p}", ordConfirm: "Нарх ва расониданро бо телефон тасдиқ мекунем.",
       ordSend: "Фиристодани дархост", ordSending: "Фиристода истодаем…", ordReq: "Пур кунед: {list}.", ordPhoneBad: "Рақами телефонро санҷед.",
@@ -1262,7 +1269,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       dpSrc: "The dupe list comes from open roundups (scentverdict.com, sensabeauty.com, whatscent.app). A dupe smells similar, but it is a different fragrance.",
       dpAllH: "Dupes of famous fragrances", dpAllLead: "Affordable fragrances that smell similar to famous ones. Pick the original and we will show its dupes.",
       dpMore: "More {b} dupes", dpAllLink: "All dupes of famous fragrances", dbFail: "Couldn't load the fragrance list. Check your connection.", dbRetry: "Reload the page", dpHome: "Perfume finder", aboutDupes: "Dupes of famous fragrances →",
-      aboutH: "About Shoh Parfumer", aboutP1: "Shoh Parfumer is a perfume shop in Dushanbe. On this site you can find a fragrance: pick three perfumes you love and we will suggest five new ones to your taste. The base has more than 17,000 fragrances with notes.",
+      aboutLink: "About Shoh Parfumer →", aboutI1: "Shoh Parfumer is the art of fragrances that reflect your character.", aboutI2: "Our goal is to bring the world of perfume closer to everyone, offering fragrances that highlight your style, evoke emotions and leave a lasting impression.", aboutI3: "Shoh Parfumer — your style. Your character. Your scent.", aboutHome: "Find a fragrance",
+      aboutH: "About Shoh Parfumer", aboutP1: "Shoh-Parfumer.com is an online perfume shop in Dushanbe. On this site you can find a fragrance: pick three perfumes you love and we will suggest five new ones to your taste. The base has more than 17,000 fragrances with notes.",
       aboutP2: "“Find a dupe” shows known affordable alternatives to expensive fragrances, and “Compare” shows how two fragrances are alike and how they differ. We sell our own dupes of famous fragrances under the Shoh Parfumer name.",
       aboutOrder: "Order on the site or on Telegram", aboutOwn: "Our fragrances:", cAddress: "Address", cHours: "Opening hours", cPhone: "Phone", lastRvH: "Customer reviews",
       faqH: "Questions and answers",
@@ -1279,7 +1287,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       ownOur: "Our fragrance", ownHas: "our dupe available", ownHasLine: "Our dupe: {n}",
       ownDelivery: "Delivery in Dushanbe — in 1 day", ownPickup: "Pick-up: {a}", ownPickupSoon: "Pick-up — we'll tell you the address when we call",
       ownPay: "Pay in cash or by card transfer", ownAskText: "Hello! I'd like to order {n}{v}.", ownTg: "Telegram", ownWa: "WhatsApp", ordVolPrice: "{v} — {p}", ownNotes: "Notes", ownMl: "{n} ml",
-      ordTitle: "Order", ordVol: "Size", ordQty: "Quantity", ordLess: "Fewer", ordMoreQ: "More", ordGet: "How to get it", ordGetOpts: ["Delivery in Dushanbe", "Pick-up"],
+      ordAdd: "+ Add another fragrance", ordRemove: "Remove from order", ordTitle: "Order", ordVol: "Size", ordQty: "Quantity", ordLess: "Fewer", ordMoreQ: "More", ordGet: "How to get it", ordGetOpts: ["Delivery in Dushanbe", "Pick-up"],
       ordAddr: "Delivery address", ordPay: "Payment", ordPayOpts: ["Cash", "Card transfer"], ordName: "Your name", ordPhone: "Phone",
       ordComment: "Comment (optional)", ordTotal: "Total: {p}", ordConfirm: "We'll confirm the price and delivery by phone.",
       ordSend: "Send order", ordSending: "Sending…", ordReq: "Please fill in: {list}.", ordPhoneBad: "Please check the phone number.",
@@ -2744,17 +2752,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       " · <b>" + esc(ownPrice(o)) + '</b></span><span class="go" aria-hidden="true">→</span></button>';
   }
   // Внизу главной: ссылки на наши ароматы (страницы для Google, на сайте открываются сразу), контакты, свежие отзывы
-  function drawAbout() {
-    var tx = function (o) { return (o && (o[lang] || o.ru)) || ""; }, h = "", base = "/" + (lang === "ru" ? "" : lang + "/");
-    if (tx(CONTACTS.address)) h += "<li>" + esc(t("cAddress")) + ": " + esc(tx(CONTACTS.address)) + "</li>";
-    if (tx(CONTACTS.hours)) h += "<li>" + esc(t("cHours")) + ": " + esc(tx(CONTACTS.hours)) + "</li>";
-    if (CONTACTS.phone) h += "<li>" + esc(t("cPhone")) + ': <a href="tel:+' + esc(CONTACTS.phone.replace(/\D/g, "")) + '">' + esc(CONTACTS.phone) + "</a></li>";
-    if (TELEGRAM) h += '<li>Telegram: <a href="https://t.me/' + esc(TELEGRAM) + '" target="_blank" rel="noopener">@' + esc(TELEGRAM) + "</a></li>";
-    if (CONTACTS.instagram) h += '<li>Instagram: <a href="https://instagram.com/' + esc(CONTACTS.instagram) + '" target="_blank" rel="noopener">@' + esc(CONTACTS.instagram) + "</a></li>";
-    $("#contacts").innerHTML = h;
-    $("#ownlinks").innerHTML = OWN.length ? esc(t("aboutOwn")) + " " + OWN.map(function (o) {
-      return '<a href="' + (inClaude ? "#" : base + "aromaty/" + o.id + "/") + '" data-omore="' + esc(o.id) + '">' + esc(ownTitle(o)) + "</a>";
-    }).join(" · ") : "";
+  function drawAbout() {   // низ главной: ссылки на страницы «О Shoh Parfumer» и «Дюпы» (в превью Claude — на сайт), свежие отзывы
+    var base = "/" + (lang === "ru" ? "" : lang + "/"), al = $("#aboutLink");
+    al.setAttribute("href", (inClaude ? SITE_URL.replace(/\/$/, "") : "") + base + "o-nas/");
+    if (inClaude) al.setAttribute("target", "_blank");
     $("#aboutDupes").setAttribute("href", inClaude ? "#" : base + "dupy/");
     drawLastReviews();
   }
@@ -2792,60 +2793,105 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   $("#back9").addEventListener("click", function () { navBack("8:::own", function () { state.own = null; go(8); }); });
   $("#ordgo9").addEventListener("click", function (e) { if (state.own) openOrder(state.own, e.currentTarget); });
 
-  /* ---------- Заказ: имя, телефон, объём, количество, доставка / самовывоз → Telegram-бот магазина ---------- */
-  var ord = $("#ord"), ordCur = null, ordF = {}, ordView = "form", ordRes = null, ordBusy = false, ordOpener = null;
+  /* ---------- Заказ (корзина): один или несколько ароматов, объём и количество у каждого, доставка → Telegram-бот магазина ---------- */
+  // Ароматы в заказе остаются, пока заказ не отправлен: закрыли окно, нажали «Заказать» у другого аромата — он добавится к ним.
+  // Имя, телефон и адрес тоже не теряются при закрытии окна.
+  var ord = $("#ord"), ordItems = [], ordSent = [], ordF = { get: PICKUP_ON ? 0 : 1, pay: 0 }, ordIn = {}, ordView = "form", ordRes = null, ordBusy = false, ordOpener = null, ordAddOpen = false;
+  var ORD_MAX = 10;
+  function ordNewItem(o) { return { o: o, vol: o.vol.length === 1 ? 0 : -1, qty: 1 }; }
   function openOrder(o, opener) {
-    ordCur = o; ordOpener = opener || null; ordView = "form"; ordRes = null;
-    ordF = { vol: o.vol.length === 1 ? 0 : -1, qty: 1, get: PICKUP_ON ? 0 : 1, pay: 0 };   // без самовывоза — сразу доставка
+    if (ordView === "thanks") { ordItems = []; ordView = "form"; ordRes = null; }
+    if (!ordItems.some(function (it) { return it.o.id === o.id; }) && ordItems.length < ORD_MAX) ordItems.push(ordNewItem(o));
+    ordOpener = opener || null; ordAddOpen = false;
     ord.hidden = false; histOverlay(); ordDraw();
     track("order-open/" + o.id);
   }
-  function closeOrder() { ord.hidden = true; ordCur = null; if (ordOpener && ordOpener.focus) ordOpener.focus(); histOverlayClosed(); }
-  function ordSeg(field, opts) {
-    return '<div class="seg" role="group">' + opts.map(function (txt, i) {
-      return '<button type="button" data-of="' + field + '" data-v="' + i + '" aria-pressed="' + (ordF[field] === i + (field === "vol" ? 0 : 1)) + '">' + esc(txt) + "</button>";
+  function ordKeep() {   // что покупатель уже ввёл — сохраняем до следующего открытия окна
+    ["ordaddr", "ordname", "ordphone", "ordcomment"].forEach(function (k) { var el = $("#" + k); if (el) ordIn[k] = el.value; });
+  }
+  function closeOrder() {
+    if (ordView === "form") ordKeep();
+    ord.hidden = true; if (ordOpener && ordOpener.focus) ordOpener.focus(); histOverlayClosed();
+  }
+  function ordSeg(field, opts, cur, i) {
+    return '<div class="seg" role="group">' + opts.map(function (txt, k) {
+      return '<button type="button" data-of="' + field + '"' + (i != null ? ' data-i="' + i + '"' : "") + ' data-v="' + k + '" aria-pressed="' + (cur === k) + '">' + esc(txt) + "</button>";
     }).join("") + "</div>";
   }
+  function ordSum() {   // итог, если у всех ароматов известна цена выбранного объёма
+    var s = 0, ok = ordItems.length > 0;
+    ordItems.forEach(function (it) { var v = it.o.vol[it.vol]; if (v && v[1] > 0) s += v[1] * it.qty; else ok = false; });
+    return ok ? s : 0;
+  }
   function ordTotal() {
-    var v = ordCur.vol[ordF.vol];
-    return (v && v[1] > 0 ? '<p class="ordtotal">' + esc(t("ordTotal", { p: money(v[1] * ordF.qty) })) + "</p>" : "") + '<p class="small" style="margin:0">' + esc(t("ordConfirm")) + "</p>";
+    var s = ordSum();
+    return (s ? '<p class="ordtotal">' + esc(t("ordTotal", { p: money(s) })) + "</p>" : "") + '<p class="small" style="margin:0">' + esc(t("ordConfirm")) + "</p>";
+  }
+  function ordItemHtml(it, i) {
+    var o = it.o, v = o.vol[it.vol], many = ordItems.length > 1;
+    return '<div class="oitem">' +
+      '<div class="oihead"><div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(o)) + "</b><span>" + esc(ownOf(o)) + "</span></div>" +
+      (many ? '<button type="button" class="tool oirm" data-orm="' + i + '" aria-label="' + esc(t("ordRemove") + ": " + ownTitle(o)) + '" title="' + esc(t("ordRemove")) + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' : "") + "</div>" +
+      (o.vol.length > 1 ? '<div class="rvq"><span>' + esc(t("ordVol")) + ' <i aria-hidden="true">*</i></span>' +
+        ordSeg("vol", o.vol.map(function (x) { return x[1] > 0 ? t("ordVolPrice", { v: ownMl(x), p: money(x[1]) }) : ownMl(x); }), it.vol, i) + "</div>" : "") +
+      '<div class="oirow"><div class="qty" role="group" aria-label="' + esc(t("ordQty")) + '"><button type="button" data-oq="-1" data-i="' + i + '" aria-label="' + esc(t("ordLess")) + '">−</button><b>' + it.qty +
+      '</b><button type="button" data-oq="1" data-i="' + i + '" aria-label="' + esc(t("ordMoreQ")) + '">+</button></div>' +
+      '<span class="oiprice">' + esc((o.vol.length === 1 ? ownMl(o.vol[0]) + " · " : "") + (v && v[1] > 0 ? money(v[1] * it.qty) : (v ? t("ownPriceAsk") : ""))) + "</span></div></div>";
+  }
+  function ordAddHtml() {
+    var rest = OWN.filter(function (o) { return !ordItems.some(function (it) { return it.o.id === o.id; }); });
+    if (!rest.length || ordItems.length >= ORD_MAX) return "";
+    return '<button type="button" class="btn ghost sm ordadd" id="ordadd" aria-expanded="' + ordAddOpen + '">' + esc(t("ordAdd")) + "</button>" +
+      '<div class="list ordaddlist" id="ordaddlist"' + (ordAddOpen ? "" : " hidden") + ">" + rest.map(function (o) {
+        return '<button type="button" data-oadd="' + esc(o.id) + '"><b>' + esc(ownTitle(o)) + "</b><span>" + esc(ownOf(o)) + '</span><span class="p">' + esc(ownPrice(o)) + "</span></button>";
+      }).join("") + "</div>";
   }
   function ordFormHtml() {
-    var o = ordCur, X = L(), req = ' <i aria-hidden="true">*</i>', a = PICKUP[lang] || PICKUP.ru;
-    return '<div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(o)) + "</b><span>" + esc(ownOf(o)) + "</span></div>" +
-      (o.vol.length ? '<div class="rvq"><span>' + esc(t("ordVol")) + req + "</span>" + ordSeg("vol", o.vol.map(function (v) { return v[1] > 0 ? t("ordVolPrice", { v: ownMl(v), p: money(v[1]) }) : ownMl(v); })) + "</div>" : "") +
-      '<div class="rvq"><span>' + esc(t("ordQty")) + '</span><div class="qty"><button type="button" data-oq="-1" aria-label="' + esc(t("ordLess")) + '">−</button><b id="ordqty">' + ordF.qty +
-      '</b><button type="button" data-oq="1" aria-label="' + esc(t("ordMoreQ")) + '">+</button></div></div>' +
+    var X = L(), req = ' <i aria-hidden="true">*</i>', a = PICKUP[lang] || PICKUP.ru, val = function (k) { return ordIn[k] ? ' value="' + esc(ordIn[k]) + '"' : ""; };
+    var first = ordItems[0];
+    return '<div class="oitems" id="oitems">' + ordItems.map(ordItemHtml).join("") + "</div>" + ordAddHtml() +
       '<div id="ordtot">' + ordTotal() + "</div>" +
-      (PICKUP_ON ? '<div class="rvq"><span>' + esc(t("ordGet")) + req + "</span>" + ordSeg("get", X.ordGetOpts) + "</div>"
+      (PICKUP_ON ? '<div class="rvq"><span>' + esc(t("ordGet")) + req + "</span>" + ordSeg("get", X.ordGetOpts, ordF.get - 1) + "</div>"
         : '<div class="rvq"><span>' + esc(t("ordAddr")) + req + '</span><span class="small" style="font-weight:400">' + esc(t("ownDelivery")) + "</span></div>") +
-      '<input id="ordaddr" class="search" type="text" maxlength="200" autocomplete="street-address" placeholder="' + esc(t("ordAddr")) + (PICKUP_ON ? "" : " *") + '" aria-label="' + esc(t("ordAddr")) + '"' + (ordF.get === 1 ? "" : " hidden") + ">" +
+      '<input id="ordaddr" class="search" type="text" maxlength="200" autocomplete="street-address" placeholder="' + esc(t("ordAddr")) + (PICKUP_ON ? "" : " *") + '" aria-label="' + esc(t("ordAddr")) + '"' + val("ordaddr") + (ordF.get === 1 ? "" : " hidden") + ">" +
       (PICKUP_ON ? '<p class="small" id="ordpick" style="margin:0"' + (ordF.get === 2 ? "" : " hidden") + ">" + esc(a ? t("ownPickup", { a: a }) : t("ownPickupSoon")) + "</p>" : "") +
-      '<div class="rvq"><span>' + esc(t("ordPay")) + "</span>" + ordSeg("pay", X.ordPayOpts) + "</div>" +
-      '<input id="ordname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("ordName")) + ' *" aria-label="' + esc(t("ordName")) + '">' +
-      '<input id="ordphone" class="search" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="' + esc(t("ordPhone")) + ' * (+992 …)" aria-label="' + esc(t("ordPhone")) + '">' +
-      '<textarea id="ordcomment" class="search" maxlength="500" style="min-height:80px" placeholder="' + esc(t("ordComment")) + '" aria-label="' + esc(t("ordComment")) + '"></textarea>' +
+      '<div class="rvq"><span>' + esc(t("ordPay")) + "</span>" + ordSeg("pay", X.ordPayOpts, ordF.pay - 1) + "</div>" +
+      '<input id="ordname" class="search" type="text" maxlength="40" autocomplete="name" placeholder="' + esc(t("ordName")) + ' *" aria-label="' + esc(t("ordName")) + '"' + val("ordname") + ">" +
+      '<input id="ordphone" class="search" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="' + esc(t("ordPhone")) + ' * (+992 …)" aria-label="' + esc(t("ordPhone")) + '"' + val("ordphone") + ">" +
+      '<textarea id="ordcomment" class="search" maxlength="500" style="min-height:80px" placeholder="' + esc(t("ordComment")) + '" aria-label="' + esc(t("ordComment")) + '">' + esc(ordIn.ordcomment || "") + "</textarea>" +
       '<p class="small" style="margin:0">' + esc(t("ordPrivacy")) + "</p>" +
       '<input id="ordweb" class="vh" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
       '<p class="status" id="ordstatus" role="status"></p><button type="button" class="btn" id="ordsend">' + esc(t("ordSend")) + "</button>" +
-      (TELEGRAM || WHATSAPP ? '<p class="small" style="margin:0">' + esc(t("ordOr")) + "</p>" + ownContacts(o, o.vol[ordF.vol]) : "");
+      (first && (TELEGRAM || WHATSAPP) ? '<p class="small" style="margin:0">' + esc(t("ordOr")) + "</p>" + ownContacts(first.o, first.o.vol[first.vol]) : "");
   }
   function ordDraw() {
     $("#ordtitle").textContent = t("ordTitle");
+    if (ordView === "form" && !ordItems.length) { closeOrder(); return; }
     $("#ordbody").innerHTML = ordView === "thanks"
-      ? '<div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(ordCur)) + "</b><span>" + esc(ownOf(ordCur)) + "</span></div>" +
+      ? ordSent.map(function (it) { return '<div class="rvhead"><b>' + esc(OWN_BRAND + " " + ownTitle(it.o)) + (it.qty > 1 ? " × " + it.qty : "") + "</b><span>" + esc(ownOf(it.o)) + "</span></div>"; }).join("") +
         '<p class="rvnote">' + esc(t("ordThanks", { n: ordRes && ordRes.id ? ordRes.id : "—" })) + "</p>" +
         (ordRes && ordRes.test ? '<p class="small" style="margin:0">' + esc(t("ordThanksTest")) + "</p>" : "") +
         '<button type="button" class="btn" id="orddone">' + esc(t("ordDone")) + "</button>"
       : ordFormHtml();
     ord.querySelector(".sheet").scrollTop = 0;
   }
+  function ordRedrawItems() {   // список ароматов и итог — без перерисовки полей, которые покупатель заполняет
+    $("#oitems").innerHTML = ordItems.map(ordItemHtml).join("");
+    var add = $("#ordadd"), list = $("#ordaddlist");
+    if (add) add.remove();
+    if (list) list.remove();
+    $("#oitems").insertAdjacentHTML("afterend", ordAddHtml());
+    $("#ordtot").innerHTML = ordTotal();
+    var oc = $("#ordbody .ocontact"); if (oc && ordItems[0]) oc.outerHTML = ownContacts(ordItems[0].o, ordItems[0].o.vol[ordItems[0].vol]);
+    $("#ordstatus").textContent = "";
+  }
   function phoneDigits(s) { var d = String(s || "").replace(/\D/g, ""); if (d.length === 9) d = "992" + d; return d; }
   function ordSubmit() {
     if (ordBusy) return;
-    var st = $("#ordstatus"), btn = $("#ordsend"), o = ordCur, miss = [];
+    var st = $("#ordstatus"), btn = $("#ordsend"), miss = [];
     var name = $("#ordname").value.trim(), phone = $("#ordphone").value.trim(), addr = $("#ordaddr").value.trim();
-    if (o.vol.length && ordF.vol < 0) miss.push(t("ordVol"));
+    if (ordItems.some(function (it) { return it.o.vol.length && it.vol < 0; })) miss.push(t("ordVol"));
     if (!ordF.get) miss.push(t("ordGet"));
     else if (ordF.get === 1 && !addr) miss.push(t("ordAddr"));
     if (!name) miss.push(t("ordName"));
@@ -2853,11 +2899,20 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     if (miss.length) { st.textContent = t("ordReq", { list: miss.map(function (x) { return x.toLowerCase(); }).join(", ") }); return; }
     var pd = phoneDigits(phone);
     if (pd.length < 9 || pd.length > 15) { st.textContent = t("ordPhoneBad"); $("#ordphone").focus(); return; }
-    var v = o.vol[ordF.vol] || null;
-    var body = { id: o.id, name: OWN_BRAND + " " + ownTitle(o), of: o.ob + " " + o.on, ml: v ? v[0] : null, price: v ? v[1] : 0, qty: ordF.qty,
+    var items = ordItems.map(function (it) {
+      var v = it.o.vol[it.vol] || null;
+      return { id: it.o.id, name: OWN_BRAND + " " + ownTitle(it.o), of: it.o.ob + " " + it.o.on, ml: v ? v[0] : null, price: v ? v[1] : 0, qty: it.qty };
+    });
+    var f = items[0];
+    // первый аромат ещё и отдельными полями — так заявку примет и прежняя версия сервера
+    var body = { items: items, id: f.id, name: f.name, of: f.of, ml: f.ml, price: f.price, qty: f.qty,
       get: ordF.get === 1 ? "delivery" : "pickup", addr: ordF.get === 1 ? addr : "", pay: ordF.pay === 1 ? "cash" : (ordF.pay === 2 ? "card" : ""),
       cname: name, phone: phone, comment: $("#ordcomment").value, website: $("#ordweb").value, lang: lang, dev: devId() };
-    var done = function (j) { ordBusy = false; ordRes = j; ordView = "thanks"; track("order-sent/" + o.id); ordDraw(); };
+    var done = function (j) {
+      ordBusy = false; ordRes = j; ordView = "thanks"; ordSent = ordItems; ordItems = []; ordIn.ordcomment = "";
+      track("order-sent/" + items.map(function (x) { return x.id; }).join("+")); ordDraw();
+    };
+    ordKeep();
     if (inClaude) { done({ ok: true, id: 0, test: true }); return; }          // превью в чате: заявку никуда не отправляем
     ordBusy = true; btn.disabled = true; st.textContent = t("ordSending");
     fetch(RV_API + "order", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
@@ -2871,20 +2926,38 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   $("#ordclose").addEventListener("click", closeOrder);
   ord.addEventListener("click", function (e) { if (e.target === ord) closeOrder(); });
   $("#ordbody").addEventListener("click", function (e) {
-    var f = e.target.closest("[data-of]"), q = e.target.closest("[data-oq]"), b = e.target.closest("button");
+    var f = e.target.closest("[data-of]"), q = e.target.closest("[data-oq]"), rm = e.target.closest("[data-orm]"), ad = e.target.closest("[data-oadd]"), b = e.target.closest("button");
     if (f) {
-      var field = f.getAttribute("data-of"), v = Number(f.getAttribute("data-v")) + (field === "vol" ? 0 : 1);
+      var field = f.getAttribute("data-of"), k = Number(f.getAttribute("data-v"));
+      if (field === "vol") { ordItems[Number(f.getAttribute("data-i"))].vol = k; ordRedrawItems(); return; }
+      var v = k + 1;
       ordF[field] = field === "pay" && ordF.pay === v ? 0 : v;                    // оплату можно снять повторным нажатием
-      f.parentNode.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(Number(x.getAttribute("data-v")) + (field === "vol" ? 0 : 1) === ordF[field])); });
+      f.parentNode.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(Number(x.getAttribute("data-v")) + 1 === ordF[field])); });
       if (field === "get") { $("#ordaddr").hidden = ordF.get !== 1; if ($("#ordpick")) $("#ordpick").hidden = ordF.get !== 2; if (ordF.get === 1) $("#ordaddr").focus(); }
-      if (field === "vol") {
-        $("#ordtot").innerHTML = ordTotal();
-        var oc = $("#ordbody .ocontact"); if (oc) oc.outerHTML = ownContacts(ordCur, ordCur.vol[ordF.vol]);
-      }
       $("#ordstatus").textContent = "";
       return;
     }
-    if (q) { ordF.qty = Math.max(1, Math.min(10, ordF.qty + Number(q.getAttribute("data-oq")))); $("#ordqty").textContent = ordF.qty; $("#ordtot").innerHTML = ordTotal(); return; }
+    if (q) {
+      var qi = Number(q.getAttribute("data-i")), d = Number(q.getAttribute("data-oq")), it = ordItems[qi];
+      it.qty = Math.max(1, Math.min(10, it.qty + d));
+      ordRedrawItems();
+      var nb = $('#oitems [data-oq="' + d + '"][data-i="' + qi + '"]'); if (nb) nb.focus();
+      return;
+    }
+    if (rm) {
+      ordItems.splice(Number(rm.getAttribute("data-orm")), 1);
+      ordRedrawItems();
+      var fb = $("#oitems .qty button"); if (fb) fb.focus();
+      return;
+    }
+    if (ad && OWN_BY_ID[ad.getAttribute("data-oadd")]) {
+      ordItems.push(ordNewItem(OWN_BY_ID[ad.getAttribute("data-oadd")])); ordAddOpen = false;
+      track("order-add/" + ad.getAttribute("data-oadd"));
+      ordRedrawItems();
+      var last = $("#oitems .oitem:last-child"); if (last) { last.scrollIntoView({ block: "nearest" }); var lb = last.querySelector(".qty button"); if (lb) lb.focus(); }
+      return;
+    }
+    if (b && b.id === "ordadd") { ordAddOpen = !ordAddOpen; b.setAttribute("aria-expanded", String(ordAddOpen)); $("#ordaddlist").hidden = !ordAddOpen; return; }
     if (b && b.id === "ordsend") ordSubmit();
     if (b && b.id === "orddone") closeOrder();
   });
@@ -3316,8 +3389,10 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
     track("reviews/" + p.b + " — " + p.n);
   }
   // Ссылка с кодом покупки (?otziv=КОД): сразу выбор купленного аромата и форма
-  function openReviewByCode(code, own) {
-    rvCur = null; rvCode = code; rvView = "pick"; rvQ = ""; rvForm = {}; rvOpener = null;
+  // own — купленный аромат (ссылка ведёт сразу в форму); ownList — несколько купленных (заказ из корзины): они первыми в выборе
+  var rvOwnPick = [];
+  function openReviewByCode(code, own, ownList) {
+    rvCur = null; rvCode = code; rvView = "pick"; rvQ = ""; rvForm = {}; rvOpener = null; rvOwnPick = ownList || [];
     if (own) { var x = ownRv(own); rvCur = { b: x.b, n: x.n, uid: rvKey(x) }; rvView = "form"; }
     rv.hidden = false; histOverlay(); rvDraw();
     track("review-code-link");
@@ -3399,7 +3474,9 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   }
   function rvPickRows() {
     var D = searchPerfumes(rvQ);
-    $("#rvlist").innerHTML = D.items.slice(0, 30).map(function (p) {
+    $("#rvlist").innerHTML = (rvQ.trim() ? [] : rvOwnPick).map(function (o) {
+      return '<li><button type="button" class="row" data-rpo="' + esc(o.id) + '"><span class="txt"><b>' + esc(OWN_BRAND + " " + ownTitle(o)) + "</b><span>" + esc(ownOf(o)) + '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
+    }).join("") + D.items.slice(0, 30).map(function (p) {
       return '<li><button type="button" class="row" data-rp="' + p.i + '"><span class="txt"><b>' + esc(p.n) + "</b><span>" + esc(p.b) + '</span></span><span class="go" aria-hidden="true">→</span></button></li>';
     }).join("");
     $("#rvhint").textContent = D.pop ? t("dupePopular") : (D.items.length ? t("found", { n: D.items.length }) : t(SEARCH_READY ? "notFound" : "searching"));
@@ -3460,6 +3537,8 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
       return;
     }
     if (pk) { var p = P[Number(pk.getAttribute("data-rp"))]; rvCur = { b: p.b, n: p.n, uid: rvKey(p) }; rvView = "form"; rvDraw(); return; }
+    var pko = e.target.closest("[data-rpo]"), po = pko && OWN_BY_ID[pko.getAttribute("data-rpo")];
+    if (po) { var xo = ownRv(po); rvCur = { b: xo.b, n: xo.n, uid: rvKey(xo) }; rvView = "form"; rvDraw(); return; }
     if (id === "rvwrite") { rvView = "form"; rvDraw(); track("review-form"); }
     else if (id === "rvsend") rvSubmit();
     else if (id === "rvretry") { rvData = null; rvDraw(); rvFetch(); }
@@ -3656,7 +3735,7 @@ textarea.search { min-height: 120px; resize: vertical; line-height: 1.45; }
   histFlush();
   setTimeout(loadLastReviews, 1500);       // свежие отзывы внизу главной — после загрузки, не мешая первому экрану
   // Ссылка из бота магазина с кодом покупки: shoh-parfumer.com/?otziv=КОД
-  try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) { var oa = new URLSearchParams(location.search).get("a"); openReviewByCode(oc, (oa && OWN_BY_ID[oa]) || null); } } } catch (e) {}
+  try { var oc = new URLSearchParams(location.search).get("otziv"); if (oc) { oc = oc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); if (oc) { var oa = String(new URLSearchParams(location.search).get("a") || "").split(",").map(function (x) { return OWN_BY_ID[x]; }).filter(Boolean); openReviewByCode(oc, oa.length === 1 ? oa[0] : null, oa.length > 1 ? oa : null); } } } catch (e) {}
   // Со страницы аромата (/aromaty/…) нажали «Заказать»: ?a=id&z=1 — сразу форма заказа (z убираем из адреса)
   if (OPEN_ORDER && state.step === 9 && state.own) {
     try { history.replaceState(history.state, "", location.pathname + "?a=" + encodeURIComponent(state.own.id)); } catch (e) {}

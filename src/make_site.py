@@ -289,6 +289,7 @@ OWN_CSS = (":root{--bg:#0B0B0A;--surface:#151513;--soft:#211F19;--line:#2E2D27;-
            ".ourcard img{width:64px;height:96px;object-fit:contain;background:#fff;border-radius:10px;flex:none}"
            ".list .it{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}"
            ".list .it span{color:var(--muted);font-size:.875rem}"
+           ".motto{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:1.0625rem;line-height:1.4}"
            ".list b{font-weight:600}.list span{color:var(--muted);font-size:.875rem}.list .p{color:var(--fg);font-weight:600}")
 
 
@@ -577,6 +578,45 @@ for l, p in LANGS.items():
         write_if(os.path.join(ddir, dslug[i], "index.html"), dupe_page(i, l))
 print("ok dupy: %d оригиналов × %d языка" % (len(dorig), len(LANGS)))
 
+# ---------- Страница «О Shoh Parfumer»: /o-nas/ (+ /tg/, /en/). Текст владельца (14.11.2026) из I18N about* ----------
+def about_page(l):
+    T, base = I18N[l], SITE + LANGS[l]
+    url = base + "o-nas/"
+    alts_map = {x: SITE + LANGS[x] + "o-nas/" for x in LANGS}
+    app = "/" + LANGS[l]
+    c, tx = SHOP["CONTACTS"], lambda o: (o or {}).get(l) or (o or {}).get("ru") or ""
+    contacts = ""                                  # адрес, часы, телефон, Instagram — только когда владелец их пришлёт
+    if tx(c.get("address")):
+        contacts += "<li>" + H(T["cAddress"] + ": " + tx(c.get("address"))) + "</li>"
+    if tx(c.get("hours")):
+        contacts += "<li>" + H(T["cHours"] + ": " + tx(c.get("hours"))) + "</li>"
+    if c.get("phone"):
+        contacts += "<li>" + H(T["cPhone"]) + ': <a href="tel:+' + A(re.sub(r"\D", "", c["phone"])) + '">' + H(c["phone"]) + "</a></li>"
+    if c.get("instagram"):
+        contacts += '<li>Instagram: <a href="https://instagram.com/' + A(c["instagram"]) + '" rel="noopener">@' + H(c["instagram"]) + "</a></li>"
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "AboutPage", "name": T["aboutH"], "url": url, "inLanguage": l, "mainEntity": {"@id": SITE + "#store"}},
+        {"@type": "Store", "@id": SITE + "#store", "name": "Shoh Parfumer", "url": SITE, "logo": SITE + "logo.png", "slogan": T["aboutI3"],
+         "description": T["aboutI1"] + " " + T["aboutI2"], "address": store_address()},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Shoh Parfumer", "item": base},
+            {"@type": "ListItem", "position": 2, "name": T["aboutH"], "item": url}]}]}
+    body = (own_header(l, alts_map) + "<main>\n<h1>" + H(T["aboutH"]) + "</h1>\n" +
+            "<p>" + H(T["aboutI1"]) + "</p>\n<p>" + H(T["aboutI2"]) + '</p>\n<p class="motto">' + H(T["aboutI3"]) + "</p>\n" +
+            "<p>" + H(T["aboutP1"]) + "</p>\n<p>" + H(T["aboutP2"]) + "</p>\n" +
+            ('<section class="stack"><h2>' + H(T["h8"]) + '</h2><div class="list">' + "".join(
+                '<a href="' + app + "aromaty/" + A(o["id"]) + '/"><b>' + H(own_info(o)[2]) + "</b><span>" + H(T["ownDupeOf"].replace("{n}", own_info(o)[0] + " " + own_info(o)[1])) +
+                '</span><span class="p">' + H(own_price(o, l)) + "</span></a>" for o in SHOP["OWN"]) + "</div></section>\n" if SHOP["OWN"] else "") +
+            '<ul class="info">' + "".join("<li>" + H(x) + "</li>" for x in (T["ownDelivery"], T["ownPay"], T["aboutOrder"])) + contacts + "</ul>\n" +
+            '<div class="acts"><a class="btn" href="' + app + '">' + H(T["aboutHome"]) + '</a><a class="btn ghost" href="' + app + 'dupy/">' + H(T["dpAllH"]) + "</a></div>\n" +
+            "</main>\n</body>\n</html>\n")
+    return own_head(l, T["aboutH"] + " · " + CITY[l], T["aboutI1"] + " " + T["aboutI2"], url, alts_map, ld) + body
+
+
+for l, p in LANGS.items():
+    write_if(os.path.join(root, p, "o-nas", "index.html"), about_page(l))
+print("ok o-nas: %d языка" % len(LANGS))
+
 # страницы ароматов пишем после «Дюпов»: на них ссылка «Дюпы <оригинал>»
 ids = [o["id"] for o in SHOP["OWN"]]
 assert len(ids) == len(set(ids)) and all(re.fullmatch(r"[a-z0-9-]+", i) for i in ids), "id ароматов: латиница, цифры, дефис, без повторов"
@@ -599,7 +639,7 @@ old = open(smp, encoding="utf-8").read() if os.path.exists(smp) else ""
 m = re.search(r"<lastmod>([^<]+)</lastmod>", old)
 today = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=5)).strftime("%Y-%m-%d")   # время Душанбе
 lastmod = today if changed or not m else m.group(1)
-groups = [""] + (["aromaty/"] + ["aromaty/" + i + "/" for i in ids] if ids else []) + ["dupy/"] + ["dupy/" + d + "/" for d in dids]   # страница + её версии на трёх языках
+groups = [""] + (["aromaty/"] + ["aromaty/" + i + "/" for i in ids] if ids else []) + ["dupy/"] + ["dupy/" + d + "/" for d in dids] + ["o-nas/"]   # страница + её версии на трёх языках
 
 
 def sm_group(sub):
